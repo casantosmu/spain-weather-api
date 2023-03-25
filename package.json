@@ -10,8 +10,9 @@
     "prebuild": "npm run clean",
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
+    "openapi:lint": "npx spectral lint src/openapi/openapi.json --ruleset src/openapi/spectral.json",
     "format": "prettier --write .",
-    "lint": "eslint src",
+    "lint": "eslint src && npm run openapi:lint",
     "prepare": "husky install"
   },
   "lint-staged": {
