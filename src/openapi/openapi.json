@@ -15,7 +15,36 @@
       "url": "/v1"
     }
   ],
-  "tags": [],
-  "paths": {},
+  "tags": [
+    {
+      "name": "location",
+      "description": "Endpoints related to cities, provinces and Spain."
+    }
+  ],
+  "paths": {
+    "/locations": {
+      "get": {
+        "tags": ["location"],
+        "summary": "Get all locations",
+        "description": "Retrieves a list of all locations in Spain.",
+        "operationId": "getLocations",
+        "responses": {
+          "200": {
+            "description": "List of all locations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {}
 }
