@@ -28,6 +28,23 @@
         "summary": "Get all locations",
         "description": "Retrieves a list of all locations in Spain.",
         "operationId": "getLocations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/skip"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Name of the location to filter the results by",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of all locations",
@@ -46,5 +63,29 @@
       }
     }
   },
-  "components": {}
+  "components": {
+    "parameters": {
+      "limit": {
+        "name": "limit",
+        "description": "Maximum number of items to include in the API response",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "maximum": 1000,
+          "default": 25
+        }
+      },
+      "skip": {
+        "name": "skip",
+        "description": "How many items should be skipped before starting to include items in the response",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "default": 0
+        }
+      }
+    }
+  }
 }
