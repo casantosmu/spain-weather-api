@@ -1,0 +1,21 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "spain-weather",
+    "description": "This API provides a comprehensive historical weather data for Spanish cities, provinces, and the country as a whole. The API also includes tools for filtering and searching for specific information, making it easy to find relevant data.",
+    "version": "1.0",
+    "contact": {},
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "servers": [
+    {
+      "url": "/v1"
+    }
+  ],
+  "tags": [],
+  "paths": {},
+  "components": {}
+}
