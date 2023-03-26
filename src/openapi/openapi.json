@@ -51,10 +51,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "object",
+                  "properties": {
+                    "metadata": {
+                      "$ref": "#/components/schemas/ListMetadata"
+                    },
+                    "data": {}
+                  },
+                  "required": ["metadata", "data"]
                 }
               }
             }
@@ -64,6 +68,22 @@
     }
   },
   "components": {
+    "schemas": {
+      "ListMetadata": {
+        "type": "object",
+        "properties": {
+          "skip": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": ["skip", "limit"]
+      }
+    },
     "parameters": {
       "limit": {
         "name": "limit",
@@ -72,6 +92,7 @@
         "required": false,
         "schema": {
           "type": "integer",
+          "format": "int32",
           "maximum": 1000,
           "default": 25
         }
@@ -83,6 +104,7 @@
         "required": false,
         "schema": {
           "type": "integer",
+          "format": "int32",
           "default": 0
         }
       }
