@@ -56,7 +56,23 @@
                     "metadata": {
                       "$ref": "#/components/schemas/ListMetadata"
                     },
-                    "data": {}
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "anyOf": [
+                          {
+                            "$ref": "#/components/schemas/City"
+                          },
+                          {
+                            "$ref": "#/components/schemas/Province"
+                          },
+                          {
+                            "$ref": "#/components/schemas/Country"
+                          }
+                        ]
+                      }
+                    }
                   },
                   "required": ["metadata", "data"]
                 }
@@ -69,6 +85,140 @@
   },
   "components": {
     "schemas": {
+      "Location": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "latLng": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 2,
+            "minItems": 2
+          },
+          "entity": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "latLng", "entity"],
+        "discriminator": {
+          "propertyName": "entity"
+        }
+      },
+      "City": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Location"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "province": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name"]
+              },
+              "country": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name"]
+              }
+            },
+            "required": ["province", "country"]
+          }
+        ]
+      },
+      "Province": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Location"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "capital": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name"]
+              },
+              "country": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name"]
+              }
+            },
+            "required": ["capital", "country"]
+          }
+        ]
+      },
+      "Country": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Location"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "capital": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name"]
+              }
+            },
+            "required": ["capital"]
+          }
+        ]
+      },
       "ListMetadata": {
         "type": "object",
         "properties": {
