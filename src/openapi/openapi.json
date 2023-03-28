@@ -78,6 +78,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       }
@@ -232,6 +238,52 @@
           }
         },
         "required": ["skip", "limit"]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["name", "message"]
+      },
+      "BadRequestError": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "errors": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Error"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "target": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["target"]
+                    }
+                  ]
+                }
+              }
+            },
+            "required": ["errors"]
+          }
+        ]
       }
     },
     "parameters": {
@@ -256,6 +308,28 @@
           "type": "integer",
           "format": "int32",
           "default": 0
+        }
+      }
+    },
+    "responses": {
+      "InternalServerError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "BadRequestError": {
+        "description": "The request was malformed or invalid",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
         }
       }
     }
