@@ -6,14 +6,14 @@
   "scripts": {
     "prestart": "npm run build",
     "start": "node .",
-    "clean": "rimraf ./dist",
+    "clean": "rm -rf ./dist",
     "prebuild": "npm run clean",
     "build": "tsc",
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon --watch src --exec node --loader ts-node/esm --inspect=0.0.0.0:9229 src/index.ts",
     "openapi:lint": "npx spectral lint src/docs/docs.json --ruleset src/docs/spectral.json",
     "format": "prettier --write .",
     "lint": "eslint src && npm run openapi:lint",
-    "prepare": "husky install"
+    "prepare": "test -d node_modules/husky && husky install || echo \"husky is not installed\""
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown",
@@ -23,7 +23,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "swagger-ui-express": "^4.6.2"
   },
@@ -42,7 +41,6 @@
     "lint-staged": "^13.1.2",
     "nodemon": "^2.0.22",
     "prettier": "^2.8.4",
-    "rimraf": "^4.3.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
   }
