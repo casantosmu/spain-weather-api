@@ -4,15 +4,16 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "prestart": "npm run build",
-    "start": "node .",
     "clean": "rm -rf ./dist",
     "prebuild": "npm run clean",
     "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node .",
     "dev": "nodemon --watch src --exec node --loader ts-node/esm --inspect=0.0.0.0:9229 src/index.ts",
-    "openapi:lint": "npx spectral lint src/docs/docs.json --ruleset src/docs/spectral.json",
     "format": "prettier --write .",
-    "lint": "eslint src && npm run openapi:lint",
+    "check:format": "prettier --check .",
+    "check:lint": "eslint src",
+    "check:docs": "npx spectral lint src/docs/docs.json --ruleset src/docs/spectral.json",
     "prepare": "test -d node_modules/husky && husky install || echo \"husky is not installed\""
   },
   "lint-staged": {
