@@ -1,4 +1,4 @@
-name: code quality
+name: Code Quality
 
 on:
   pull_request:
@@ -6,23 +6,24 @@ on:
 
 jobs:
   code-quality:
-    name: code quality
+    name: Code Quality Check
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        script: ["check:format", "check:lint", "check:docs", "check:types"]
+
     steps:
-      - name: check out code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: set up node
+      - name: Set Up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "18.x"
 
-      - name: install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: lint check
-        run: npm run lint
-
-      - name: format check
-        run: npx prettier --check .
+      - name: Check Code ${{ matrix.script }}
+        run: npm run ${{ matrix.script }}
