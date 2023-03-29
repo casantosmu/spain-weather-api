@@ -28,6 +28,7 @@
         "summary": "Get all locations",
         "description": "Retrieves a list of all locations in Spain.",
         "operationId": "getLocations",
+        "deprecated": true,
         "parameters": [
           {
             "$ref": "#/components/parameters/limit"
