@@ -30,9 +30,7 @@ To develop and debug the application, follow the steps below.
 
 1. To connect a debugger, open Chrome and type the following into the address bar:
 
-   ```bash
-   about:inspect
-   ```
+   `about:inspect`
 
    This will open the DevTools that are connected to the running Node.js process inside the Docker container.
 
