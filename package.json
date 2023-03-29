@@ -9,7 +9,7 @@
     "clean": "rimraf ./dist",
     "prebuild": "npm run clean",
     "build": "tsc",
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon --watch src --exec node --loader ts-node/esm --inspect=0.0.0.0:9229 src/index.ts",
     "openapi:lint": "npx spectral lint src/docs/docs.json --ruleset src/docs/spectral.json",
     "format": "prettier --write .",
     "lint": "eslint src && npm run openapi:lint",
