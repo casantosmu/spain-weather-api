@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        script: ["check:format", "check:lint", "check:docs"]
+        script: ["check:format", "check:lint", "check:docs", "check:types"]
 
     steps:
       - name: Checkout Code
