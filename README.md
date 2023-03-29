@@ -26,7 +26,7 @@ To develop and debug the application, follow the steps below.
    docker compose -f docker-compose.dev.yml up --build
    ```
 
-   This will compile the image and start the application in debug mode.
+   This will build the image and start the application in watch and debug mode.
 
 1. To connect a debugger, open Chrome and type the following into the address bar:
 
