@@ -10,7 +10,7 @@ const options = {
   },
 };
 
-docsRouter.get("/docs.json", (req, res) => res.json(docsJson));
+docsRouter.get("/docs.json", (_req, res) => res.json(docsJson));
 docsRouter.use(
   "/docs",
   swaggerUi.serveFiles(undefined, options),
