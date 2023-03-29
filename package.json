@@ -13,7 +13,7 @@
     "openapi:lint": "npx spectral lint src/docs/docs.json --ruleset src/docs/spectral.json",
     "format": "prettier --write .",
     "lint": "eslint src && npm run openapi:lint",
-    "prepare": "husky install"
+    "prepare": "test -d node_modules/husky && husky install || echo \"husky is not installed\""
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown",
