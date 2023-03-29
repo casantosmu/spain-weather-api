@@ -6,7 +6,7 @@ const docsRouter = expressRouter();
 
 const options = {
   swaggerOptions: {
-    url: "/docs.json",
+    url: "/v1/docs.json",
   },
 };
 
