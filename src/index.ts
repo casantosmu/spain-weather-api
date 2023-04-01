@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import express from "express";
 import router from "./router";
 
@@ -6,6 +7,10 @@ const port = process.env["SERVER_PORT"] ?? 3000;
 
 app.use("/v1", router);
 
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
-});
+(async () => {
+  await mongoose.connect(process.env["MONGODB_URI"]!);
+  console.log("Database connection successful");
+  app.listen(port, () => {
+    console.log(`Server is running at http://localhost:${port}`);
+  });
+})();
