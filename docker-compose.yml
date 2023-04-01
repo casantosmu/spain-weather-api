@@ -5,7 +5,10 @@ services:
     build:
       context: .
       target: prod
+    restart: always
     ports:
-      - 8000:8000
+      - 3000:3000
     environment:
-      - SERVER_PORT=8000
+      - NODE_ENV=production
+      - SERVER_PORT=3000
+      - MONGODB_URI=${MONGODB_URI}
