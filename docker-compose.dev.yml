@@ -6,11 +6,24 @@ services:
       context: .
       target: build
     ports:
-      - 8000:8000
+      - 3000:3000
       - 9229:9229
     environment:
       - SERVER_PORT=8000
+      - MONGODB_URI=mongodb://mongo:27017/spain-weather
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules
     command: npm run dev
+
+  mongo:
+    image: mongo:6.0.5
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb:/data/db
+      - mongodb_config:/data/configdb
+
+volumes:
+  mongodb:
+  mongodb_config:

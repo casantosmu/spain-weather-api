@@ -1,4 +1,4 @@
-name: Code Quality
+name: CI
 
 on:
   pull_request:
@@ -21,6 +21,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18.x"
+          cache: npm
 
       - name: Install Dependencies
         run: npm ci
