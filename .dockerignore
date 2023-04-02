@@ -1,0 +1,12 @@
+.env
+docker-compose.dev.yml
+.eslintrc.json
+.prettierignore
+.editorconfig
+.git/
+.github/
+.husky/
+README.md
+
+dist/
+node_modules/
