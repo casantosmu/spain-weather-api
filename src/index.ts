@@ -13,10 +13,19 @@ const port = process.env["SERVER_PORT"] ?? 3000;
 app.use(httpLogger);
 app.use("/v1", router);
 
+const handleError = (error: unknown) => {
+  logger.error(error);
+};
+
 (async () => {
-  await mongoose.connect(process.env["MONGODB_URI"]!);
-  logger.info("Database connection successful");
-  app.listen(port, () => {
-    logger.info(`Server is running at http://localhost:${port}`);
-  });
+  try {
+    await mongoose.connect(process.env["MONGODB_URI"]!);
+    logger.info("Database connection successful");
+    app.listen(port, async () => {
+      logger.info(`Server is running at http://localhost:${port}`);
+    });
+  } catch (error) {
+    handleError(error);
+    process.exitCode = 1;
+  }
 })();
