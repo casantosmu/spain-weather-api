@@ -6,7 +6,7 @@ services:
       context: .
       target: build
     ports:
-      - 3000:3000
+      - 8000:8000
       - 9229:9229
     environment:
       - SERVER_PORT=8000

@@ -7,8 +7,8 @@ services:
       target: prod
     restart: always
     ports:
-      - 3000:3000
+      - 8000:8000
     environment:
       - NODE_ENV=production
-      - SERVER_PORT=3000
+      - SERVER_PORT=8000
       - MONGODB_URI=${MONGODB_URI}
