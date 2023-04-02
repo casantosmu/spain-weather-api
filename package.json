@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "prebuild": "npm run clean",
     "build": "tsc",
     "prestart": "npm run build",
@@ -47,6 +47,7 @@
     "nodemon": "^2.0.22",
     "pino-pretty": "^10.0.0",
     "prettier": "^2.8.7",
+    "rimraf": "^4.4.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.3"
   }
