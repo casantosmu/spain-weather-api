@@ -1,10 +1,14 @@
 import mongoose from "mongoose";
 import express from "express";
 import router from "./router";
+import pinoHttp from "pino-http";
 
 const app = express();
 const port = process.env["SERVER_PORT"] ?? 3000;
 
+const httpLogger = pinoHttp();
+
+app.use(httpLogger);
 app.use("/v1", router);
 
 (async () => {
