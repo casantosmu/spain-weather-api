@@ -2,10 +2,8 @@ version: "3.8"
 
 services:
   api:
-    build:
-      context: .
-      target: prod
-    restart: always
+    image: ghcr.io/casantosmu/spain-weather:main
+    restart: unless-stopped
     ports:
       - 8000:8000
     environment:
