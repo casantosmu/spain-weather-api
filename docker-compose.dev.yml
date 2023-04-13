@@ -11,6 +11,7 @@ services:
     environment:
       - SERVER_PORT=8000
       - MONGODB_URI=mongodb://mongo:27017/spain-weather
+      - LOG_LEVEL=debug
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules
@@ -18,8 +19,8 @@ services:
 
   mongo:
     image: mongo:6.0.5
-    ports:
-      - 27017:27017
+    expose:
+      - "27017"
     volumes:
       - mongodb:/data/db
       - mongodb_config:/data/configdb

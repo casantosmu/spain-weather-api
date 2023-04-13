@@ -1,17 +1,22 @@
 import mongoose from "mongoose";
 import express from "express";
-import router from "./router";
 import pinoHttp from "pino-http";
-import pino from "pino";
+import pino, { type LoggerOptions } from "pino";
 
-const logger = pino();
-const httpLogger = pinoHttp();
+const loggerOptions: LoggerOptions = {
+  errorKey: "error",
+  messageKey: "message",
+  level: process.env["LOG_LEVEL"]!,
+};
+
+const logger = pino(loggerOptions);
+const httpLogger = pinoHttp(loggerOptions);
 
 const app = express();
 const port = process.env["SERVER_PORT"] ?? 3000;
 
 app.use(httpLogger);
-app.use("/v1", router);
+app.disable("x-powered-by");
 
 const handleError = (error: unknown) => {
   logger.error(error);
