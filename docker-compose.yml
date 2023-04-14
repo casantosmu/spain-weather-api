@@ -2,7 +2,8 @@ version: "3.8"
 
 services:
   api:
-    image: ghcr.io/casantosmu/spain-weather:main
+    container_name: spain-weather-api
+    image: ghcr.io/casantosmu/spain-weather-api:main
     restart: unless-stopped
     environment:
       - NODE_ENV=production
