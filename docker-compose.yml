@@ -4,9 +4,18 @@ services:
   api:
     image: ghcr.io/casantosmu/spain-weather:main
     restart: unless-stopped
-    ports:
-      - 8000:8000
     environment:
       - NODE_ENV=production
       - SERVER_PORT=8000
       - MONGODB_URI=${MONGODB_URI}
+      - VIRTUAL_HOST=spain-weather.casantosmu.com,www.spain-weather.casantosmu.com
+      - VIRTUAL_PATH=/api/v1
+      - LETSENCRYPT_HOST=spain-weather.casantosmu.com,www.spain-weather.casantosmu.com
+    expose:
+      - "8000"
+    networks:
+      - reverse-proxy
+
+networks:
+  reverse-proxy:
+    external: true
