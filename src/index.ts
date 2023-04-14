@@ -3,18 +3,19 @@ import express from "express";
 import pinoHttp from "pino-http";
 import pino, { type LoggerOptions } from "pino";
 import router from "./router";
+import { config } from "./config";
 
 const loggerOptions: LoggerOptions = {
   errorKey: "error",
   messageKey: "message",
-  level: process.env["LOG_LEVEL"] ?? "info",
+  level: config.logLevel,
 };
 
 const logger = pino(loggerOptions);
 const httpLogger = pinoHttp(loggerOptions);
 
 const app = express();
-const port = process.env["SERVER_PORT"] ?? 8000;
+const port = config.serverPort;
 
 app.use(httpLogger);
 app.disable("x-powered-by");
@@ -27,7 +28,7 @@ const handleError = (error: unknown) => {
 
 (async () => {
   try {
-    await mongoose.connect(process.env["MONGODB_URI"]!);
+    await mongoose.connect(config.mongodbUri);
     logger.info("Database connection successful");
     app.listen(port, async () => {
       logger.info(`Server is running at http://localhost:${port}`);
