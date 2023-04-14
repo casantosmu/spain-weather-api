@@ -4,17 +4,7 @@ import docsJson from "./docs.json";
 
 const docsRouter = expressRouter();
 
-const options = {
-  swaggerOptions: {
-    url: "/v1/docs.json",
-  },
-};
-
 docsRouter.get("/docs.json", (_req, res) => res.json(docsJson));
-docsRouter.use(
-  "/docs",
-  swaggerUi.serveFiles(undefined, options),
-  swaggerUi.setup(undefined, options)
-);
+docsRouter.use("/docs", swaggerUi.serve, swaggerUi.setup(docsJson));
 
 export default docsRouter;
