@@ -1,4 +1,4 @@
-import { handleError } from "../src/error";
+import { AppError, handleError } from "../src/error";
 import { logger } from "../src/logger";
 
 describe("handleError", () => {
@@ -30,5 +30,22 @@ describe("handleError", () => {
       );
       expect(process.exit).toHaveBeenCalledWith(errorExitCode);
     });
+  });
+});
+
+describe("AppError", () => {
+  it("should create an instance with the correct properties", () => {
+    const statusCode = 500;
+    const name = "TestError";
+    const message = "This is a test error";
+    const cause = new Error("Cause error");
+
+    const error = new AppError(statusCode, name, message, { cause });
+
+    expect(error).toBeInstanceOf(Error);
+    expect(error.statusCode).toEqual(statusCode);
+    expect(error.name).toEqual(name);
+    expect(error.message).toEqual(message);
+    expect(error.cause).toEqual(cause);
   });
 });

@@ -14,3 +14,14 @@ export const handleError = (error: unknown) => {
 
   process.exit(1);
 };
+
+export class AppError extends Error {
+  constructor(
+    readonly statusCode: number,
+    override readonly name: string,
+    override readonly message: string,
+    readonly options?: ErrorOptions
+  ) {
+    super(message, options);
+  }
+}
