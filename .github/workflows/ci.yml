@@ -28,3 +28,26 @@ jobs:
 
       - name: Check Code ${{ matrix.script }}
         run: npm run ${{ matrix.script }}
+
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Copy .env file
+        run: cp .env.example .env
+
+      - name: Run tests
+        run: npm run test
