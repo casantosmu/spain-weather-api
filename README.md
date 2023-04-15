@@ -20,13 +20,23 @@ To develop and debug the application, follow the steps below.
    cd spain-weather
    ```
 
-1. Build the Docker image with the following command:
+1. Copy the example environment file to a new file named .env with the following command:
 
    ```bash
-   docker compose -f docker-compose.dev.yml up --build
+   cp .env.example .env
    ```
 
-   This will build the image and start the application in watch and debug mode.
+1. Build the mongo image with the following command:
+
+   ```bash
+   docker compose up --build -d mongo
+   ```
+
+1. Run the application in watch and debug mode with the following command:
+
+   ```bash
+   docker compose run --rm --service-ports api npm run dev
+   ```
 
 1. To connect a debugger, open Chrome and type the following into the address bar:
 
@@ -34,6 +44,18 @@ To develop and debug the application, follow the steps below.
 
    This will open the DevTools that are connected to the running Node.js process inside the Docker container.
 
+## Running Tests
+
+To run the tests instead of the application in watch and debug mode, follow these steps:
+
+```bash
+docker compose run --rm api npm run test
+```
+
 ## Documentation
 
-API documentation for the Spanish Weather API is written in OpenAPI 3 format and is available at /v1/docs. The documentation is validated using Spectral, a tool for enforcing API design rules and best practices.
+API documentation for the Spanish Weather API is written in OpenAPI 3 format and is available at api/v1/docs. The documentation is validated using Spectral, a tool for enforcing API design rules and best practices.
+
+## Usage
+
+The API can be accessed at: [spain-weather.casantosmu.com](https://spain-weather.casantosmu.com/api/v1)

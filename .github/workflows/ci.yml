@@ -28,3 +28,17 @@ jobs:
 
       - name: Check Code ${{ matrix.script }}
         run: npm run ${{ matrix.script }}
+
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Build the mongo image
+        run: docker compose up --build -d mongo
+
+      - name: Run tests
+        run: docker compose run --rm api npm run test

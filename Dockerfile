@@ -2,7 +2,8 @@ FROM node:18-slim AS build
 WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 RUN npm install
-COPY src tsconfig*.json ./
+COPY tsconfig*.json ./
+COPY src ./src
 
 RUN npm run build
 

@@ -6,14 +6,15 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "prebuild": "npm run clean",
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "prestart": "npm run build",
     "start": "node .",
-    "dev": "dotenv nodemon --watch src --exec node --loader ts-node/esm --inspect=0.0.0.0:9229 src/index.ts | pino-pretty",
+    "dev": "dotenv -- nodemon --watch src --exec node --loader ts-node/esm --inspect=0.0.0.0:9229 src/index.ts | pino-pretty",
+    "test": "dotenv -e .env.test -- jest",
     "format": "prettier --write .",
     "check:format": "prettier --check .",
     "check:lint": "eslint src",
-    "check:docs": "npx spectral lint src/docs/docs.json --ruleset src/docs/spectral.json",
+    "check:docs": "npx spectral lint src/docs.json",
     "check:types": "tsc --noEmit",
     "prepare": "test -d node_modules/husky && husky install || echo \"husky is not installed\""
   },
@@ -25,6 +26,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "envalid": "^7.3.1",
     "express": "^4.18.2",
     "mongoose": "^7.0.3",
     "pino": "^8.11.0",
@@ -34,6 +36,7 @@
   "devDependencies": {
     "@stoplight/spectral-cli": "^6.6.0",
     "@types/express": "^4.17.17",
+    "@types/jest": "^29.5.0",
     "@types/node": "^18.15.11",
     "@types/swagger-ui-express": "^4.1.3",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
@@ -44,11 +47,13 @@
     "eslint-config-xo": "^0.43.1",
     "eslint-config-xo-typescript": "^0.57.0",
     "husky": "^8.0.3",
+    "jest": "^29.5.0",
     "lint-staged": "^13.2.1",
     "nodemon": "^2.0.22",
     "pino-pretty": "^10.0.0",
     "prettier": "^2.8.7",
     "rimraf": "^5.0.0",
+    "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   }

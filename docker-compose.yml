@@ -2,21 +2,24 @@ version: "3.8"
 
 services:
   api:
-    container_name: spain-weather-api
-    image: ghcr.io/casantosmu/spain-weather-api:main
-    restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-      - SERVER_PORT=8000
-      - MONGODB_URI=${MONGODB_URI}
-      - VIRTUAL_HOST=spain-weather.casantosmu.com,www.spain-weather.casantosmu.com
-      - VIRTUAL_PATH=/api/v1
-      - LETSENCRYPT_HOST=spain-weather.casantosmu.com,www.spain-weather.casantosmu.com
-    expose:
-      - "8000"
-    networks:
-      - reverse-proxy
+    build:
+      context: .
+      target: build
+    ports:
+      - ${SERVER_PORT:-8000}:${SERVER_PORT:-8000}
+      - 9229:9229
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
 
-networks:
-  reverse-proxy:
-    external: true
+  mongo:
+    image: mongo:6.0.5
+    expose:
+      - "27017"
+    volumes:
+      - mongodb:/data/db
+      - mongodb_config:/data/configdb
+
+volumes:
+  mongodb:
+  mongodb_config:
