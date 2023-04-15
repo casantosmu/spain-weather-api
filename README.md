@@ -20,19 +20,37 @@ To develop and debug the application, follow the steps below.
    cd spain-weather
    ```
 
-1. Build the Docker image with the following command:
+1. Copy the example environment file to a new file named .env with the following command:
 
    ```bash
-   docker compose -f docker-compose.yml up --build
+   cp .env.example .env
    ```
 
-   This will build the image and start the application in watch and debug mode.
+1. Build the mongo image with the following command:
+
+   ```bash
+   docker compose up --build -d mongo
+   ```
+
+1. Run the application in watch and debug mode with the following command:
+
+   ```bash
+   docker compose run --rm --service-ports api npm run dev
+   ```
 
 1. To connect a debugger, open Chrome and type the following into the address bar:
 
    `about:inspect`
 
    This will open the DevTools that are connected to the running Node.js process inside the Docker container.
+
+## Running Tests
+
+To run the tests instead of the application in watch and debug mode, follow these steps:
+
+```bash
+docker compose run --rm api npm run test
+```
 
 ## Documentation
 

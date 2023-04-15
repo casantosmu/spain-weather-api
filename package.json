@@ -9,14 +9,14 @@
     "build": "tsc --project tsconfig.build.json",
     "prestart": "npm run build",
     "start": "node .",
-    "dev": "dotenv nodemon --watch src --exec node --loader ts-node/esm --inspect=0.0.0.0:9229 src/index.ts | pino-pretty",
+    "dev": "dotenv -- nodemon --watch src --exec node --loader ts-node/esm --inspect=0.0.0.0:9229 src/index.ts | pino-pretty",
+    "test": "dotenv -e .env.test -- jest",
     "format": "prettier --write .",
     "check:format": "prettier --check .",
     "check:lint": "eslint src",
     "check:docs": "npx spectral lint src/docs.json",
     "check:types": "tsc --noEmit",
-    "prepare": "test -d node_modules/husky && husky install || echo \"husky is not installed\"",
-    "test": "dotenv jest"
+    "prepare": "test -d node_modules/husky && husky install || echo \"husky is not installed\""
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown",

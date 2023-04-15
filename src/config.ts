@@ -1,4 +1,4 @@
-import { cleanEnv, num, str, url } from "envalid";
+import { cleanEnv, num, str, testOnly, url } from "envalid";
 
 const env = cleanEnv(process.env, {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -9,10 +9,12 @@ const env = cleanEnv(process.env, {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   SERVER_PORT: num({
     default: 8000,
+    devDefault: testOnly(0),
+    desc: "For test environments must be 0, which means that a dynamically available port will be assigned.",
   }),
   // eslint-disable-next-line @typescript-eslint/naming-convention
   LOG_LEVEL: str({
-    choices: ["debug", "info", "warn", "error", "fatal"],
+    choices: ["silent", "debug", "info", "warn", "error", "fatal"],
     default: "info",
     devDefault: "debug",
     desc: "Specifies the level of detail of the log messages that are written to the log.",
