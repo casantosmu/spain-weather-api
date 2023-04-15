@@ -13,7 +13,7 @@
     "format": "prettier --write .",
     "check:format": "prettier --check .",
     "check:lint": "eslint src",
-    "check:docs": "npx spectral lint src/docs/docs.json --ruleset src/docs/spectral.json",
+    "check:docs": "npx spectral lint src/docs.json",
     "check:types": "tsc --noEmit",
     "prepare": "test -d node_modules/husky && husky install || echo \"husky is not installed\""
   },

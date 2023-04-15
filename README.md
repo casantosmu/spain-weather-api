@@ -36,4 +36,8 @@ To develop and debug the application, follow the steps below.
 
 ## Documentation
 
-API documentation for the Spanish Weather API is written in OpenAPI 3 format and is available at /v1/docs. The documentation is validated using Spectral, a tool for enforcing API design rules and best practices.
+API documentation for the Spanish Weather API is written in OpenAPI 3 format and is available at api/v1/docs. The documentation is validated using Spectral, a tool for enforcing API design rules and best practices.
+
+## Usage
+
+The API can be accessed at: [spain-weather.casantosmu.com](https://spain-weather.casantosmu.com/api/v1)
