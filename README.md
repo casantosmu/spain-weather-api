@@ -23,7 +23,7 @@ To develop and debug the application, follow the steps below.
 1. Build the Docker image with the following command:
 
    ```bash
-   docker compose -f docker-compose.dev.yml up --build
+   docker compose -f docker-compose.yml up --build
    ```
 
    This will build the image and start the application in watch and debug mode.
