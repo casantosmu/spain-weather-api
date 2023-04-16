@@ -251,40 +251,6 @@
           }
         },
         "required": ["name", "message"]
-      },
-      "BadRequestError": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Error"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "errors": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Error"
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "target": {
-                          "type": "string"
-                        }
-                      },
-                      "required": ["target"]
-                    }
-                  ]
-                }
-              }
-            },
-            "required": ["errors"]
-          }
-        ]
       }
     },
     "parameters": {
@@ -328,7 +294,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/BadRequestError"
+              "$ref": "#/components/schemas/Error"
             }
           }
         }
