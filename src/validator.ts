@@ -15,7 +15,7 @@ import Ajv, { type ErrorObject, type ValidateFunction } from "ajv";
 
 // export const validate = validator.compile(schema);
 
-export const validator = new Ajv({ allErrors: true });
+export const validator = new Ajv();
 
 const convertAjvErrorToMessage = (ajvError: ErrorObject) => {
   const propertyName = ajvError.instancePath.split("/").pop();

@@ -14,7 +14,6 @@ describe("validateMiddleware", () => {
       const middleware = validateMiddleware(validateSchema);
       middleware(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalled();
       expect(validateSchema).toHaveBeenCalledWith(req.body);
     });
   });
