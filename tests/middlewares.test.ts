@@ -27,16 +27,15 @@ describe("generalErrorMiddleware", () => {
       json: jest.fn(),
     } as unknown as Response;
     const next = jest.fn();
-    const generalError = new errorModule.GeneralError();
-    const error = new Error("Something went wrong");
+    const defaultGeneralError = new errorModule.GeneralError();
 
-    generalErrorMiddleware(error, req, res, next);
+    generalErrorMiddleware(new Error(), req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(generalError.statusCode);
+    expect(res.status).toHaveBeenCalledWith(defaultGeneralError.statusCode);
     expect(res.json).toHaveBeenCalledWith({
       error: {
-        name: generalError.name,
-        message: generalError.message,
+        name: defaultGeneralError.name,
+        message: defaultGeneralError.message,
       },
     });
   });
@@ -49,16 +48,16 @@ describe("generalErrorMiddleware", () => {
         json: jest.fn(),
       } as unknown as Response;
       const next = jest.fn();
-      const generalError = new errorModule.GeneralError();
+      const defaultGeneralError = new errorModule.GeneralError();
       const error = new errorModule.GeneralError({ message: "Custom message" });
 
       generalErrorMiddleware(error, req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(generalError.statusCode);
+      expect(res.status).toHaveBeenCalledWith(defaultGeneralError.statusCode);
       expect(res.json).toHaveBeenCalledWith({
         error: {
-          name: generalError.name,
-          message: generalError.message,
+          name: defaultGeneralError.name,
+          message: defaultGeneralError.message,
         },
       });
     });
