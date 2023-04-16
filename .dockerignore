@@ -8,6 +8,7 @@ docker-compose.dev.yml
 .github/
 .husky/
 README.md
+.vscode
 
 dist/
 node_modules/
