@@ -69,3 +69,13 @@ export class NotFoundError extends AppError {
     super(404, name, message, { cause });
   }
 }
+
+export class BadRequestError extends AppError {
+  constructor({
+    name = "BadRequestError",
+    message = "Bad Request",
+    cause,
+  }: ErrorProps | undefined = {}) {
+    super(400, name, message, { cause });
+  }
+}

@@ -1,5 +1,6 @@
 import { type Request, type Response, type NextFunction } from "express";
 import Ajv, { type ErrorObject, type ValidateFunction } from "ajv";
+import { BadRequestError } from "./error";
 
 // AJV Example
 //
@@ -24,15 +25,18 @@ const convertAjvErrorToMessage = (ajvError: ErrorObject) => {
 };
 
 export const validateMiddleware =
-  (validateSchema: ValidateFunction) =>
+  (validateSchema: ValidateFunction, property: "body" | "query") =>
   (req: Request, _res: Response, next: NextFunction) => {
-    validateSchema(req.body);
+    validateSchema(req[property]);
 
     const validationError = validateSchema?.errors?.[0];
 
     if (validationError) {
       const errorMessage = convertAjvErrorToMessage(validationError);
-      const error = new Error(errorMessage);
+      const error = new BadRequestError({
+        name: "ValidationError",
+        message: errorMessage,
+      });
       next(error);
       return;
     }

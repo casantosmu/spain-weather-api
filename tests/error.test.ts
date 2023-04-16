@@ -2,6 +2,7 @@
 
 import {
   AppError,
+  BadRequestError,
   GeneralError,
   NotFoundError,
   handleError,
@@ -146,6 +147,36 @@ describe("NotFoundError", () => {
     expect(error.name).toBe(errorName);
     expect(error.message).toBe(errorMessage);
     expect(error.statusCode).toBe(404);
+    expect(error.cause).toBe(errorCause);
+  });
+});
+
+describe("BadRequestError", () => {
+  test("should create a BadRequestError instance with default values", () => {
+    const error = new BadRequestError();
+
+    expect(error).toBeInstanceOf(AppError);
+
+    expect(error.name).toBe("BadRequestError");
+    expect(error.message).toBe("Bad Request");
+    expect(error.statusCode).toBe(400);
+    expect(error.cause).toBeUndefined();
+  });
+
+  test("should create a BadRequestError instance with provided values", () => {
+    const errorCause = new Error("This is the cause");
+    const errorName = "CustomError";
+    const errorMessage = "This is a custom error message";
+
+    const error = new BadRequestError({
+      name: errorName,
+      message: errorMessage,
+      cause: errorCause,
+    });
+
+    expect(error.name).toBe(errorName);
+    expect(error.message).toBe(errorMessage);
+    expect(error.statusCode).toBe(400);
     expect(error.cause).toBe(errorCause);
   });
 });
