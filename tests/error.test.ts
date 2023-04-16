@@ -1,9 +1,22 @@
-import { AppError, handleError } from "../src/error";
+import { AppError, GeneralError, handleError } from "../src/error";
 import { logger } from "../src/logger";
 
 describe("handleError", () => {
+  describe("when receives an AppError", () => {
+    it("logs the error message and error object, but does not exit the process", () => {
+      jest.spyOn(logger, "error");
+      jest.spyOn(process, "exit").mockImplementation();
+      const appError = new GeneralError();
+
+      handleError(appError);
+
+      expect(logger.error).toHaveBeenCalledWith(appError.message, appError);
+      expect(process.exit).not.toHaveBeenCalled();
+    });
+  });
+
   describe("when receives an error", () => {
-    it("logs the error message and exits the process", () => {
+    it("creates and logs an AppError and exits the process", () => {
       jest.spyOn(logger, "error");
       jest.spyOn(process, "exit").mockImplementation();
       const error = new Error("Some error message");
@@ -11,7 +24,10 @@ describe("handleError", () => {
 
       handleError(error);
 
-      expect(logger.error).toHaveBeenCalledWith(error.message, error);
+      expect(logger.error).toHaveBeenCalledWith(
+        error.message,
+        expect.any(GeneralError)
+      );
       expect(process.exit).toHaveBeenCalledWith(errorExitCode);
     });
   });
@@ -47,5 +63,35 @@ describe("AppError", () => {
     expect(error.name).toEqual(name);
     expect(error.message).toEqual(message);
     expect(error.cause).toEqual(cause);
+  });
+});
+
+describe("GeneralError", () => {
+  test("should create a GeneralError instance with default values", () => {
+    const error = new GeneralError();
+
+    expect(error).toBeInstanceOf(AppError);
+
+    expect(error.name).toBe("InternalServerError");
+    expect(error.message).toBe("Something went wrong");
+    expect(error.statusCode).toBe(500);
+    expect(error.cause).toBeUndefined();
+  });
+
+  test("should create a GeneralError instance with provided values", () => {
+    const errorCause = new Error("This is the cause");
+    const errorName = "CustomError";
+    const errorMessage = "This is a custom error message";
+
+    const error = new GeneralError({
+      name: errorName,
+      message: errorMessage,
+      cause: errorCause,
+    });
+
+    expect(error.name).toBe(errorName);
+    expect(error.message).toBe(errorMessage);
+    expect(error.statusCode).toBe(500);
+    expect(error.cause).toBe(errorCause);
   });
 });
