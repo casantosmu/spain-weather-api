@@ -4,11 +4,20 @@ import router from "./router";
 import { type Server } from "http";
 import { config } from "./config";
 import { generalErrorMiddleware, notFoundMiddleware } from "./middlewares";
+import { queryParser } from "express-query-parser";
 
 const app = express();
 
 app.use(httpLogger);
 app.disable("x-powered-by");
+app.use(
+  queryParser({
+    parseNull: true,
+    parseUndefined: true,
+    parseBoolean: true,
+    parseNumber: true,
+  })
+);
 
 app.use("/api/v1", router);
 
