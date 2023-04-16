@@ -1,9 +1,15 @@
 import { logger } from "./logger";
 import util from "util";
+import { terminateApp } from "./utils";
 
 export const handleError = (error: unknown) => {
   if (error instanceof AppError) {
     logger.error(error.message, error);
+
+    if (error instanceof GeneralError) {
+      terminateApp("error");
+    }
+
     return;
   }
 
@@ -14,7 +20,8 @@ export const handleError = (error: unknown) => {
     });
     logger.error(appError.message, appError);
 
-    process.exit(1);
+    terminateApp("error");
+    return;
   }
 
   logger.error(
@@ -23,7 +30,7 @@ export const handleError = (error: unknown) => {
     )}`
   );
 
-  process.exit(1);
+  terminateApp("error");
 };
 
 export class AppError extends Error {

@@ -24,3 +24,15 @@ export const startServer = async () =>
       reject(error);
     });
   });
+
+export const stopServer = (cb: () => void) => {
+  if (server) {
+    server.close(() => {
+      logger.info("HTTP server closed");
+      cb();
+    });
+    return;
+  }
+
+  cb();
+};

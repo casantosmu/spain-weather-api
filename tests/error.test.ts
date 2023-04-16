@@ -1,26 +1,47 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+
 import { AppError, GeneralError, handleError } from "../src/error";
 import { logger } from "../src/logger";
+import { terminateApp } from "../src/utils";
+
+jest.mock("../src/utils", () => ({
+  __esModule: true,
+  ...jest.requireActual("../src/utils"),
+  terminateApp: jest.fn(),
+}));
 
 describe("handleError", () => {
   describe("when receives an AppError", () => {
-    it("logs the error message and error object, but does not exit the process", () => {
+    it("logs the error message and error object, but does not terminate the app", () => {
       jest.spyOn(logger, "error");
-      jest.spyOn(process, "exit").mockImplementation();
-      const appError = new GeneralError();
+      const appError = new AppError(500, "", "");
 
       handleError(appError);
 
       expect(logger.error).toHaveBeenCalledWith(appError.message, appError);
-      expect(process.exit).not.toHaveBeenCalled();
+      expect(terminateApp).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when receives a GeneralError", () => {
+    it("logs the error message and error object and terminates the app", () => {
+      jest.spyOn(logger, "error");
+      const generalError = new GeneralError();
+
+      handleError(generalError);
+
+      expect(logger.error).toHaveBeenCalledWith(
+        generalError.message,
+        generalError
+      );
+      expect(terminateApp).toHaveBeenCalled();
     });
   });
 
   describe("when receives an error", () => {
-    it("creates and logs an AppError and exits the process", () => {
+    it("creates and logs an AppError and terminates the app", () => {
       jest.spyOn(logger, "error");
-      jest.spyOn(process, "exit").mockImplementation();
       const error = new Error("Some error message");
-      const errorExitCode = 1;
 
       handleError(error);
 
@@ -28,23 +49,21 @@ describe("handleError", () => {
         error.message,
         expect.any(GeneralError)
       );
-      expect(process.exit).toHaveBeenCalledWith(errorExitCode);
+      expect(terminateApp).toHaveBeenCalled();
     });
   });
 
   describe("when not receives an error", () => {
-    it("logs an error message with the unexpected value and exits the process", () => {
+    it("logs an error message with the unexpected value and terminates the app", () => {
       jest.spyOn(logger, "error");
-      jest.spyOn(process, "exit").mockImplementation();
       const value = { foo: "bar" };
-      const errorExitCode = 1;
 
       handleError(value);
 
       expect(logger.error).toHaveBeenCalledWith(
         "Unexpected value encountered at handleError: object { foo: 'bar' }"
       );
-      expect(process.exit).toHaveBeenCalledWith(errorExitCode);
+      expect(terminateApp).toHaveBeenCalled();
     });
   });
 });
