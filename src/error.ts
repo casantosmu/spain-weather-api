@@ -59,3 +59,13 @@ export class GeneralError extends AppError {
     super(500, name, message, { cause });
   }
 }
+
+export class NotFoundError extends AppError {
+  constructor({
+    name = "NotFoundError",
+    message = "Resource not found",
+    cause,
+  }: ErrorProps | undefined = {}) {
+    super(404, name, message, { cause });
+  }
+}

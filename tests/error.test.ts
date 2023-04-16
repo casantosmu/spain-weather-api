@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
-import { AppError, GeneralError, handleError } from "../src/error";
+import {
+  AppError,
+  GeneralError,
+  NotFoundError,
+  handleError,
+} from "../src/error";
 import { logger } from "../src/logger";
 import { terminateApp } from "../src/utils";
 
@@ -14,7 +19,7 @@ describe("handleError", () => {
   describe("when receives an AppError", () => {
     it("logs the error message and error object, but does not terminate the app", () => {
       jest.spyOn(logger, "error");
-      const appError = new AppError(500, "", "");
+      const appError = new NotFoundError();
 
       handleError(appError);
 
@@ -111,6 +116,36 @@ describe("GeneralError", () => {
     expect(error.name).toBe(errorName);
     expect(error.message).toBe(errorMessage);
     expect(error.statusCode).toBe(500);
+    expect(error.cause).toBe(errorCause);
+  });
+});
+
+describe("NotFoundError", () => {
+  test("should create a NotFoundError instance with default values", () => {
+    const error = new NotFoundError();
+
+    expect(error).toBeInstanceOf(AppError);
+
+    expect(error.name).toBe("NotFoundError");
+    expect(error.message).toBe("Resource not found");
+    expect(error.statusCode).toBe(404);
+    expect(error.cause).toBeUndefined();
+  });
+
+  test("should create a NotFoundError instance with provided values", () => {
+    const errorCause = new Error("This is the cause");
+    const errorName = "CustomError";
+    const errorMessage = "This is a custom error message";
+
+    const error = new NotFoundError({
+      name: errorName,
+      message: errorMessage,
+      cause: errorCause,
+    });
+
+    expect(error.name).toBe(errorName);
+    expect(error.message).toBe(errorMessage);
+    expect(error.statusCode).toBe(404);
     expect(error.cause).toBe(errorCause);
   });
 });
