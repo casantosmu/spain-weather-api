@@ -6,3 +6,8 @@ export const connectMongoDb = async () => {
   await mongoose.connect(config.mongodbUri);
   logger.info("Database connection successful");
 };
+
+export const closeMongoDb = async () => {
+  await mongoose.disconnect();
+  logger.info("Close all database connections successful");
+};

@@ -1,34 +1,74 @@
-import { AppError, handleError } from "../src/error";
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+
+import {
+  AppError,
+  GeneralError,
+  NotFoundError,
+  handleError,
+} from "../src/error";
 import { logger } from "../src/logger";
+import { terminateApp } from "../src/utils";
+
+jest.mock("../src/utils", () => ({
+  __esModule: true,
+  ...jest.requireActual("../src/utils"),
+  terminateApp: jest.fn(),
+}));
 
 describe("handleError", () => {
-  describe("when receives an error", () => {
-    it("logs the error message and exits the process", () => {
+  describe("when receives an AppError", () => {
+    it("logs the error message and error object, but does not terminate the app", () => {
       jest.spyOn(logger, "error");
-      jest.spyOn(process, "exit").mockImplementation();
+      const appError = new NotFoundError();
+
+      handleError(appError);
+
+      expect(logger.error).toHaveBeenCalledWith(appError.message, appError);
+      expect(terminateApp).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when receives a GeneralError", () => {
+    it("logs the error message and error object and terminates the app", () => {
+      jest.spyOn(logger, "error");
+      const generalError = new GeneralError();
+
+      handleError(generalError);
+
+      expect(logger.error).toHaveBeenCalledWith(
+        generalError.message,
+        generalError
+      );
+      expect(terminateApp).toHaveBeenCalled();
+    });
+  });
+
+  describe("when receives an error", () => {
+    it("creates and logs an AppError and terminates the app", () => {
+      jest.spyOn(logger, "error");
       const error = new Error("Some error message");
-      const errorExitCode = 1;
 
       handleError(error);
 
-      expect(logger.error).toHaveBeenCalledWith(error.message, error);
-      expect(process.exit).toHaveBeenCalledWith(errorExitCode);
+      expect(logger.error).toHaveBeenCalledWith(
+        error.message,
+        expect.any(GeneralError)
+      );
+      expect(terminateApp).toHaveBeenCalled();
     });
   });
 
   describe("when not receives an error", () => {
-    it("logs an error message with the unexpected value and exits the process", () => {
+    it("logs an error message with the unexpected value and terminates the app", () => {
       jest.spyOn(logger, "error");
-      jest.spyOn(process, "exit").mockImplementation();
       const value = { foo: "bar" };
-      const errorExitCode = 1;
 
       handleError(value);
 
       expect(logger.error).toHaveBeenCalledWith(
         "Unexpected value encountered at handleError: object { foo: 'bar' }"
       );
-      expect(process.exit).toHaveBeenCalledWith(errorExitCode);
+      expect(terminateApp).toHaveBeenCalled();
     });
   });
 });
@@ -47,5 +87,65 @@ describe("AppError", () => {
     expect(error.name).toEqual(name);
     expect(error.message).toEqual(message);
     expect(error.cause).toEqual(cause);
+  });
+});
+
+describe("GeneralError", () => {
+  test("should create a GeneralError instance with default values", () => {
+    const error = new GeneralError();
+
+    expect(error).toBeInstanceOf(AppError);
+
+    expect(error.name).toBe("InternalServerError");
+    expect(error.message).toBe("Something went wrong");
+    expect(error.statusCode).toBe(500);
+    expect(error.cause).toBeUndefined();
+  });
+
+  test("should create a GeneralError instance with provided values", () => {
+    const errorCause = new Error("This is the cause");
+    const errorName = "CustomError";
+    const errorMessage = "This is a custom error message";
+
+    const error = new GeneralError({
+      name: errorName,
+      message: errorMessage,
+      cause: errorCause,
+    });
+
+    expect(error.name).toBe(errorName);
+    expect(error.message).toBe(errorMessage);
+    expect(error.statusCode).toBe(500);
+    expect(error.cause).toBe(errorCause);
+  });
+});
+
+describe("NotFoundError", () => {
+  test("should create a NotFoundError instance with default values", () => {
+    const error = new NotFoundError();
+
+    expect(error).toBeInstanceOf(AppError);
+
+    expect(error.name).toBe("NotFoundError");
+    expect(error.message).toBe("Resource not found");
+    expect(error.statusCode).toBe(404);
+    expect(error.cause).toBeUndefined();
+  });
+
+  test("should create a NotFoundError instance with provided values", () => {
+    const errorCause = new Error("This is the cause");
+    const errorName = "CustomError";
+    const errorMessage = "This is a custom error message";
+
+    const error = new NotFoundError({
+      name: errorName,
+      message: errorMessage,
+      cause: errorCause,
+    });
+
+    expect(error.name).toBe(errorName);
+    expect(error.message).toBe(errorMessage);
+    expect(error.statusCode).toBe(404);
+    expect(error.cause).toBe(errorCause);
   });
 });
