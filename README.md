@@ -26,16 +26,10 @@ To develop and debug the application, follow the steps below.
    cp .env.example .env
    ```
 
-1. Build the mongo image with the following command:
-
-   ```bash
-   docker compose up --build -d mongo
-   ```
-
 1. Run the application in watch and debug mode with the following command:
 
    ```bash
-   docker compose run --rm --service-ports api npm run dev
+   docker compose up --build -d
    ```
 
 1. To connect a debugger, open Chrome and type the following into the address bar:
@@ -46,15 +40,16 @@ To develop and debug the application, follow the steps below.
 
 ## Running Tests
 
-To run the tests instead of the application in watch and debug mode, follow these steps:
+To run the tests follow these steps:
 
 ```bash
+docker compose up --build -d mongo
 docker compose run --rm api npm run test
 ```
 
 ## Documentation
 
-API documentation for the Spanish Weather API is written in OpenAPI 3 format and is available at api/v1/docs. The documentation is validated using Spectral, a tool for enforcing API design rules and best practices.
+API documentation for the Spanish Weather API is written in OpenAPI 3 format and is available at /api/v1/docs. The documentation is validated using Spectral, a tool for enforcing API design rules and best practices.
 
 ## Usage
 
