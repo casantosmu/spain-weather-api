@@ -8,11 +8,6 @@ const loggerOptions: LoggerOptions = {
   level: config.logLevel,
   messageKey: "message",
   errorKey: "error",
-  formatters: {
-    level(_label, number) {
-      return { level: number };
-    },
-  },
 };
 
 const pinoLogger = pino(loggerOptions);
@@ -20,8 +15,13 @@ const pinoLogger = pino(loggerOptions);
 const log =
   (level: LogLevels) =>
   (message: string, metadata?: Record<string, unknown> | Error) => {
-    if (metadata) {
+    if (metadata instanceof Error) {
       pinoLogger[level](metadata, message);
+      return;
+    }
+
+    if (metadata) {
+      pinoLogger[level]({ metadata }, message);
       return;
     }
 

@@ -26,6 +26,17 @@ describe("Logger", () => {
     });
   });
 
+  describe("when it receives a object and a message", () => {
+    test("should log a message with the specified level and metadata with object", () => {
+      const object = { foo: "bat" };
+      const message = "Log message";
+
+      logger.info(message, object);
+
+      expect(mockInfoLevel).toHaveBeenCalledWith({ metadata: object }, message);
+    });
+  });
+
   describe("when it receives an error and a message", () => {
     test("should log an error with the specified level and error object", () => {
       const error = new Error("Error msg");

@@ -1,6 +1,6 @@
 import { logger } from "./logger";
 import util from "util";
-import { terminateApp } from "./utils";
+import { terminateApp } from "./terminate";
 
 export const handleError = (error: unknown) => {
   if (error instanceof AppError) {
@@ -47,7 +47,7 @@ export class AppError extends Error {
 type ErrorProps = {
   name?: string;
   message?: string;
-  cause?: Error;
+  cause?: unknown;
 };
 
 export class GeneralError extends AppError {

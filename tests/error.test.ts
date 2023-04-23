@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-
 import {
   AppError,
   BadRequestError,
@@ -8,13 +6,9 @@ import {
   handleError,
 } from "../src/error";
 import { logger } from "../src/logger";
-import { terminateApp } from "../src/utils";
+import { terminateApp } from "../src/terminate";
 
-jest.mock("../src/utils", () => ({
-  __esModule: true,
-  ...jest.requireActual("../src/utils"),
-  terminateApp: jest.fn(),
-}));
+jest.mock("../src/terminate");
 
 describe("handleError", () => {
   describe("when receives an AppError", () => {
@@ -40,7 +34,7 @@ describe("handleError", () => {
         generalError.message,
         generalError
       );
-      expect(terminateApp).toHaveBeenCalled();
+      expect(terminateApp).toHaveBeenCalledWith("error");
     });
   });
 
@@ -55,7 +49,7 @@ describe("handleError", () => {
         error.message,
         expect.any(GeneralError)
       );
-      expect(terminateApp).toHaveBeenCalled();
+      expect(terminateApp).toHaveBeenCalledWith("error");
     });
   });
 
@@ -69,7 +63,7 @@ describe("handleError", () => {
       expect(logger.error).toHaveBeenCalledWith(
         "Unexpected value encountered at handleError: object { foo: 'bar' }"
       );
-      expect(terminateApp).toHaveBeenCalled();
+      expect(terminateApp).toHaveBeenCalledWith("error");
     });
   });
 });
