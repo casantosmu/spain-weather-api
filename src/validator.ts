@@ -2,20 +2,6 @@ import { type Request, type Response, type NextFunction } from "express";
 import Ajv, { type ErrorObject, type ValidateFunction } from "ajv";
 import { BadRequestError } from "./error";
 
-// AJV Example
-//
-// const schema = {
-//   type: "object",
-//   properties: {
-//     foo: { type: "integer" },
-//     bar: { type: "string" },
-//   },
-//   required: ["foo"],
-//   additionalProperties: false,
-// };
-
-// export const validate = validator.compile(schema);
-
 export const validator = new Ajv();
 
 const convertAjvErrorToMessage = (ajvError: ErrorObject) => {

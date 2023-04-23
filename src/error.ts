@@ -1,6 +1,6 @@
 import { logger } from "./logger";
 import util from "util";
-import { terminateApp } from "./utils";
+import { terminateApp } from "./terminate";
 
 export const handleError = (error: unknown) => {
   if (error instanceof AppError) {
