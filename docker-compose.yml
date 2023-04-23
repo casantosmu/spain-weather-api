@@ -16,8 +16,8 @@ services:
 
   mongo:
     image: mongo:6.0.5
-    expose:
-      - "27017"
+    ports:
+      - 27017:27017
     volumes:
       - mongodb:/data/db
       - mongodb_config:/data/configdb

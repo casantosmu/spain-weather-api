@@ -47,7 +47,7 @@ export class AppError extends Error {
 type ErrorProps = {
   name?: string;
   message?: string;
-  cause?: Error;
+  cause?: unknown;
 };
 
 export class GeneralError extends AppError {
