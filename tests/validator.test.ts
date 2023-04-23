@@ -5,7 +5,7 @@ import { BadRequestError } from "../src/error";
 
 describe("validateMiddleware", () => {
   describe("when called with a validateSchema and a property", () => {
-    it("should call validateSchema with the corresponding property in req object", () => {
+    test("should call validateSchema with the corresponding property in req object", () => {
       const req = { query: { hello: "world" } };
       const res = {};
       const next = jest.fn();
@@ -19,7 +19,7 @@ describe("validateMiddleware", () => {
   });
 
   describe("when validateSchema has errors", () => {
-    it("should call next with a bad request error", () => {
+    test("should call next with a bad request error", () => {
       const req = { body: { foo: "bar" } };
       const res = {};
       const next = jest.fn();
@@ -36,7 +36,7 @@ describe("validateMiddleware", () => {
   });
 
   describe("when validateSchema have error with instancePath and message", () => {
-    it("should call next with a bad request error message including instancePath", () => {
+    test("should call next with a bad request error message including instancePath", () => {
       const req = { body: { foo: "bar" } };
       const res = {};
       const next = jest.fn();
@@ -57,7 +57,7 @@ describe("validateMiddleware", () => {
   });
 
   describe("when validateSchema hasn't errors", () => {
-    it("should call next without arguments ", () => {
+    test("should call next without arguments ", () => {
       const req = { body: { foo: "bar" } };
       const res = {};
       const next = jest.fn();
