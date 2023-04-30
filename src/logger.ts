@@ -8,6 +8,7 @@ const loggerOptions: LoggerOptions = {
   level: config.logLevel,
   messageKey: "message",
   errorKey: "error",
+  nestedKey: "metadata",
 };
 
 const pinoLogger = pino(loggerOptions);
@@ -15,13 +16,8 @@ const pinoLogger = pino(loggerOptions);
 const log =
   (level: LogLevels) =>
   (message: string, metadata?: Record<string, unknown> | Error) => {
-    if (metadata instanceof Error) {
-      pinoLogger[level](metadata, message);
-      return;
-    }
-
     if (metadata) {
-      pinoLogger[level]({ metadata }, message);
+      pinoLogger[level](metadata, message);
       return;
     }
 
@@ -30,10 +26,12 @@ const log =
 
 export const httpLogger = pinoHttp(loggerOptions);
 
-export const logger = {
+const logger = {
   debug: log("debug"),
   error: log("error"),
   info: log("info"),
-  warning: log("warn"),
+  warn: log("warn"),
   fatal: log("fatal"),
 };
+
+export default logger;

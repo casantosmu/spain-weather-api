@@ -5,7 +5,7 @@ import {
   NotFoundError,
   handleError,
 } from "../src/error";
-import { logger } from "../src/logger";
+import logger from "../src/logger";
 import { terminateApp } from "../src/terminate";
 
 jest.mock("../src/terminate");
@@ -13,12 +13,12 @@ jest.mock("../src/terminate");
 describe("handleError", () => {
   describe("when receives an AppError", () => {
     it("logs the error message and error object, but does not terminate the app", () => {
-      jest.spyOn(logger, "error");
+      jest.spyOn(logger, "warn");
       const appError = new NotFoundError();
 
       handleError(appError);
 
-      expect(logger.error).toHaveBeenCalledWith(appError.message, appError);
+      expect(logger.warn).toHaveBeenCalledWith(appError.message, appError);
       expect(terminateApp).not.toHaveBeenCalled();
     });
   });
@@ -61,7 +61,8 @@ describe("handleError", () => {
       handleError(value);
 
       expect(logger.error).toHaveBeenCalledWith(
-        "Unexpected value encountered at handleError: object { foo: 'bar' }"
+        "Unexpected value encountered at handleError: object { foo: 'bar' }",
+        expect.any(GeneralError)
       );
       expect(terminateApp).toHaveBeenCalledWith("error");
     });

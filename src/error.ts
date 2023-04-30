@@ -1,36 +1,38 @@
-import { logger } from "./logger";
+import logger from "./logger";
 import util from "util";
 import { terminateApp } from "./terminate";
 
-export const handleError = (error: unknown) => {
+const normalizeError = (error: unknown) => {
   if (error instanceof AppError) {
-    logger.error(error.message, error);
-
-    if (error instanceof GeneralError) {
-      terminateApp("error");
-    }
-
-    return;
+    return error;
   }
 
   if (error instanceof Error) {
-    const appError = new GeneralError({
-      cause: error,
+    return new GeneralError({
+      name: error.name,
       message: error.message,
+      cause: error,
     });
-    logger.error(appError.message, appError);
+  }
 
+  return new GeneralError({
+    name: "UnexpectedErrorValue",
+    message: `Unexpected value encountered at handleError: ${typeof error} ${util.inspect(
+      error
+    )}`,
+  });
+};
+
+export const handleError = (error: unknown) => {
+  const appError = normalizeError(error);
+
+  if (appError instanceof GeneralError) {
+    logger.error(appError.message, appError);
     terminateApp("error");
     return;
   }
 
-  logger.error(
-    `Unexpected value encountered at handleError: ${typeof error} ${util.inspect(
-      error
-    )}`
-  );
-
-  terminateApp("error");
+  logger.warn(appError.message, appError);
 };
 
 export class AppError extends Error {
