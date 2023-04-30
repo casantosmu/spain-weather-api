@@ -10,6 +10,12 @@
       "files": ["*.ts", "*.tsx"]
     },
     {
+      "files": ["*.test.ts"],
+      "plugins": ["jest"],
+      "extends": ["plugin:jest/recommended"],
+      "rules": { "max-nested-callbacks": "off" }
+    },
+    {
       "extends": ["prettier"],
       "files": ["*"]
     }
