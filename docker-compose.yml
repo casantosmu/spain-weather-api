@@ -11,6 +11,8 @@ services:
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules
+    depends_on:
+      - mongo
     tty: true
     command: npm run dev
 

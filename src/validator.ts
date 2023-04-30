@@ -2,7 +2,7 @@ import { type Request, type Response, type NextFunction } from "express";
 import Ajv, { type ErrorObject, type ValidateFunction } from "ajv";
 import { BadRequestError } from "./error";
 
-export const validator = new Ajv();
+export const validator = new Ajv({ coerceTypes: true });
 
 const convertAjvErrorToMessage = (ajvError: ErrorObject) => {
   const propertyName = ajvError.instancePath.split("/").pop();
