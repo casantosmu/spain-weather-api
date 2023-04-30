@@ -1,5 +1,5 @@
 import express from "express";
-import { httpLogger, logger } from "./logger";
+import logger, { httpLogger } from "./logger";
 import router from "./router";
 import { type Server } from "http";
 import { config } from "./config";
