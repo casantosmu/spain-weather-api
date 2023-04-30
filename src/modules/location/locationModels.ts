@@ -7,6 +7,7 @@ const locationSchema = new mongoose.Schema(
     name: { type: String, required: true },
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
+    code: { type: String, required: true, unique: true },
   },
   {
     discriminatorKey: "entity",
@@ -19,10 +20,24 @@ export const LocationModel = mongoose.model(
   "locations"
 );
 
+const locationRelationSchema = new mongoose.Schema({
+  _id: "UUID",
+  name: { type: String, required: true },
+  code: { type: String, required: true },
+});
+
 const provinceSchema = new mongoose.Schema({
-  capital: { type: String },
+  capital: locationRelationSchema,
 });
 export const ProvinceModel = LocationModel.discriminator(
-  "Province",
+  "province",
   provinceSchema
+);
+
+const municipalitySchema = new mongoose.Schema({
+  province: locationRelationSchema,
+});
+export const MunicipalityModel = LocationModel.discriminator(
+  "municipality",
+  municipalitySchema
 );

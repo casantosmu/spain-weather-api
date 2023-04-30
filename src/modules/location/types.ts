@@ -1,9 +1,18 @@
-type Location = {
+type LocationBase = {
   id: string;
+  code: string;
   name: string;
-  latLng: readonly [number, number];
 };
 
+export type LatLng = readonly [number, number];
+
+type Location = {
+  latLng: LatLng;
+} & LocationBase;
+
 export type Province = {
-  capital?: string;
+  capital: LocationBase;
+} & Location;
+export type Municipality = {
+  province: LocationBase;
 } & Location;
