@@ -67,7 +67,7 @@ export const seedLocationsService = async () => {
     })
     .filter(isValidMunicipalityCode);
 
-  const provinces = newProvincesWithUuid.map((province) => {
+  const provinces = newProvincesWithUuid.map((province, index) => {
     const capital = municipalities.find(
       (municipality) =>
         municipality.name === province.capital.name &&
@@ -79,6 +79,15 @@ export const seedLocationsService = async () => {
 
     if (!capital) {
       throw new MunicipalityNotFoundError(province.capital.name);
+    }
+
+    const isNotUniqueCode = newProvinces.find(
+      (province2, index2) =>
+        province.code === province2.code && index !== index2
+    );
+
+    if (isNotUniqueCode) {
+      throw new LocationCodeNotUniqueError(province.code);
     }
 
     return {

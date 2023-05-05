@@ -12,7 +12,11 @@ import {
   NewProvincesRepositoryBuilder,
 } from "./locationFactory";
 import { isValidMunicipalityCode } from "../../../src/modules/location/municipalityService";
-import { LocationCodeNotUniqueError } from "../../../src/modules/location/error";
+import {
+  LocationCodeNotUniqueError,
+  ProvinceNotFoundError,
+} from "../../../src/modules/location/error";
+import { MunicipalityNotFoundError } from "../../../src/modules/location/error";
 
 jest.mock("../../../src/modules/location/locationRepository");
 const mockedGetNewProvincesRepository = jest.mocked(getNewProvincesRepository);
@@ -41,6 +45,65 @@ describe("seedLocationsService", () => {
       });
     });
 
+    describe("and repository returns repeated municipalities", () => {
+      test("should throw error", async () => {
+        const province = new NewProvincesRepositoryBuilder()
+          .withCode("ON")
+          .withName("Ontario")
+          .withLatLng([43.6532, -79.3832])
+          .withCapital(
+            new NewMunicipalitiesRepositoryBuilder()
+              .withCode("TOR01")
+              .withName("Toronto Municipality")
+              .build()
+          )
+          .build();
+        const municipality = new NewMunicipalitiesRepositoryBuilder()
+          .withCode("TOR01")
+          .withName("Municipality1")
+          .withLatLng([43.6532, -79.3832])
+          .withProvince(province)
+          .build();
+        const provinces = [province];
+        const municipalities = [municipality, municipality];
+        mockedGetNewProvincesRepository.mockResolvedValueOnce(provinces);
+        mockedGetNewMunicipalitiesRepository.mockResolvedValueOnce(
+          municipalities
+        );
+
+        const result = async () => {
+          await seedLocationsService();
+        };
+
+        await expect(result).rejects.toThrow(LocationCodeNotUniqueError);
+      });
+    });
+
+    describe("and repository returns a municipality with not found province", () => {
+      test("should throw error", async () => {
+        const municipality = new NewMunicipalitiesRepositoryBuilder()
+          .withCode("TOR01º")
+          .withName("Municipality1")
+          .withProvince(
+            new NewProvincesRepositoryBuilder()
+              .withCode("00")
+              .withName("NOT FOUND")
+              .build()
+          )
+          .build();
+        mockedGetNewProvincesRepository.mockResolvedValueOnce([]);
+        mockedGetNewMunicipalitiesRepository.mockResolvedValueOnce([
+          municipality,
+        ]);
+
+        const result = async () => {
+          await seedLocationsService();
+        };
+
+        await expect(result).rejects.toThrow(ProvinceNotFoundError);
+      });
+    });
+
     describe("and repository returns repeated provinces", () => {
       test("should throw error", async () => {
         const province = new NewProvincesRepositoryBuilder()
@@ -54,28 +117,48 @@ describe("seedLocationsService", () => {
               .build()
           )
           .build();
-        const municipality1 = new NewMunicipalitiesRepositoryBuilder()
+        const municipality = new NewMunicipalitiesRepositoryBuilder()
           .withCode("TOR01")
-          .withName("Municipality1")
+          .withName("Toronto Municipality")
           .withLatLng([43.6532, -79.3832])
           .withProvince(province)
           .build();
-        const municipality2 = new NewMunicipalitiesRepositoryBuilder()
-          .withCode("TOR01")
-          .withName("Municipality2")
-          .withLatLng([43.6532, -79.3832])
-          .withProvince(province)
-          .build();
-        const provinces = [province];
-        const municipalities = [municipality1, municipality2];
+        const provinces = [province, province];
         mockedGetNewProvincesRepository.mockResolvedValueOnce(provinces);
-        mockedGetNewMunicipalitiesRepository.mockResolvedValue(municipalities);
+        mockedGetNewMunicipalitiesRepository.mockResolvedValueOnce([
+          municipality,
+        ]);
+        mockIsValidMunicipalityCode.mockReturnValue(true);
 
         const result = async () => {
           await seedLocationsService();
         };
 
         await expect(result).rejects.toThrow(LocationCodeNotUniqueError);
+      });
+    });
+
+    describe("and repository returns a province with not found municipality", () => {
+      test("should throw error", async () => {
+        const province = new NewProvincesRepositoryBuilder()
+          .withCode("ON")
+          .withName("Ontario")
+          .withLatLng([43.6532, -79.3832])
+          .withCapital(
+            new NewMunicipalitiesRepositoryBuilder()
+              .withCode("00")
+              .withName("NOT FOUND")
+              .build()
+          )
+          .build();
+        mockedGetNewProvincesRepository.mockResolvedValueOnce([province]);
+        mockedGetNewMunicipalitiesRepository.mockResolvedValueOnce([]);
+
+        const result = async () => {
+          await seedLocationsService();
+        };
+
+        await expect(result).rejects.toThrow(MunicipalityNotFoundError);
       });
     });
 
@@ -118,7 +201,9 @@ describe("seedLocationsService", () => {
         const provinces = [province1, province2];
         const municipalities = [municipality1, municipality2];
         mockedGetNewProvincesRepository.mockResolvedValueOnce(provinces);
-        mockedGetNewMunicipalitiesRepository.mockResolvedValue(municipalities);
+        mockedGetNewMunicipalitiesRepository.mockResolvedValueOnce(
+          municipalities
+        );
         mockIsValidMunicipalityCode.mockReturnValue(true);
         const ids = ["id1", "id2", "id3", "id3"];
         ids.forEach((id) => {
@@ -188,7 +273,9 @@ describe("seedLocationsService", () => {
         const provinces = [province1, province2];
         const municipalities = [municipality1, municipality2];
         mockedGetNewProvincesRepository.mockResolvedValueOnce(provinces);
-        mockedGetNewMunicipalitiesRepository.mockResolvedValue(municipalities);
+        mockedGetNewMunicipalitiesRepository.mockResolvedValueOnce(
+          municipalities
+        );
         mockIsValidMunicipalityCode.mockReturnValue(true);
         const ids = ["id1", "id2", "id3", "id3"];
         ids.forEach((id) => {
