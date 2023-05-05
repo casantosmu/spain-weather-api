@@ -31,7 +31,7 @@
     "envalid": "^7.3.1",
     "express": "^4.18.2",
     "mongoose": "^7.1.0",
-    "pino": "^8.11.0",
+    "pino": "^8.12.1",
     "pino-http": "^8.3.3",
     "swagger-ui-express": "^4.6.2"
   },
