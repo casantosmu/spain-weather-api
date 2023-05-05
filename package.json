@@ -33,7 +33,7 @@
     "mongoose": "^7.1.0",
     "pino": "^8.11.0",
     "pino-http": "^8.3.3",
-    "swagger-ui-express": "^4.6.2"
+    "swagger-ui-express": "^4.6.3"
   },
   "devDependencies": {
     "@stoplight/spectral-cli": "^6.6.0",
