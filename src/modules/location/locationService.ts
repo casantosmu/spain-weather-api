@@ -1,20 +1,33 @@
+import logger from "../../logger";
 import {
   createMunicipalitiesRepository,
   createProvincesRepository,
   getNewMunicipalitiesRepository,
   getNewProvincesRepository,
+  hasLocationRepository,
 } from "./locationRepository";
 import { randomUUID } from "crypto";
+import { checkProvincesLength } from "./provinceService";
 
 export const seedLocationsService = async () => {
-  const newProvinces = await getNewProvincesRepository();
+  const hasLocation = await hasLocationRepository();
+
+  if (hasLocation) {
+    logger.info("Locations already seeded");
+    return;
+  }
+
+  const [newProvinces, newMunicipalities] = await Promise.all([
+    getNewProvincesRepository(),
+    getNewMunicipalitiesRepository(),
+  ]);
+
+  checkProvincesLength(newProvinces);
 
   const newProvincesWithUuid = newProvinces.map((province) => ({
     ...province,
     id: randomUUID(),
   }));
-
-  const newMunicipalities = await getNewMunicipalitiesRepository();
 
   const municipalities = newMunicipalities.map((municipality) => {
     const province = newProvincesWithUuid.find(
@@ -60,6 +73,8 @@ export const seedLocationsService = async () => {
     };
   });
 
-  await createMunicipalitiesRepository(municipalities);
-  await createProvincesRepository(provinces);
+  await Promise.all([
+    createProvincesRepository(provinces),
+    createMunicipalitiesRepository(municipalities),
+  ]);
 };

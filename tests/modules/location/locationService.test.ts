@@ -3,6 +3,7 @@ import {
   createProvincesRepository,
   getNewMunicipalitiesRepository,
   getNewProvincesRepository,
+  hasLocationRepository,
 } from "../../../src/modules/location/locationRepository";
 import { seedLocationsService } from "../../../src/modules/location/locationService";
 import { randomUUID } from "crypto";
@@ -16,12 +17,25 @@ const mockedGetNewProvincesRepository = jest.mocked(getNewProvincesRepository);
 const mockedGetNewMunicipalitiesRepository = jest.mocked(
   getNewMunicipalitiesRepository
 );
+const mockHasLocationRepository = jest.mocked(hasLocationRepository);
+
+jest.mock("../../../src/modules/location/provinceService");
 
 jest.mock("crypto");
 const mockedRandomUuid = jest.mocked(randomUUID);
 
 describe("seedLocationsService", () => {
   describe("when called", () => {
+    describe("and repository has locations", () => {
+      test("should not call any other repository", async () => {
+        mockHasLocationRepository.mockResolvedValueOnce(true);
+        await seedLocationsService();
+
+        expect(mockedGetNewProvincesRepository).not.toHaveBeenCalled();
+        expect(mockedGetNewMunicipalitiesRepository).not.toHaveBeenCalled();
+      });
+    });
+
     describe("and repository returns 2 municipalities and their provinces", () => {
       test("should call createMunicipalitiesRepository with the 2 municipalities with an id and their province", async () => {
         const province1 = new NewProvincesRepositoryBuilder()

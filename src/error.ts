@@ -81,3 +81,13 @@ export class BadRequestError extends AppError {
     super(400, name, message, { cause });
   }
 }
+
+export class UnprocessableEntityError extends AppError {
+  constructor({
+    name = "UnprocessableEntityError",
+    message = "Unprocessable Entity",
+    cause,
+  }: ErrorProps | undefined = {}) {
+    super(422, name, message, { cause });
+  }
+}

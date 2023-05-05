@@ -64,7 +64,7 @@ export type NewProvincesRepository = Awaited<
 
 export const getNewMunicipalitiesRepository = async () => {
   const dataset = "georef-spain-municipio";
-  const rows = 1000;
+  const rows = 10000;
   const facets = ["prov_code", "prov_name", "mun_code", "mun_name"];
   const url = `${openDataSoftBaseUrl}?dataset=${dataset}&rows=${rows}&facet=${facets.join(
     "&facet="
@@ -125,4 +125,9 @@ export const createMunicipalitiesRepository = async (
   }));
 
   await MunicipalityModel.insertMany(mappedProvinces);
+};
+
+export const hasLocationRepository = async () => {
+  const hasLocation = await MunicipalityModel.findOne().exec();
+  return Boolean(hasLocation);
 };
