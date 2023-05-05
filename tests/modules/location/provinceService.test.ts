@@ -1,3 +1,4 @@
+import { provincesLength } from "../../../src/modules/location/constants";
 import { InvalidNumberOfProvincesError } from "../../../src/modules/location/error";
 import { checkProvincesLength } from "../../../src/modules/location/provinceService";
 
@@ -13,7 +14,7 @@ describe("checkProvincesLength", () => {
   });
 
   test("Given an array of provinces, when the length is correct, then it does not throw an error", () => {
-    const provinces = new Array(50);
+    const provinces = new Array(provincesLength);
 
     const checkProvinces = () => {
       checkProvincesLength(provinces);

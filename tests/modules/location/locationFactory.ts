@@ -2,15 +2,13 @@ import {
   type NewMunicipalitiesRepository,
   type NewProvincesRepository,
 } from "../../../src/modules/location/locationRepository";
-import { type LatLng } from "../../../src/modules/location/types";
+import {
+  type NewLocationBase,
+  type LatLng,
+  type NewLocation,
+} from "../../../src/modules/location/types";
 
-type BaseLocation = {
-  code: string;
-  name: string;
-  latLng: LatLng;
-};
-
-abstract class BaseLocationBuilder<T extends BaseLocation> {
+abstract class BaseLocationBuilder<T extends NewLocation> {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   protected readonly data: T = {} as T;
 
@@ -35,14 +33,14 @@ abstract class BaseLocationBuilder<T extends BaseLocation> {
 }
 
 export class NewProvincesRepositoryBuilder extends BaseLocationBuilder<NewProvincesRepository> {
-  withCapital(capital: { code: string; name: string }) {
+  withCapital(capital: NewLocationBase) {
     this.data.capital = capital;
     return this;
   }
 }
 
 export class NewMunicipalitiesRepositoryBuilder extends BaseLocationBuilder<NewMunicipalitiesRepository> {
-  withProvince(province: { code: string; name: string }) {
+  withProvince(province: NewLocationBase) {
     this.data.province = province;
     return this;
   }

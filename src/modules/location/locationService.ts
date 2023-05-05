@@ -8,6 +8,12 @@ import {
 } from "./locationRepository";
 import { randomUUID } from "crypto";
 import { checkProvincesLength } from "./provinceService";
+import { isValidMunicipalityCode } from "./municipalityService";
+import {
+  LocationCodeNotUniqueError,
+  MunicipalityNotFoundError,
+  ProvinceNotFoundError,
+} from "./error";
 
 export const seedLocationsService = async () => {
   const hasLocation = await hasLocationRepository();
@@ -29,26 +35,37 @@ export const seedLocationsService = async () => {
     id: randomUUID(),
   }));
 
-  const municipalities = newMunicipalities.map((municipality) => {
-    const province = newProvincesWithUuid.find(
-      (province) =>
-        province.code === municipality.province.code &&
-        province.name === municipality.province.name
-    );
+  const municipalities = newMunicipalities
+    .map((municipality, index) => {
+      const province = newProvincesWithUuid.find(
+        (province) =>
+          province.code === municipality.province.code &&
+          province.name === municipality.province.name
+      );
 
-    if (!province) {
-      throw new Error("not found!!!");
-    }
+      if (!province) {
+        throw new ProvinceNotFoundError(municipality.province.name);
+      }
 
-    return {
-      ...municipality,
-      id: randomUUID(),
-      province: {
-        ...municipality.province,
-        id: province.id,
-      },
-    };
-  });
+      const isNotUniqueCode = newMunicipalities.find(
+        (municipality2, index2) =>
+          municipality.code === municipality2.code && index !== index2
+      );
+
+      if (isNotUniqueCode) {
+        throw new LocationCodeNotUniqueError(municipality.code);
+      }
+
+      return {
+        ...municipality,
+        id: randomUUID(),
+        province: {
+          ...municipality.province,
+          id: province.id,
+        },
+      };
+    })
+    .filter(isValidMunicipalityCode);
 
   const provinces = newProvincesWithUuid.map((province) => {
     const capital = municipalities.find(
@@ -61,7 +78,7 @@ export const seedLocationsService = async () => {
     );
 
     if (!capital) {
-      throw new Error("not found!!!");
+      throw new MunicipalityNotFoundError(province.capital.name);
     }
 
     return {

@@ -1,6 +1,7 @@
 import {
   AppError,
   BadRequestError,
+  ConflictError,
   GeneralError,
   NotFoundError,
   UnprocessableEntityError,
@@ -199,6 +200,35 @@ describe("UnprocessableEntityError", () => {
     expect(error.name).toBe(errorName);
     expect(error.message).toBe(errorMessage);
     expect(error.statusCode).toBe(422);
+    expect(error.cause).toBe(errorCause);
+  });
+});
+
+describe("ConflictError", () => {
+  test("should create a ConflictError instance with default values", () => {
+    const error = new ConflictError();
+
+    expect(error).toBeInstanceOf(AppError);
+    expect(error.name).toBe("ConflictError");
+    expect(error.message).toBe("Conflict");
+    expect(error.statusCode).toBe(409);
+    expect(error.cause).toBeUndefined();
+  });
+
+  test("should create a ConflictError instance with provided values", () => {
+    const errorCause = new Error("This is the cause");
+    const errorName = "CustomError";
+    const errorMessage = "This is a custom error message";
+
+    const error = new ConflictError({
+      name: errorName,
+      message: errorMessage,
+      cause: errorCause,
+    });
+
+    expect(error.name).toBe(errorName);
+    expect(error.message).toBe(errorMessage);
+    expect(error.statusCode).toBe(409);
     expect(error.cause).toBe(errorCause);
   });
 });

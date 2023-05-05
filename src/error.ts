@@ -91,3 +91,13 @@ export class UnprocessableEntityError extends AppError {
     super(422, name, message, { cause });
   }
 }
+
+export class ConflictError extends AppError {
+  constructor({
+    name = "ConflictError",
+    message = "Conflict",
+    cause,
+  }: ErrorProps | undefined = {}) {
+    super(409, name, message, { cause });
+  }
+}
