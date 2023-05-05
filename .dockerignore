@@ -9,6 +9,7 @@ docker-compose.dev.yml
 .husky/
 README.md
 .vscode
+coverage
 
 dist/
 node_modules/

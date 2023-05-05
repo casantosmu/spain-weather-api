@@ -27,5 +27,5 @@
   "rules": {
     "no-console": "error"
   },
-  "ignorePatterns": ["dist", "**/generated/**"]
+  "ignorePatterns": ["dist", "**/generated/**", "coverage"]
 }
