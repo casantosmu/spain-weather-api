@@ -8,11 +8,13 @@ const normalizeError = (error: unknown) => {
   }
 
   if (error instanceof Error) {
-    return new GeneralError({
+    const appError = new GeneralError({
       name: error.name,
       message: error.message,
       cause: error,
     });
+    appError.stack = error.stack;
+    return appError;
   }
 
   return new GeneralError({

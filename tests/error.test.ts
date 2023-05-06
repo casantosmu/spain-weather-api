@@ -41,16 +41,18 @@ describe("handleError", () => {
   });
 
   describe("when receives an error", () => {
-    it("creates and logs an AppError and terminates the app", () => {
-      jest.spyOn(logger, "error");
+    it("creates and logs an AppError with error stack and terminates the app", () => {
+      const spyLoggerError = jest.spyOn(logger, "error");
       const error = new Error("Some error message");
 
       handleError(error);
 
-      expect(logger.error).toHaveBeenCalledWith(
-        error.message,
-        expect.any(GeneralError)
-      );
+      expect(spyLoggerError.mock.calls[0]?.[0]).toBe(error.message);
+      expect(spyLoggerError.mock.calls[0]?.[1]?.name).toBe(error.name);
+      expect(spyLoggerError.mock.calls[0]?.[1]?.message).toBe(error.message);
+      expect(spyLoggerError.mock.calls[0]?.[1]?.stack).toBe(error.stack);
+      expect(spyLoggerError.mock.calls[0]?.[1]?.cause).toBe(error);
+      expect(spyLoggerError.mock.calls[0]?.[1]).toBeInstanceOf(GeneralError);
       expect(terminateApp).toHaveBeenCalledWith("error");
     });
   });
