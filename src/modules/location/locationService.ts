@@ -7,13 +7,15 @@ import {
   hasLocationRepository,
 } from "./locationRepository";
 import { randomUUID } from "crypto";
-import { checkProvincesLength } from "./provinceService";
+import { checkProvincesLength, isValidProvinceCode } from "./provinceService";
 import { isValidMunicipalityCode } from "./municipalityService";
 import {
   LocationCodeNotUniqueError,
   MunicipalityNotFoundError,
   ProvinceNotFoundError,
 } from "./error";
+
+// There is a circular relationship between province and municipality.
 
 export const seedLocationsService = async () => {
   const hasLocation = await hasLocationRepository();
@@ -67,37 +69,38 @@ export const seedLocationsService = async () => {
     })
     .filter(isValidMunicipalityCode);
 
-  const provinces = newProvincesWithUuid.map((province, index) => {
-    const capital = municipalities.find(
-      (municipality) =>
-        municipality.name === province.capital.name &&
-        municipality.code === province.capital.code &&
-        municipality.province.id === province.id &&
-        municipality.province.code === province.code &&
-        municipality.province.name === province.name
-    );
+  const provinces = newProvincesWithUuid
+    .map((province, index) => {
+      const capital = municipalities.find(
+        (municipality) =>
+          province.capital.name === municipality.name &&
+          province.capital.code === municipality.code &&
+          municipality.province.code === province.code &&
+          municipality.province.name === province.name
+      );
 
-    if (!capital) {
-      throw new MunicipalityNotFoundError(province.capital.name);
-    }
+      if (!capital) {
+        throw new MunicipalityNotFoundError(province.capital.name);
+      }
 
-    const isNotUniqueCode = newProvinces.find(
-      (province2, index2) =>
-        province.code === province2.code && index !== index2
-    );
+      const isNotUniqueCode = newProvinces.find(
+        (province2, index2) =>
+          province.code === province2.code && index !== index2
+      );
 
-    if (isNotUniqueCode) {
-      throw new LocationCodeNotUniqueError(province.code);
-    }
+      if (isNotUniqueCode) {
+        throw new LocationCodeNotUniqueError(province.code);
+      }
 
-    return {
-      ...province,
-      capital: {
-        ...province.capital,
-        id: capital.id,
-      },
-    };
-  });
+      return {
+        ...province,
+        capital: {
+          ...province.capital,
+          id: capital.id,
+        },
+      };
+    })
+    .filter(isValidProvinceCode);
 
   await Promise.all([
     createProvincesRepository(provinces),

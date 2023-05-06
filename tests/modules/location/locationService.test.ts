@@ -17,6 +17,7 @@ import {
   ProvinceNotFoundError,
 } from "../../../src/modules/location/error";
 import { MunicipalityNotFoundError } from "../../../src/modules/location/error";
+import { isValidProvinceCode } from "../../../src/modules/location/provinceService";
 
 jest.mock("../../../src/modules/location/locationRepository");
 const mockedGetNewProvincesRepository = jest.mocked(getNewProvincesRepository);
@@ -28,6 +29,7 @@ const mockHasLocationRepository = jest.mocked(hasLocationRepository);
 jest.mock("../../../src/modules/location/provinceService");
 jest.mock("../../../src/modules/location/municipalityService");
 const mockIsValidMunicipalityCode = jest.mocked(isValidMunicipalityCode);
+const mockIsValidProvinceCode = jest.mocked(isValidProvinceCode);
 
 jest.mock("crypto");
 const mockedRandomUuid = jest.mocked(randomUUID);
@@ -205,6 +207,7 @@ describe("seedLocationsService", () => {
           municipalities
         );
         mockIsValidMunicipalityCode.mockReturnValue(true);
+        mockIsValidProvinceCode.mockReturnValue(true);
         const ids = ["id1", "id2", "id3", "id3"];
         ids.forEach((id) => {
           mockedRandomUuid.mockReturnValueOnce(id as never);
@@ -277,6 +280,7 @@ describe("seedLocationsService", () => {
           municipalities
         );
         mockIsValidMunicipalityCode.mockReturnValue(true);
+        mockIsValidProvinceCode.mockReturnValue(true);
         const ids = ["id1", "id2", "id3", "id3"];
         ids.forEach((id) => {
           mockedRandomUuid.mockReturnValueOnce(id as never);
