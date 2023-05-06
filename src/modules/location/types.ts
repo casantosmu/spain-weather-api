@@ -25,6 +25,7 @@ type LocationBase = {
 
 type Location = {
   latLng: LatLng;
+  year: number;
 } & LocationBase;
 
 export type Province = {

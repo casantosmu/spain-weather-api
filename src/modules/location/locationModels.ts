@@ -8,6 +8,7 @@ const locationSchema = new mongoose.Schema(
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
     code: { type: String, required: true, unique: true },
+    year: { type: Number, required: true },
   },
   {
     discriminatorKey: "entity",

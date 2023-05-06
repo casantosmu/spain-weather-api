@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import { config } from "./config";
 import logger from "./logger";
+import { handleError } from "./error";
+import { terminateApp } from "./terminate";
 
 export const connectMongoDb = async () => {
   await mongoose.connect(config.mongodbUri);
@@ -21,3 +23,20 @@ mongoose.set(
     });
   }
 );
+
+export const runSeed = async (seedFn: () => Promise<void>) => {
+  const seedName = seedFn.name;
+
+  logger.info(`Stating seed: ${seedName}`);
+
+  try {
+    await connectMongoDb();
+    await seedFn();
+    logger.info(`Successful seed: ${seedName}`);
+    terminateApp("ok");
+  } catch (error) {
+    logger.error(`Error at seed: ${seedName}`);
+    handleError(error);
+    terminateApp("error");
+  }
+};

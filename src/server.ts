@@ -13,6 +13,7 @@ export const startServer = async () =>
     });
 
     server.once("error", (error) => {
+      logger.error("Error starting server");
       reject(error);
     });
   });
