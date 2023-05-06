@@ -1,4 +1,7 @@
-import { provincesLength } from "../../../src/modules/location/constants";
+import {
+  provinceCodeRange,
+  provincesLength,
+} from "../../../src/modules/location/constants";
 import { InvalidNumberOfProvincesError } from "../../../src/modules/location/error";
 import {
   checkProvincesLength,
@@ -42,7 +45,7 @@ describe("isValidProvinceCode", () => {
 
   test("Given an invalid province code that is too low, it returns false", () => {
     const province = new NewProvincesRepositoryBuilder()
-      .withCode("0")
+      .withCode(`${provinceCodeRange.min - 1}`)
       .withName("Name")
       .build();
 
@@ -53,7 +56,7 @@ describe("isValidProvinceCode", () => {
 
   test("Given an invalid province code that is too high, it returns false", () => {
     const province = new NewProvincesRepositoryBuilder()
-      .withCode("51")
+      .withCode(`${provinceCodeRange.max + 1}`)
       .withName("Name")
       .build();
 

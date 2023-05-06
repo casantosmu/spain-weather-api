@@ -36,7 +36,7 @@ export const runSeeder = async (seederFn: () => Promise<void>) => {
     terminateApp("ok");
   } catch (error) {
     const seederError = new GeneralError({
-      name: "SeedError",
+      name: "SeederError",
       message: `An error occurred while seeding "${seederName}".`,
       cause: error,
     });

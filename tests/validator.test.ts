@@ -57,7 +57,7 @@ describe("validateMiddleware", () => {
   });
 
   describe("when validateSchema hasn't errors", () => {
-    test("should call next without arguments ", () => {
+    test("should call next without arguments", () => {
       const req = { body: { foo: "bar" } };
       const res = {};
       const next = jest.fn();
