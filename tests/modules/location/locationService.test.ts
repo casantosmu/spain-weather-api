@@ -20,8 +20,8 @@ import { MunicipalityNotFoundError } from "../../../src/modules/location/error";
 import { isValidProvinceCode } from "../../../src/modules/location/provinceService";
 
 jest.mock("../../../src/modules/location/locationRepository");
-const mockedGetNewProvincesRepository = jest.mocked(getNewProvincesRepository);
-const mockedGetNewMunicipalitiesRepository = jest.mocked(
+const mockGetNewProvincesRepository = jest.mocked(getNewProvincesRepository);
+const mockGetNewMunicipalitiesRepository = jest.mocked(
   getNewMunicipalitiesRepository
 );
 const mockHasLocationRepository = jest.mocked(hasLocationRepository);
@@ -32,7 +32,7 @@ const mockIsValidMunicipalityCode = jest.mocked(isValidMunicipalityCode);
 const mockIsValidProvinceCode = jest.mocked(isValidProvinceCode);
 
 jest.mock("crypto");
-const mockedRandomUuid = jest.mocked(randomUUID);
+const mockRandomUuid = jest.mocked(randomUUID);
 
 describe("seedLocationsService", () => {
   describe("when called", () => {
@@ -42,8 +42,8 @@ describe("seedLocationsService", () => {
 
         await seedLocationsService();
 
-        expect(mockedGetNewProvincesRepository).not.toHaveBeenCalled();
-        expect(mockedGetNewMunicipalitiesRepository).not.toHaveBeenCalled();
+        expect(mockGetNewProvincesRepository).not.toHaveBeenCalled();
+        expect(mockGetNewMunicipalitiesRepository).not.toHaveBeenCalled();
       });
     });
 
@@ -66,12 +66,11 @@ describe("seedLocationsService", () => {
           .withLatLng([43.6532, -79.3832])
           .withProvince(province)
           .build();
-        const provinces = [province];
-        const municipalities = [municipality, municipality];
-        mockedGetNewProvincesRepository.mockResolvedValueOnce(provinces);
-        mockedGetNewMunicipalitiesRepository.mockResolvedValueOnce(
-          municipalities
-        );
+        mockGetNewProvincesRepository.mockResolvedValueOnce([province]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
+          municipality,
+          municipality,
+        ]);
 
         const result = async () => {
           await seedLocationsService();
@@ -93,8 +92,8 @@ describe("seedLocationsService", () => {
               .build()
           )
           .build();
-        mockedGetNewProvincesRepository.mockResolvedValueOnce([]);
-        mockedGetNewMunicipalitiesRepository.mockResolvedValueOnce([
+        mockGetNewProvincesRepository.mockResolvedValueOnce([]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
           municipality,
         ]);
 
@@ -125,9 +124,11 @@ describe("seedLocationsService", () => {
           .withLatLng([43.6532, -79.3832])
           .withProvince(province)
           .build();
-        const provinces = [province, province];
-        mockedGetNewProvincesRepository.mockResolvedValueOnce(provinces);
-        mockedGetNewMunicipalitiesRepository.mockResolvedValueOnce([
+        mockGetNewProvincesRepository.mockResolvedValueOnce([
+          province,
+          province,
+        ]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
           municipality,
         ]);
         mockIsValidMunicipalityCode.mockReturnValue(true);
@@ -153,8 +154,8 @@ describe("seedLocationsService", () => {
               .build()
           )
           .build();
-        mockedGetNewProvincesRepository.mockResolvedValueOnce([province]);
-        mockedGetNewMunicipalitiesRepository.mockResolvedValueOnce([]);
+        mockGetNewProvincesRepository.mockResolvedValueOnce([province]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([]);
 
         const result = async () => {
           await seedLocationsService();
@@ -200,17 +201,19 @@ describe("seedLocationsService", () => {
           .withLatLng([43.6532, -79.3832])
           .withProvince(province2)
           .build();
-        const provinces = [province1, province2];
-        const municipalities = [municipality1, municipality2];
-        mockedGetNewProvincesRepository.mockResolvedValueOnce(provinces);
-        mockedGetNewMunicipalitiesRepository.mockResolvedValueOnce(
-          municipalities
-        );
+        mockGetNewProvincesRepository.mockResolvedValueOnce([
+          province1,
+          province2,
+        ]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
+          municipality1,
+          municipality2,
+        ]);
         mockIsValidMunicipalityCode.mockReturnValue(true);
         mockIsValidProvinceCode.mockReturnValue(true);
         const ids = ["id1", "id2", "id3", "id3"];
         ids.forEach((id) => {
-          mockedRandomUuid.mockReturnValueOnce(id as never);
+          mockRandomUuid.mockReturnValueOnce(id as never);
         });
 
         await seedLocationsService();
@@ -273,17 +276,19 @@ describe("seedLocationsService", () => {
           .withLatLng([43.6532, -79.3832])
           .withProvince(province2)
           .build();
-        const provinces = [province1, province2];
-        const municipalities = [municipality1, municipality2];
-        mockedGetNewProvincesRepository.mockResolvedValueOnce(provinces);
-        mockedGetNewMunicipalitiesRepository.mockResolvedValueOnce(
-          municipalities
-        );
+        mockGetNewProvincesRepository.mockResolvedValueOnce([
+          province1,
+          province2,
+        ]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
+          municipality1,
+          municipality2,
+        ]);
         mockIsValidMunicipalityCode.mockReturnValue(true);
         mockIsValidProvinceCode.mockReturnValue(true);
         const ids = ["id1", "id2", "id3", "id3"];
         ids.forEach((id) => {
-          mockedRandomUuid.mockReturnValueOnce(id as never);
+          mockRandomUuid.mockReturnValueOnce(id as never);
         });
 
         await seedLocationsService();

@@ -2,7 +2,7 @@ import { type Municipality, type Province } from "./types";
 import { MunicipalityModel, ProvinceModel } from "./locationModels";
 import httpClient from "../../httpClient";
 import { provinceCodeRange } from "./constants";
-import capitalsOfProvincesJson from "./seed/capitalsOfProvinces.json";
+import capitalsOfProvincesJson from "./seeder/capitalsOfProvinces.json";
 import { NotFoundError } from "../../error";
 import { getProvinceCodeFromMunicipalityCode } from "./utils";
 
@@ -39,6 +39,10 @@ export type OpenDataSoftProvincesResponse =
 const openDataSoftBaseUrl =
   "https://public.opendatasoft.com/api/records/1.0/search/";
 
+// The provinces provided by Open Soft Data include Ceuta and Melilla autonomous cities and "Territorio no asociado a ninguna provincia".
+const isValidProvinceCode = (provinceCode: string) =>
+  Number(provinceCode) <= provinceCodeRange.max;
+
 export const getNewProvincesRepository = async () => {
   const dataset = "georef-spain-provincia";
   const rows = 1000;
@@ -51,11 +55,10 @@ export const getNewProvincesRepository = async () => {
     await httpClient.get<OpenDataSoftProvincesResponse>(url);
 
   return newProvinces.records
-    .filter(
-      // Filter Ceuta and Melilla autonomous cities and "Territorio no asociado a ninguna provincia".
-      (record) => Number(record.fields.prov_code) <= provinceCodeRange.max
-    )
+    .filter((record) => isValidProvinceCode(record.fields.prov_code))
     .map((record) => {
+      // The information provided by Open Data Soft on Spanish provinces does not include their respective capitals.
+      // Therefore, we need to search for the capital city of each province in a JSON file containing a list of Spanish provincial capitals.
       const provinceCapital = capitalsOfProvincesJson[0]?.data.find(
         (provinceCapital) =>
           getProvinceCodeFromMunicipalityCode(provinceCapital.code) ===
@@ -65,7 +68,7 @@ export const getNewProvincesRepository = async () => {
       if (!provinceCapital) {
         throw new NotFoundError({
           name: "ProvinceCapitalNotFound",
-          message: `Not found capital for province ${record.fields.prov_code}`,
+          message: `Could not find the capital city for the province with code ${record.fields.prov_code}.`,
         });
       }
 
@@ -100,7 +103,7 @@ const repeatedMunicipalities = [
 
 export const getNewMunicipalitiesRepository = async () => {
   const dataset = "georef-spain-municipio";
-  const rows = 10000;
+  const rows = 10000; // There are around 8k provinces in Spain.
   const facets = ["prov_code", "prov_name", "mun_code", "mun_name"];
   const url = `${openDataSoftBaseUrl}?dataset=${dataset}&rows=${rows}&facet=${facets.join(
     "&facet="
@@ -112,11 +115,9 @@ export const getNewMunicipalitiesRepository = async () => {
   return newMunicipalities.records
     .filter(
       (record) =>
-        // Filter Ceuta and Melilla autonomous cities, "Territorio no asociado a ninguna provincia" and some repeated municipalities
-        // The first digits correspond to the province
-        Number(getProvinceCodeFromMunicipalityCode(record.fields.mun_code)) <=
-          provinceCodeRange.max &&
-        !repeatedMunicipalities.includes(record.fields.mun_name)
+        isValidProvinceCode(
+          getProvinceCodeFromMunicipalityCode(record.fields.mun_code)
+        ) && !repeatedMunicipalities.includes(record.fields.mun_name)
     )
     .map((record) => ({
       name: record.fields.mun_name,
