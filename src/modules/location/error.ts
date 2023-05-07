@@ -39,3 +39,21 @@ export class LocationCodeNotUniqueError extends ConflictError {
     });
   }
 }
+
+export class InvalidProvinceCodeError extends UnprocessableEntityError {
+  constructor(provinceCode: string) {
+    super({
+      name: "InvalidProvinceCodeError",
+      message: `Invalid province code: ${provinceCode}`,
+    });
+  }
+}
+
+export class InvalidMunicipalityCodeError extends UnprocessableEntityError {
+  constructor(municipalityCode: string) {
+    super({
+      name: "InvalidMunicipalityCodeError",
+      message: `The code '${municipalityCode}' is not a valid municipality code for Spain`,
+    });
+  }
+}

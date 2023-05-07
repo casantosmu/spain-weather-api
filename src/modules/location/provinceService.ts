@@ -1,5 +1,8 @@
 import { provinceCodeRange, provincesLength } from "./constants";
-import { InvalidNumberOfProvincesError } from "./error";
+import {
+  InvalidNumberOfProvincesError,
+  InvalidProvinceCodeError,
+} from "./error";
 import { type NewProvince, type Province } from "./types";
 
 export const checkProvincesLength = (provinces: unknown[]) => {
@@ -8,6 +11,14 @@ export const checkProvincesLength = (provinces: unknown[]) => {
   }
 };
 
-export const isValidProvinceCode = (province: NewProvince | Province) =>
-  Number(province.code) >= provinceCodeRange.min &&
-  Number(province.code) <= provinceCodeRange.max;
+// To a check
+export const checkProvinceCode = (province: NewProvince | Province) => {
+  const code = Number(province.code);
+  if (
+    isNaN(code) ||
+    code < provinceCodeRange.min ||
+    code > provinceCodeRange.max
+  ) {
+    throw new InvalidProvinceCodeError(province.code);
+  }
+};

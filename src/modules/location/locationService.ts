@@ -7,8 +7,8 @@ import {
   hasLocationRepository,
 } from "./locationRepository";
 import { randomUUID } from "crypto";
-import { checkProvincesLength, isValidProvinceCode } from "./provinceService";
-import { isValidMunicipalityCode } from "./municipalityService";
+import { checkProvinceCode, checkProvincesLength } from "./provinceService";
+import { checkMunicipalityCode } from "./municipalityService";
 import {
   LocationCodeNotUniqueError,
   MunicipalityNotFoundError,
@@ -37,70 +37,70 @@ export const seedLocationsService = async () => {
     id: randomUUID(),
   }));
 
-  const municipalities = newMunicipalities
-    .map((municipality, index) => {
-      const province = newProvincesWithUuid.find(
-        (province) =>
-          province.code === municipality.province.code &&
-          province.name === municipality.province.name
-      );
+  const municipalities = newMunicipalities.map((municipality, index) => {
+    checkMunicipalityCode(municipality);
 
-      if (!province) {
-        throw new ProvinceNotFoundError(municipality.province.name);
-      }
+    const province = newProvincesWithUuid.find(
+      (province) =>
+        province.code === municipality.province.code &&
+        province.name === municipality.province.name
+    );
 
-      const isNotUniqueCode = newMunicipalities.find(
-        (municipality2, index2) =>
-          municipality.code === municipality2.code && index !== index2
-      );
+    if (!province) {
+      throw new ProvinceNotFoundError(municipality.province.name);
+    }
 
-      if (isNotUniqueCode) {
-        throw new LocationCodeNotUniqueError(municipality.code);
-      }
+    const isNotUniqueCode = newMunicipalities.find(
+      (municipality2, index2) =>
+        municipality.code === municipality2.code && index !== index2
+    );
 
-      return {
-        ...municipality,
-        id: randomUUID(),
-        province: {
-          ...municipality.province,
-          id: province.id,
-        },
-      };
-    })
-    .filter(isValidMunicipalityCode);
+    if (isNotUniqueCode) {
+      throw new LocationCodeNotUniqueError(municipality.code);
+    }
 
-  const provinces = newProvincesWithUuid
-    .map((province, index) => {
-      const capital = municipalities.find(
-        (municipality) =>
-          province.capital.name === municipality.name &&
-          province.capital.code === municipality.code &&
-          municipality.province.code === province.code &&
-          municipality.province.name === province.name
-      );
+    return {
+      ...municipality,
+      id: randomUUID(),
+      province: {
+        ...municipality.province,
+        id: province.id,
+      },
+    };
+  });
 
-      if (!capital) {
-        throw new MunicipalityNotFoundError(province.capital.name);
-      }
+  const provinces = newProvincesWithUuid.map((province, index) => {
+    checkProvinceCode(province);
 
-      const isNotUniqueCode = newProvinces.find(
-        (province2, index2) =>
-          province.code === province2.code && index !== index2
-      );
+    const capital = municipalities.find(
+      (municipality) =>
+        province.capital.name === municipality.name &&
+        province.capital.code === municipality.code &&
+        municipality.province.code === province.code &&
+        municipality.province.name === province.name
+    );
 
-      if (isNotUniqueCode) {
-        throw new LocationCodeNotUniqueError(province.code);
-      }
+    if (!capital) {
+      throw new MunicipalityNotFoundError(province.capital.name);
+    }
 
-      return {
-        ...province,
-        capital: {
-          ...province.capital,
-          id: capital.id,
-        },
-      };
-    })
-    .filter(isValidProvinceCode);
+    const isNotUniqueCode = newProvinces.find(
+      (province2, index2) =>
+        province.code === province2.code && index !== index2
+    );
+
+    if (isNotUniqueCode) {
+      throw new LocationCodeNotUniqueError(province.code);
+    }
+
+    return {
+      ...province,
+      capital: {
+        ...province.capital,
+        id: capital.id,
+      },
+    };
+  });
 
   await Promise.all([
     createProvincesRepository(provinces),

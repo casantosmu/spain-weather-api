@@ -1,39 +1,65 @@
-import { isValidMunicipalityCode } from "../../../src/modules/location/municipalityService";
+import { InvalidMunicipalityCodeError } from "../../../src/modules/location/error";
+import { checkMunicipalityCode } from "../../../src/modules/location/municipalityService";
 import {
   NewMunicipalitiesRepositoryBuilder,
   NewProvincesRepositoryBuilder,
 } from "./locationFactory";
 
-describe("isValidMunicipalityCode", () => {
-  test("returns true for a valid municipality code", () => {
-    const province = new NewProvincesRepositoryBuilder()
-      .withCode("ON")
-      .withName("Province")
-      .build();
+describe("checkMunicipalityCode", () => {
+  test("Given a valid municipality code, it does not throw an error", () => {
     const municipality = new NewMunicipalitiesRepositoryBuilder()
-      .withCode("ON010")
-      .withName("Municipality")
-      .withProvince(province)
+      .withCode("20211")
+      .withName("Name")
+      .withProvince(
+        new NewProvincesRepositoryBuilder()
+          .withCode("20")
+          .withName("Province")
+          .build()
+      )
       .build();
 
-    const result = isValidMunicipalityCode(municipality);
+    const result = () => {
+      checkMunicipalityCode(municipality);
+    };
 
-    expect(result).toBe(true);
+    expect(result).not.toThrow();
   });
 
-  test("returns false for an invalid municipality code", () => {
-    const province = new NewProvincesRepositoryBuilder()
-      .withCode("ON")
-      .withName("Ontario")
-      .build();
+  test("Given an invalid municipality code with invalid province code, it throws an InvalidMunicipalityCodeError", () => {
     const municipality = new NewMunicipalitiesRepositoryBuilder()
-      .withCode("ON00")
-      .withName("Municipality")
-      .withProvince(province)
+      .withCode("10001")
+      .withName("Name")
+      .withProvince(
+        new NewProvincesRepositoryBuilder()
+          .withCode("00")
+          .withName("Province")
+          .build()
+      )
       .build();
 
-    const result = isValidMunicipalityCode(municipality);
+    const result = () => {
+      checkMunicipalityCode(municipality);
+    };
 
-    expect(result).toBe(false);
+    expect(result).toThrow(InvalidMunicipalityCodeError);
+  });
+
+  test("Given an invalid municipality code with invalid length, it throws an InvalidMunicipalityCodeError", () => {
+    const municipality = new NewMunicipalitiesRepositoryBuilder()
+      .withCode("202110")
+      .withName("Name")
+      .withProvince(
+        new NewProvincesRepositoryBuilder()
+          .withCode("20")
+          .withName("Province")
+          .build()
+      )
+      .build();
+
+    const result = () => {
+      checkMunicipalityCode(municipality);
+    };
+
+    expect(result).toThrow(InvalidMunicipalityCodeError);
   });
 });

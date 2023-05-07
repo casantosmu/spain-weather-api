@@ -11,13 +11,11 @@ import {
   NewMunicipalitiesRepositoryBuilder,
   NewProvincesRepositoryBuilder,
 } from "./locationFactory";
-import { isValidMunicipalityCode } from "../../../src/modules/location/municipalityService";
 import {
   LocationCodeNotUniqueError,
   ProvinceNotFoundError,
 } from "../../../src/modules/location/error";
 import { MunicipalityNotFoundError } from "../../../src/modules/location/error";
-import { isValidProvinceCode } from "../../../src/modules/location/provinceService";
 
 jest.mock("../../../src/modules/location/locationRepository");
 const mockGetNewProvincesRepository = jest.mocked(getNewProvincesRepository);
@@ -28,8 +26,6 @@ const mockHasLocationRepository = jest.mocked(hasLocationRepository);
 
 jest.mock("../../../src/modules/location/provinceService");
 jest.mock("../../../src/modules/location/municipalityService");
-const mockIsValidMunicipalityCode = jest.mocked(isValidMunicipalityCode);
-const mockIsValidProvinceCode = jest.mocked(isValidProvinceCode);
 
 jest.mock("crypto");
 const mockRandomUuid = jest.mocked(randomUUID);
@@ -131,7 +127,6 @@ describe("seedLocationsService", () => {
         mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
           municipality,
         ]);
-        mockIsValidMunicipalityCode.mockReturnValue(true);
 
         const result = async () => {
           await seedLocationsService();
@@ -209,8 +204,6 @@ describe("seedLocationsService", () => {
           municipality1,
           municipality2,
         ]);
-        mockIsValidMunicipalityCode.mockReturnValue(true);
-        mockIsValidProvinceCode.mockReturnValue(true);
         const ids = ["id1", "id2", "id3", "id3"];
         ids.forEach((id) => {
           mockRandomUuid.mockReturnValueOnce(id as never);
@@ -284,8 +277,6 @@ describe("seedLocationsService", () => {
           municipality1,
           municipality2,
         ]);
-        mockIsValidMunicipalityCode.mockReturnValue(true);
-        mockIsValidProvinceCode.mockReturnValue(true);
         const ids = ["id1", "id2", "id3", "id3"];
         ids.forEach((id) => {
           mockRandomUuid.mockReturnValueOnce(id as never);

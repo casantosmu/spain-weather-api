@@ -2,10 +2,13 @@ import {
   provinceCodeRange,
   provincesLength,
 } from "../../../src/modules/location/constants";
-import { InvalidNumberOfProvincesError } from "../../../src/modules/location/error";
 import {
+  InvalidNumberOfProvincesError,
+  InvalidProvinceCodeError,
+} from "../../../src/modules/location/error";
+import {
+  checkProvinceCode,
   checkProvincesLength,
-  isValidProvinceCode,
 } from "../../../src/modules/location/provinceService";
 import { NewProvincesRepositoryBuilder } from "./locationFactory";
 
@@ -31,37 +34,56 @@ describe("checkProvincesLength", () => {
   });
 });
 
-describe("isValidProvinceCode", () => {
-  test("Given a valid province code, it returns true", () => {
+describe("checkProvinceCode", () => {
+  test("Given a valid province code, it does not throw an error", () => {
     const province = new NewProvincesRepositoryBuilder()
       .withCode("20")
       .withName("Name")
       .build();
 
-    const result = isValidProvinceCode(province);
+    const result = () => {
+      checkProvinceCode(province);
+    };
 
-    expect(result).toBe(true);
+    expect(result).not.toThrow();
   });
 
-  test("Given an invalid province code that is too low, it returns false", () => {
+  test("Given an invalid province code that is too low, it throws an InvalidProvinceCodeError", () => {
     const province = new NewProvincesRepositoryBuilder()
       .withCode(`${provinceCodeRange.min - 1}`)
       .withName("Name")
       .build();
 
-    const result = isValidProvinceCode(province);
+    const result = () => {
+      checkProvinceCode(province);
+    };
 
-    expect(result).toBe(false);
+    expect(result).toThrow(InvalidProvinceCodeError);
   });
 
-  test("Given an invalid province code that is too high, it returns false", () => {
+  test("Given an invalid province code that is too high, it throws an InvalidProvinceCodeError", () => {
     const province = new NewProvincesRepositoryBuilder()
       .withCode(`${provinceCodeRange.max + 1}`)
       .withName("Name")
       .build();
 
-    const result = isValidProvinceCode(province);
+    const result = () => {
+      checkProvinceCode(province);
+    };
 
-    expect(result).toBe(false);
+    expect(result).toThrow(InvalidProvinceCodeError);
+  });
+
+  test("Given an invalid province code that is not a number, it throws an InvalidProvinceCodeError", () => {
+    const province = new NewProvincesRepositoryBuilder()
+      .withCode("invalid code")
+      .withName("Name")
+      .build();
+
+    const result = () => {
+      checkProvinceCode(province);
+    };
+
+    expect(result).toThrow(InvalidProvinceCodeError);
   });
 });

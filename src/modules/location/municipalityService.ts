@@ -1,10 +1,16 @@
 import { municipalityCodeLength } from "./constants";
+import { InvalidMunicipalityCodeError } from "./error";
 import { type Municipality, type NewMunicipality } from "./types";
 import { getProvinceCodeFromMunicipalityCode } from "./utils";
 
-export const isValidMunicipalityCode = (
+export const checkMunicipalityCode = (
   municipality: NewMunicipality | Municipality
-) =>
-  getProvinceCodeFromMunicipalityCode(municipality.code) ===
-    municipality.province.code &&
-  municipality.code.length === municipalityCodeLength;
+) => {
+  if (
+    getProvinceCodeFromMunicipalityCode(municipality.code) !==
+      municipality.province.code ||
+    municipality.code.length !== municipalityCodeLength
+  ) {
+    throw new InvalidMunicipalityCodeError(municipality.code);
+  }
+};
