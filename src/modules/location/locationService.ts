@@ -1,7 +1,9 @@
 import logger from "../../logger";
 import {
+  createAutonomousCityRepository,
   createMunicipalitiesRepository,
   createProvincesRepository,
+  getNewAutonomousCitiesRepository,
   getNewMunicipalitiesRepository,
   getNewProvincesRepository,
   hasLocationRepository,
@@ -15,8 +17,6 @@ import {
   ProvinceNotFoundError,
 } from "./error";
 
-// There is a circular relationship between province and municipality.
-
 export const seedLocationsService = async () => {
   const hasLocation = await hasLocationRepository();
 
@@ -25,10 +25,12 @@ export const seedLocationsService = async () => {
     return;
   }
 
-  const [newProvinces, newMunicipalities] = await Promise.all([
-    getNewProvincesRepository(),
-    getNewMunicipalitiesRepository(),
-  ]);
+  const [newProvinces, newMunicipalities, newAutonomousCities] =
+    await Promise.all([
+      getNewProvincesRepository(),
+      getNewMunicipalitiesRepository(),
+      getNewAutonomousCitiesRepository(),
+    ]);
 
   checkProvincesLength(newProvinces);
 
@@ -102,8 +104,14 @@ export const seedLocationsService = async () => {
     };
   });
 
+  const autonomousCities = newAutonomousCities.map((autonomousCity) => ({
+    ...autonomousCity,
+    id: randomUUID(),
+  }));
+
   await Promise.all([
     createProvincesRepository(provinces),
     createMunicipalitiesRepository(municipalities),
+    createAutonomousCityRepository(autonomousCities),
   ]);
 };

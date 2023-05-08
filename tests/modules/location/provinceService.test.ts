@@ -10,7 +10,7 @@ import {
   checkProvinceCode,
   checkProvincesLength,
 } from "../../../src/modules/location/provinceService";
-import { NewProvincesRepositoryBuilder } from "./locationFactory";
+import { NewProvincesBuilder } from "./locationFactory";
 
 describe("checkProvincesLength", () => {
   test("Given an array of provinces, when the length is incorrect, then it throws an InvalidNumberOfProvincesError", () => {
@@ -36,7 +36,7 @@ describe("checkProvincesLength", () => {
 
 describe("checkProvinceCode", () => {
   test("Given a valid province code, it does not throw an error", () => {
-    const province = new NewProvincesRepositoryBuilder()
+    const province = new NewProvincesBuilder()
       .withCode("20")
       .withName("Name")
       .build();
@@ -49,7 +49,7 @@ describe("checkProvinceCode", () => {
   });
 
   test("Given an invalid province code that is too low, it throws an InvalidProvinceCodeError", () => {
-    const province = new NewProvincesRepositoryBuilder()
+    const province = new NewProvincesBuilder()
       .withCode(`${provinceCodeRange.min - 1}`)
       .withName("Name")
       .build();
@@ -62,7 +62,7 @@ describe("checkProvinceCode", () => {
   });
 
   test("Given an invalid province code that is too high, it throws an InvalidProvinceCodeError", () => {
-    const province = new NewProvincesRepositoryBuilder()
+    const province = new NewProvincesBuilder()
       .withCode(`${provinceCodeRange.max + 1}`)
       .withName("Name")
       .build();
@@ -75,7 +75,7 @@ describe("checkProvinceCode", () => {
   });
 
   test("Given an invalid province code that is not a number, it throws an InvalidProvinceCodeError", () => {
-    const province = new NewProvincesRepositoryBuilder()
+    const province = new NewProvincesBuilder()
       .withCode("invalid code")
       .withName("Name")
       .build();

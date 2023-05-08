@@ -7,6 +7,7 @@ export type NewLocationBase = {
 
 export type NewLocation = {
   latLng: LatLng;
+  year: number;
 } & NewLocationBase;
 
 export type NewProvince = {
@@ -16,6 +17,8 @@ export type NewProvince = {
 export type NewMunicipality = {
   province: NewLocationBase;
 } & NewLocation;
+
+export type NewAutonomousCity = NewLocation;
 
 type LocationBase = {
   id: string;
@@ -31,6 +34,9 @@ type Location = {
 export type Province = {
   capital: LocationBase;
 } & Location;
+
 export type Municipality = {
   province: LocationBase;
 } & Location;
+
+export type AutonomousCity = Location;

@@ -17,6 +17,7 @@
     "check:docs": "npx spectral lint src/docs.json",
     "check:types": "tsc --noEmit",
     "generate:Docs": "openapi-typescript src/docs.json --export-type --support-array-length -o src/generated/Docs.ts",
+    "seed:Location": "node dist/modules/location/seeder/locationSeeder.js",
     "prepare": "test -d node_modules/husky && husky install || echo \"husky is not installed\""
   },
   "lint-staged": {

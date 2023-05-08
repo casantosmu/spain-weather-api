@@ -1,7 +1,10 @@
-import { type Municipality, type Province } from "./types";
-import { MunicipalityModel, ProvinceModel } from "./locationModels";
+import { type AutonomousCity, type Municipality, type Province } from "./types";
+import {
+  AutonomousCityModel,
+  MunicipalityModel,
+  ProvinceModel,
+} from "./locationModels";
 import httpClient from "../../httpClient";
-import { provinceCodeRange } from "./constants";
 import capitalsOfProvincesJson from "./seeder/capitalsOfProvinces.json";
 import { NotFoundError } from "../../error";
 import { getProvinceCodeFromMunicipalityCode } from "./utils";
@@ -40,8 +43,12 @@ const openDataSoftBaseUrl =
   "https://public.opendatasoft.com/api/records/1.0/search/";
 
 // The provinces provided by Open Soft Data include Ceuta and Melilla autonomous cities and "Territorio no asociado a ninguna provincia".
-const isValidProvinceCode = (provinceCode: string) =>
-  Number(provinceCode) <= provinceCodeRange.max;
+const specialProvincesCodes = {
+  ceuta: "51",
+  melilla: "52",
+  unknown: "53",
+  unincorporatedTerritory: "54",
+};
 
 export const getNewProvincesRepository = async () => {
   const dataset = "georef-spain-provincia";
@@ -55,10 +62,12 @@ export const getNewProvincesRepository = async () => {
     await httpClient.get<OpenDataSoftProvincesResponse>(url);
 
   return newProvinces.records
-    .filter((record) => isValidProvinceCode(record.fields.prov_code))
+    .filter(
+      (record) =>
+        !Object.values(specialProvincesCodes).includes(record.fields.prov_code)
+    )
     .map((record) => {
       // The information provided by Open Data Soft on Spanish provinces does not include their respective capitals.
-      // Therefore, we need to search for the capital city of each province in a JSON file containing a list of Spanish provincial capitals.
       const provinceCapital = capitalsOfProvincesJson[0]?.data.find(
         (provinceCapital) =>
           getProvinceCodeFromMunicipalityCode(provinceCapital.code) ===
@@ -67,7 +76,7 @@ export const getNewProvincesRepository = async () => {
 
       if (!provinceCapital) {
         throw new NotFoundError({
-          name: "ProvinceCapitalNotFound",
+          name: "ProvinceCapitalNotFoundError",
           message: `Could not find the capital city for the province with code ${record.fields.prov_code}.`,
         });
       }
@@ -87,10 +96,6 @@ export const getNewProvincesRepository = async () => {
       };
     });
 };
-
-export type NewProvincesRepository = Awaited<
-  ReturnType<typeof getNewProvincesRepository>
->[number];
 
 const repeatedMunicipalities = [
   "Sotu'l Barcu",
@@ -115,7 +120,7 @@ export const getNewMunicipalitiesRepository = async () => {
   return newMunicipalities.records
     .filter(
       (record) =>
-        isValidProvinceCode(
+        !Object.values(specialProvincesCodes).includes(
           getProvinceCodeFromMunicipalityCode(record.fields.mun_code)
         ) && !repeatedMunicipalities.includes(record.fields.mun_name)
     )
@@ -134,9 +139,33 @@ export const getNewMunicipalitiesRepository = async () => {
     }));
 };
 
-export type NewMunicipalitiesRepository = Awaited<
-  ReturnType<typeof getNewMunicipalitiesRepository>
->[number];
+export const getNewAutonomousCitiesRepository = async () => {
+  const dataset = "georef-spain-provincia";
+  const rows = 1000;
+  const facets = ["prov_code", "prov_name"];
+  const url = `${openDataSoftBaseUrl}?dataset=${dataset}&rows=${rows}&facet=${facets.join(
+    "&facet="
+  )}`;
+
+  const { data: provinces } =
+    await httpClient.get<OpenDataSoftProvincesResponse>(url);
+
+  return provinces.records
+    .filter(
+      (record) =>
+        record.fields.prov_code === specialProvincesCodes.ceuta ||
+        record.fields.prov_code === specialProvincesCodes.melilla
+    )
+    .map((record) => ({
+      name: record.fields.prov_name,
+      code: record.fields.prov_code,
+      latLng: [
+        record.fields.geo_point_2d[0],
+        record.fields.geo_point_2d[1],
+      ] as const,
+      year: Number(record.fields.year),
+    }));
+};
 
 export const createProvincesRepository = async (provinces: Province[]) => {
   const mappedProvinces = provinces.map((province) => ({
@@ -174,6 +203,21 @@ export const createMunicipalitiesRepository = async (
   }));
 
   await MunicipalityModel.insertMany(mappedMunicipalities);
+};
+
+export const createAutonomousCityRepository = async (
+  autonomousCities: AutonomousCity[]
+) => {
+  const mappedAutonomousCities = autonomousCities.map((autonomousCity) => ({
+    _id: autonomousCity.id,
+    name: autonomousCity.name,
+    latitude: autonomousCity.latLng[0],
+    longitude: autonomousCity.latLng[1],
+    code: autonomousCity.code,
+    year: autonomousCity.year,
+  }));
+
+  await AutonomousCityModel.insertMany(mappedAutonomousCities);
 };
 
 export const hasLocationRepository = async () => {

@@ -42,3 +42,9 @@ export const MunicipalityModel = LocationModel.discriminator(
   "municipality",
   municipalitySchema
 );
+
+const autonomousCitySchema = new mongoose.Schema();
+export const AutonomousCityModel = LocationModel.discriminator(
+  "autonomousCity",
+  autonomousCitySchema
+);

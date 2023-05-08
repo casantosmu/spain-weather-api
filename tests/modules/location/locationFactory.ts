@@ -1,11 +1,10 @@
 import {
-  type NewMunicipalitiesRepository,
-  type NewProvincesRepository,
-} from "../../../src/modules/location/locationRepository";
-import {
   type NewLocationBase,
   type LatLng,
   type NewLocation,
+  type NewMunicipality,
+  type NewProvince,
+  type NewAutonomousCity,
 } from "../../../src/modules/location/types";
 
 abstract class BaseLocationBuilder<T extends NewLocation> {
@@ -32,16 +31,18 @@ abstract class BaseLocationBuilder<T extends NewLocation> {
   }
 }
 
-export class NewProvincesRepositoryBuilder extends BaseLocationBuilder<NewProvincesRepository> {
+export class NewProvincesBuilder extends BaseLocationBuilder<NewProvince> {
   withCapital(capital: NewLocationBase) {
     this.data.capital = capital;
     return this;
   }
 }
 
-export class NewMunicipalitiesRepositoryBuilder extends BaseLocationBuilder<NewMunicipalitiesRepository> {
+export class NewMunicipalitiesBuilder extends BaseLocationBuilder<NewMunicipality> {
   withProvince(province: NewLocationBase) {
     this.data.province = province;
     return this;
   }
 }
+
+export class NewAutonomousCityBuilder extends BaseLocationBuilder<NewAutonomousCity> {}

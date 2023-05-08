@@ -5,13 +5,12 @@ import {
 } from "./error";
 import { type NewProvince, type Province } from "./types";
 
-export const checkProvincesLength = (provinces: unknown[]) => {
+export const checkProvincesLength = (provinces: NewProvince[] | Province[]) => {
   if (provinces.length !== provincesLength) {
     throw new InvalidNumberOfProvincesError();
   }
 };
 
-// To a check
 export const checkProvinceCode = (province: NewProvince | Province) => {
   const code = Number(province.code);
   if (
