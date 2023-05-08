@@ -8,11 +8,13 @@ const normalizeError = (error: unknown) => {
   }
 
   if (error instanceof Error) {
-    return new GeneralError({
+    const appError = new GeneralError({
       name: error.name,
       message: error.message,
       cause: error,
     });
+    appError.stack = error.stack;
+    return appError;
   }
 
   return new GeneralError({
@@ -79,5 +81,25 @@ export class BadRequestError extends AppError {
     cause,
   }: ErrorProps | undefined = {}) {
     super(400, name, message, { cause });
+  }
+}
+
+export class UnprocessableEntityError extends AppError {
+  constructor({
+    name = "UnprocessableEntityError",
+    message = "Unprocessable Entity",
+    cause,
+  }: ErrorProps | undefined = {}) {
+    super(422, name, message, { cause });
+  }
+}
+
+export class ConflictError extends AppError {
+  constructor({
+    name = "ConflictError",
+    message = "Conflict",
+    cause,
+  }: ErrorProps | undefined = {}) {
+    super(409, name, message, { cause });
   }
 }

@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import { config } from "./config";
 import logger from "./logger";
+import { GeneralError, handleError } from "./error";
+import { terminateApp } from "./terminate";
 
 export const connectMongoDb = async () => {
   await mongoose.connect(config.mongodbUri);
@@ -21,3 +23,23 @@ mongoose.set(
     });
   }
 );
+
+export const runSeeder = async (seederFn: () => Promise<void>) => {
+  const seederName = seederFn.name;
+
+  logger.info(`Stating seeder "${seederName}"`);
+
+  try {
+    await connectMongoDb();
+    await seederFn();
+    logger.info(`Seeder completed successfully "${seederName}"`);
+    terminateApp("ok");
+  } catch (error) {
+    const seederError = new GeneralError({
+      name: "SeederError",
+      message: `An error occurred while seeding "${seederName}".`,
+      cause: error,
+    });
+    handleError(seederError);
+  }
+};

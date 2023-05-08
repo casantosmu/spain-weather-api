@@ -1,8 +1,10 @@
 import {
   AppError,
   BadRequestError,
+  ConflictError,
   GeneralError,
   NotFoundError,
+  UnprocessableEntityError,
   handleError,
 } from "../src/error";
 import logger from "../src/logger";
@@ -39,16 +41,18 @@ describe("handleError", () => {
   });
 
   describe("when receives an error", () => {
-    it("creates and logs an AppError and terminates the app", () => {
-      jest.spyOn(logger, "error");
+    it("creates and logs an AppError with error stack and terminates the app", () => {
+      const spyLoggerError = jest.spyOn(logger, "error");
       const error = new Error("Some error message");
 
       handleError(error);
 
-      expect(logger.error).toHaveBeenCalledWith(
-        error.message,
-        expect.any(GeneralError)
-      );
+      expect(spyLoggerError.mock.calls[0]?.[0]).toBe(error.message);
+      expect(spyLoggerError.mock.calls[0]?.[1]?.name).toBe(error.name);
+      expect(spyLoggerError.mock.calls[0]?.[1]?.message).toBe(error.message);
+      expect(spyLoggerError.mock.calls[0]?.[1]?.stack).toBe(error.stack);
+      expect(spyLoggerError.mock.calls[0]?.[1]?.cause).toBe(error);
+      expect(spyLoggerError.mock.calls[0]?.[1]).toBeInstanceOf(GeneralError);
       expect(terminateApp).toHaveBeenCalledWith("error");
     });
   });
@@ -91,7 +95,6 @@ describe("GeneralError", () => {
     const error = new GeneralError();
 
     expect(error).toBeInstanceOf(AppError);
-
     expect(error.name).toBe("InternalServerError");
     expect(error.message).toBe("Something went wrong");
     expect(error.statusCode).toBe(500);
@@ -121,7 +124,6 @@ describe("NotFoundError", () => {
     const error = new NotFoundError();
 
     expect(error).toBeInstanceOf(AppError);
-
     expect(error.name).toBe("NotFoundError");
     expect(error.message).toBe("Resource not found");
     expect(error.statusCode).toBe(404);
@@ -151,7 +153,6 @@ describe("BadRequestError", () => {
     const error = new BadRequestError();
 
     expect(error).toBeInstanceOf(AppError);
-
     expect(error.name).toBe("BadRequestError");
     expect(error.message).toBe("Bad Request");
     expect(error.statusCode).toBe(400);
@@ -172,6 +173,64 @@ describe("BadRequestError", () => {
     expect(error.name).toBe(errorName);
     expect(error.message).toBe(errorMessage);
     expect(error.statusCode).toBe(400);
+    expect(error.cause).toBe(errorCause);
+  });
+});
+
+describe("UnprocessableEntityError", () => {
+  test("should create an UnprocessableEntityError instance with default values", () => {
+    const error = new UnprocessableEntityError();
+
+    expect(error).toBeInstanceOf(AppError);
+    expect(error.name).toBe("UnprocessableEntityError");
+    expect(error.message).toBe("Unprocessable Entity");
+    expect(error.statusCode).toBe(422);
+    expect(error.cause).toBeUndefined();
+  });
+
+  test("should create an UnprocessableEntityError instance with provided values", () => {
+    const errorCause = new Error("This is the cause");
+    const errorName = "CustomError";
+    const errorMessage = "This is a custom error message";
+
+    const error = new UnprocessableEntityError({
+      name: errorName,
+      message: errorMessage,
+      cause: errorCause,
+    });
+
+    expect(error.name).toBe(errorName);
+    expect(error.message).toBe(errorMessage);
+    expect(error.statusCode).toBe(422);
+    expect(error.cause).toBe(errorCause);
+  });
+});
+
+describe("ConflictError", () => {
+  test("should create a ConflictError instance with default values", () => {
+    const error = new ConflictError();
+
+    expect(error).toBeInstanceOf(AppError);
+    expect(error.name).toBe("ConflictError");
+    expect(error.message).toBe("Conflict");
+    expect(error.statusCode).toBe(409);
+    expect(error.cause).toBeUndefined();
+  });
+
+  test("should create a ConflictError instance with provided values", () => {
+    const errorCause = new Error("This is the cause");
+    const errorName = "CustomError";
+    const errorMessage = "This is a custom error message";
+
+    const error = new ConflictError({
+      name: errorName,
+      message: errorMessage,
+      cause: errorCause,
+    });
+
+    expect(error.name).toBe(errorName);
+    expect(error.message).toBe(errorMessage);
+    expect(error.statusCode).toBe(409);
     expect(error.cause).toBe(errorCause);
   });
 });

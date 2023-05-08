@@ -1,0 +1,348 @@
+import {
+  createAutonomousCityRepository,
+  createMunicipalitiesRepository,
+  createProvincesRepository,
+  getNewAutonomousCitiesRepository,
+  getNewMunicipalitiesRepository,
+  getNewProvincesRepository,
+  hasLocationRepository,
+} from "../../../src/modules/location/locationRepository";
+import { seedLocationsService } from "../../../src/modules/location/locationService";
+import { randomUUID } from "crypto";
+import {
+  NewAutonomousCityBuilder,
+  NewMunicipalitiesBuilder,
+  NewProvincesBuilder,
+} from "./locationFactory";
+import {
+  LocationCodeNotUniqueError,
+  ProvinceNotFoundError,
+} from "../../../src/modules/location/error";
+import { MunicipalityNotFoundError } from "../../../src/modules/location/error";
+
+jest.mock("../../../src/modules/location/locationRepository");
+const mockGetNewProvincesRepository = jest.mocked(getNewProvincesRepository);
+const mockGetNewMunicipalitiesRepository = jest.mocked(
+  getNewMunicipalitiesRepository
+);
+const mockGetNewAutonomousCitiesRepository = jest.mocked(
+  getNewAutonomousCitiesRepository
+);
+const mockHasLocationRepository = jest.mocked(hasLocationRepository);
+
+jest.mock("../../../src/modules/location/provinceService");
+jest.mock("../../../src/modules/location/municipalityService");
+
+jest.mock("crypto");
+const mockRandomUuid = jest.mocked(randomUUID);
+
+describe("seedLocationsService", () => {
+  describe("when called", () => {
+    describe("and repository has locations", () => {
+      test("should not call any other repository", async () => {
+        mockHasLocationRepository.mockResolvedValueOnce(true);
+
+        await seedLocationsService();
+
+        expect(mockGetNewProvincesRepository).not.toHaveBeenCalled();
+        expect(mockGetNewMunicipalitiesRepository).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("and repository returns repeated municipalities", () => {
+      test("should throw error", async () => {
+        const province = new NewProvincesBuilder()
+          .withCode("ON")
+          .withName("Ontario")
+          .withLatLng([43.6532, -79.3832])
+          .withCapital(
+            new NewMunicipalitiesBuilder()
+              .withCode("TOR01")
+              .withName("Toronto Municipality")
+              .build()
+          )
+          .build();
+        const municipality = new NewMunicipalitiesBuilder()
+          .withCode("TOR01")
+          .withName("Municipality1")
+          .withLatLng([43.6532, -79.3832])
+          .withProvince(province)
+          .build();
+        mockGetNewProvincesRepository.mockResolvedValueOnce([province]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
+          municipality,
+          municipality,
+        ]);
+
+        const result = async () => {
+          await seedLocationsService();
+        };
+
+        await expect(result).rejects.toThrow(LocationCodeNotUniqueError);
+      });
+    });
+
+    describe("and repository returns a municipality with not found province", () => {
+      test("should throw error", async () => {
+        const municipality = new NewMunicipalitiesBuilder()
+          .withCode("TOR01º")
+          .withName("Municipality1")
+          .withProvince(
+            new NewProvincesBuilder()
+              .withCode("00")
+              .withName("NOT FOUND")
+              .build()
+          )
+          .build();
+        mockGetNewProvincesRepository.mockResolvedValueOnce([]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
+          municipality,
+        ]);
+
+        const result = async () => {
+          await seedLocationsService();
+        };
+
+        await expect(result).rejects.toThrow(ProvinceNotFoundError);
+      });
+    });
+
+    describe("and repository returns repeated provinces", () => {
+      test("should throw error", async () => {
+        const province = new NewProvincesBuilder()
+          .withCode("ON")
+          .withName("Ontario")
+          .withLatLng([43.6532, -79.3832])
+          .withCapital(
+            new NewMunicipalitiesBuilder()
+              .withCode("TOR01")
+              .withName("Toronto Municipality")
+              .build()
+          )
+          .build();
+        const municipality = new NewMunicipalitiesBuilder()
+          .withCode("TOR01")
+          .withName("Toronto Municipality")
+          .withLatLng([43.6532, -79.3832])
+          .withProvince(province)
+          .build();
+        mockGetNewProvincesRepository.mockResolvedValueOnce([
+          province,
+          province,
+        ]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
+          municipality,
+        ]);
+
+        const result = async () => {
+          await seedLocationsService();
+        };
+
+        await expect(result).rejects.toThrow(LocationCodeNotUniqueError);
+      });
+    });
+
+    describe("and repository returns a province with not found municipality", () => {
+      test("should throw error", async () => {
+        const province = new NewProvincesBuilder()
+          .withCode("ON")
+          .withName("Ontario")
+          .withLatLng([43.6532, -79.3832])
+          .withCapital(
+            new NewMunicipalitiesBuilder()
+              .withCode("00")
+              .withName("NOT FOUND")
+              .build()
+          )
+          .build();
+        mockGetNewProvincesRepository.mockResolvedValueOnce([province]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([]);
+
+        const result = async () => {
+          await seedLocationsService();
+        };
+
+        await expect(result).rejects.toThrow(MunicipalityNotFoundError);
+      });
+    });
+
+    describe("and repository returns 2 municipalities and their provinces", () => {
+      test("should call createMunicipalitiesRepository with the 2 municipalities with an id and their province", async () => {
+        const province1 = new NewProvincesBuilder()
+          .withCode("AB")
+          .withName("Alberta")
+          .withLatLng([51.0486, -114.0708])
+          .withCapital(
+            new NewMunicipalitiesBuilder()
+              .withCode("CAL01")
+              .withName("Calgary Municipality")
+              .build()
+          )
+          .build();
+        const province2 = new NewProvincesBuilder()
+          .withCode("ON")
+          .withName("Ontario")
+          .withLatLng([43.6532, -79.3832])
+          .withCapital(
+            new NewMunicipalitiesBuilder()
+              .withCode("TOR01")
+              .withName("Toronto Municipality")
+              .build()
+          )
+          .build();
+        const municipality1 = new NewMunicipalitiesBuilder()
+          .withCode("CAL01")
+          .withName("Calgary Municipality")
+          .withLatLng([51.0447, -114.0719])
+          .withProvince(province1)
+          .build();
+        const municipality2 = new NewMunicipalitiesBuilder()
+          .withCode("TOR01")
+          .withName("Toronto Municipality")
+          .withLatLng([43.6532, -79.3832])
+          .withProvince(province2)
+          .build();
+        mockGetNewProvincesRepository.mockResolvedValueOnce([
+          province1,
+          province2,
+        ]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
+          municipality1,
+          municipality2,
+        ]);
+        mockGetNewAutonomousCitiesRepository.mockResolvedValueOnce([]);
+        const ids = ["id1", "id2", "id3", "id3"];
+        ids.forEach((id) => {
+          mockRandomUuid.mockReturnValueOnce(id as never);
+        });
+
+        await seedLocationsService();
+
+        expect(createMunicipalitiesRepository).toHaveBeenCalledTimes(1);
+        expect(createMunicipalitiesRepository).toHaveBeenCalledWith([
+          {
+            ...municipality1,
+            id: ids[2],
+            province: {
+              ...municipality1.province,
+              id: ids[0],
+            },
+          },
+          {
+            ...municipality2,
+            id: ids[3],
+            province: {
+              ...municipality2.province,
+              id: ids[1],
+            },
+          },
+        ]);
+      });
+    });
+
+    describe("and repository returns 2 provinces and their capitals", () => {
+      test("should call createProvincesRepository with the 2 provinces with an id and its capital", async () => {
+        const province1 = new NewProvincesBuilder()
+          .withCode("AB")
+          .withName("Alberta")
+          .withLatLng([51.0486, -114.0708])
+          .withCapital(
+            new NewMunicipalitiesBuilder()
+              .withCode("CAL01")
+              .withName("Calgary Municipality")
+              .build()
+          )
+          .build();
+        const province2 = new NewProvincesBuilder()
+          .withCode("ON")
+          .withName("Ontario")
+          .withLatLng([43.6532, -79.3832])
+          .withCapital(
+            new NewMunicipalitiesBuilder()
+              .withCode("TOR01")
+              .withName("Toronto Municipality")
+              .build()
+          )
+          .build();
+        const municipality1 = new NewMunicipalitiesBuilder()
+          .withCode("CAL01")
+          .withName("Calgary Municipality")
+          .withLatLng([51.0447, -114.0719])
+          .withProvince(province1)
+          .build();
+        const municipality2 = new NewMunicipalitiesBuilder()
+          .withCode("TOR01")
+          .withName("Toronto Municipality")
+          .withLatLng([43.6532, -79.3832])
+          .withProvince(province2)
+          .build();
+        mockGetNewProvincesRepository.mockResolvedValueOnce([
+          province1,
+          province2,
+        ]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
+          municipality1,
+          municipality2,
+        ]);
+        mockGetNewAutonomousCitiesRepository.mockResolvedValueOnce([]);
+        const ids = ["id1", "id2", "id3", "id3"];
+        ids.forEach((id) => {
+          mockRandomUuid.mockReturnValueOnce(id as never);
+        });
+
+        await seedLocationsService();
+
+        expect(createProvincesRepository).toHaveBeenCalledTimes(1);
+        expect(createProvincesRepository).toHaveBeenCalledWith([
+          {
+            ...province1,
+            id: ids[0],
+            capital: {
+              ...province1.capital,
+              id: ids[2],
+            },
+          },
+          {
+            ...province2,
+            id: ids[1],
+            capital: {
+              ...province2.capital,
+              id: ids[3],
+            },
+          },
+        ]);
+      });
+    });
+
+    describe("and repository returns 2 autonomous cities", () => {
+      test("should call createAutonomousCitiesRepository with the 2 autonomous cities with a uuid", async () => {
+        const autonomousCity1 = new NewAutonomousCityBuilder()
+          .withCode("ON")
+          .withName("Ontario")
+          .build();
+        const autonomousCity2 = new NewAutonomousCityBuilder()
+          .withCode("AB")
+          .withName("Alberta")
+          .build();
+        mockGetNewProvincesRepository.mockResolvedValueOnce([]);
+        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([]);
+        mockGetNewAutonomousCitiesRepository.mockResolvedValueOnce([
+          autonomousCity1,
+          autonomousCity2,
+        ]);
+        const ids = ["id1", "id2"];
+        mockRandomUuid
+          .mockReturnValueOnce(ids[0] as never)
+          .mockReturnValueOnce(ids[1] as never);
+
+        await seedLocationsService();
+
+        expect(createAutonomousCityRepository).toHaveBeenCalledTimes(1);
+        expect(createAutonomousCityRepository).toHaveBeenCalledWith([
+          { ...autonomousCity1, id: ids[0] },
+          { ...autonomousCity2, id: ids[1] },
+        ]);
+      });
+    });
+  });
+});

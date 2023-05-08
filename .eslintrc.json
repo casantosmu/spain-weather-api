@@ -10,6 +10,12 @@
       "files": ["*.ts", "*.tsx"]
     },
     {
+      "files": ["*.test.ts"],
+      "plugins": ["jest"],
+      "extends": ["plugin:jest/recommended"],
+      "rules": { "max-nested-callbacks": "off" }
+    },
+    {
       "extends": ["prettier"],
       "files": ["*"]
     }
@@ -21,5 +27,5 @@
   "rules": {
     "no-console": "error"
   },
-  "ignorePatterns": ["dist", "**/generated/**"]
+  "ignorePatterns": ["dist", "**/generated/**", "coverage"]
 }

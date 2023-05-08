@@ -1,19 +1,7 @@
-import express from "express";
-import logger, { httpLogger } from "./logger";
-import router from "./router";
 import { type Server } from "http";
+import app from "./app";
+import logger from "./logger";
 import { config } from "./config";
-import { generalErrorMiddleware, notFoundMiddleware } from "./middlewares";
-
-const app = express();
-
-app.use(httpLogger);
-app.disable("x-powered-by");
-
-app.use("/api/v1", router);
-
-app.use(notFoundMiddleware);
-app.use(generalErrorMiddleware);
 
 let server: Server | undefined;
 
@@ -25,18 +13,20 @@ export const startServer = async () =>
     });
 
     server.once("error", (error) => {
+      logger.error("Error starting server");
       reject(error);
     });
   });
 
-export const stopServer = (cb: () => void) => {
-  if (server) {
-    server.close(() => {
-      logger.info("HTTP server closed");
-      cb();
-    });
-    return;
-  }
+export const stopServer = async () =>
+  new Promise<void>((resolve) => {
+    if (server) {
+      server.close(() => {
+        logger.info("HTTP server closed");
+        resolve();
+      });
+      return;
+    }
 
-  cb();
-};
+    resolve();
+  });
