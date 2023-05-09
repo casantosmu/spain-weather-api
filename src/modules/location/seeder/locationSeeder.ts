@@ -1,6 +1,11 @@
 import { runSeeder } from "../../../db";
+import { handleError } from "../../../error";
 import { seedLocationsService } from "../locationService";
 
 (async () => {
-  await runSeeder(seedLocationsService);
+  try {
+    await runSeeder(seedLocationsService);
+  } catch (error) {
+    handleError(error);
+  }
 })();
