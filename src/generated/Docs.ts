@@ -7,7 +7,6 @@ export type paths = {
   "/locations": {
     /**
      * Get all locations
-     * @deprecated
      * @description Retrieves a list of all locations in Spain.
      */
     get: operations["getLocations"];
@@ -21,6 +20,7 @@ export type components = {
     Location: {
       /** Format: uuid */
       id: string;
+      code: string;
       name: string;
       latLng: [number, number];
       entity: string;
@@ -31,11 +31,7 @@ export type components = {
         province: {
           /** Format: uuid */
           id: string;
-          name: string;
-        };
-        country: {
-          /** Format: uuid */
-          id: string;
+          code: string;
           name: string;
         };
       };
@@ -45,23 +41,13 @@ export type components = {
         capital: {
           /** Format: uuid */
           id: string;
-          name: string;
-        };
-        country: {
-          /** Format: uuid */
-          id: string;
+          code: string;
           name: string;
         };
       };
-    Country: {
-      entity: "Country";
-    } & Omit<components["schemas"]["Location"], "entity"> & {
-        capital: {
-          /** Format: uuid */
-          id: string;
-          name: string;
-        };
-      };
+    AutonomousCity: {
+      entity: "AutonomousCity";
+    } & Omit<components["schemas"]["Location"], "entity">;
     ListMetadata: {
       /** Format: int32 */
       skip: number;
@@ -71,11 +57,6 @@ export type components = {
     Error: {
       name: string;
       message: string;
-    };
-    BadRequestError: components["schemas"]["Error"] & {
-      errors: (components["schemas"]["Error"] & {
-        target: string;
-      })[];
     };
   };
   responses: {
@@ -88,15 +69,15 @@ export type components = {
     /** @description The request was malformed or invalid */
     BadRequestError: {
       content: {
-        "application/json": components["schemas"]["BadRequestError"];
+        "application/json": components["schemas"]["Error"];
       };
     };
   };
   parameters: {
     /** @description Maximum number of items to include in the API response */
-    limit: number;
+    limit?: number;
     /** @description How many items should be skipped before starting to include items in the response */
-    skip: number;
+    skip?: number;
   };
   requestBodies: never;
   headers: never;
@@ -108,7 +89,6 @@ export type external = Record<string, never>;
 export type operations = {
   /**
    * Get all locations
-   * @deprecated
    * @description Retrieves a list of all locations in Spain.
    */
   getLocations: {
@@ -129,7 +109,7 @@ export type operations = {
             data: (
               | components["schemas"]["City"]
               | components["schemas"]["Province"]
-              | components["schemas"]["Country"]
+              | components["schemas"]["AutonomousCity"]
             )[];
           };
         };

@@ -28,7 +28,6 @@
         "summary": "Get all locations",
         "description": "Retrieves a list of all locations in Spain.",
         "operationId": "getLocations",
-        "deprecated": true,
         "parameters": [
           {
             "$ref": "#/components/parameters/limit"
@@ -69,7 +68,7 @@
                             "$ref": "#/components/schemas/Province"
                           },
                           {
-                            "$ref": "#/components/schemas/Country"
+                            "$ref": "#/components/schemas/AutonomousCity"
                           }
                         ]
                       }
@@ -99,6 +98,9 @@
             "type": "string",
             "format": "uuid"
           },
+          "code": {
+            "type": "string"
+          },
           "name": {
             "type": "string"
           },
@@ -114,7 +116,7 @@
             "type": "string"
           }
         },
-        "required": ["id", "name", "latLng", "entity"],
+        "required": ["id", "code", "name", "latLng", "entity"],
         "discriminator": {
           "propertyName": "entity"
         }
@@ -135,27 +137,17 @@
                     "type": "string",
                     "format": "uuid"
                   },
-                  "name": {
+                  "code": {
                     "type": "string"
-                  }
-                },
-                "required": ["id", "name"]
-              },
-              "country": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid"
                   },
                   "name": {
                     "type": "string"
                   }
                 },
-                "required": ["id", "name"]
+                "required": ["id", "code", "name"]
               }
             },
-            "required": ["province", "country"]
+            "required": ["province"]
           }
         ]
       },
@@ -175,54 +167,25 @@
                     "type": "string",
                     "format": "uuid"
                   },
-                  "name": {
+                  "code": {
                     "type": "string"
-                  }
-                },
-                "required": ["id", "name"]
-              },
-              "country": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid"
                   },
                   "name": {
                     "type": "string"
                   }
                 },
-                "required": ["id", "name"]
+                "required": ["id", "code", "name"]
               }
             },
-            "required": ["capital", "country"]
+            "required": ["capital"]
           }
         ]
       },
-      "Country": {
+      "AutonomousCity": {
         "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/Location"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "capital": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "name": {
-                    "type": "string"
-                  }
-                },
-                "required": ["id", "name"]
-              }
-            },
-            "required": ["capital"]
           }
         ]
       },
@@ -262,6 +225,7 @@
         "schema": {
           "type": "integer",
           "format": "int32",
+          "minimum": 1,
           "maximum": 1000,
           "default": 25
         }
