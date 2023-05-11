@@ -1,3 +1,5 @@
+import { type operations } from "../../generated/Docs";
+
 export type LatLng = readonly [number, number];
 
 export type NewLocationBase = {
@@ -26,7 +28,7 @@ type LocationBase = {
   name: string;
 };
 
-type Location = {
+export type Location = {
   latLng: LatLng;
   year: number;
 } & LocationBase;
@@ -40,3 +42,9 @@ export type Municipality = {
 } & Location;
 
 export type AutonomousCity = Location;
+
+export type GetLocationsQuery =
+  operations["getLocations"]["parameters"]["query"];
+
+export type GetLocationsOkResponse =
+  operations["getLocations"]["responses"]["200"]["content"]["application/json"];

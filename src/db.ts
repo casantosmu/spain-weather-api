@@ -22,6 +22,10 @@ mongoose.set(
   }
 );
 
+export const dropMongoDb = async () => {
+  await mongoose.connection.dropDatabase();
+};
+
 export const runSeeder = async (seederFn: () => Promise<void>) => {
   const seederName = seederFn.name;
 
