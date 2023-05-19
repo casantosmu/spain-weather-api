@@ -296,7 +296,6 @@ export const filterLikeNameLocationsRepository = async ({
   const query = {
     ...(name && { name: new RegExp(name, "i") }),
   };
-  sanitizeFilter(query);
 
   const locations = await LocationModel.find(query)
     .limit(limit)
