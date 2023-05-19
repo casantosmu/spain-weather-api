@@ -16,7 +16,6 @@ import capitalsOfProvincesJson from "./seeder/capitalsOfProvinces.json";
 import { NotFoundError } from "../../error";
 import { getProvinceCodeFromMunicipalityCode } from "./utils";
 import { entity } from "./constants";
-import { sanitizeFilter } from "mongoose";
 
 export type OpenDataSoftRecord<T> = {
   fields: T;
