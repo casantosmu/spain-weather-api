@@ -1,8 +1,4 @@
-import {
-  ConflictError,
-  NotFoundError,
-  UnprocessableEntityError,
-} from "../../error";
+import { NotFoundError, UnprocessableEntityError } from "../../error";
 
 export class InvalidNumberOfProvincesError extends UnprocessableEntityError {
   constructor() {
@@ -27,15 +23,6 @@ export class MunicipalityNotFoundError extends NotFoundError {
     super({
       name: "MunicipalityNotFoundError",
       message: `Municipality '${municipalityName}' not found`,
-    });
-  }
-}
-
-export class LocationCodeNotUniqueError extends ConflictError {
-  constructor(locationCode: string) {
-    super({
-      name: "LocationCodeNotUniqueError",
-      message: `Location code '${locationCode}' is not unique`,
     });
   }
 }

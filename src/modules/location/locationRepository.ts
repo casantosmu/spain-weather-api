@@ -1,4 +1,9 @@
-import { type AutonomousCity, type Municipality, type Province } from "./types";
+import {
+  type Location,
+  type AutonomousCity,
+  type Municipality,
+  type Province,
+} from "./types";
 import {
   AutonomousCityModel,
   MunicipalityModel,
@@ -167,56 +172,52 @@ export const getNewAutonomousCitiesRepository = async () => {
     }));
 };
 
-export const createProvincesRepository = async (provinces: Province[]) => {
-  const mappedProvinces = provinces.map((province) => ({
-    _id: province.id,
-    name: province.name,
-    latitude: province.latLng[0],
-    longitude: province.latLng[1],
-    code: province.code,
-    capital: {
-      _id: province.capital.id,
-      code: province.capital.code,
-      name: province.capital.name,
-    },
-    year: province.year,
-  }));
+const mapToLocationModel = (location: Location) => ({
+  _id: location.id,
+  name: location.name,
+  latitude: location.latLng[0],
+  longitude: location.latLng[1],
+  code: location.code,
+  year: location.year,
+});
 
+const mapToProvinceModel = (province: Province) => ({
+  ...mapToLocationModel(province),
+  capital: {
+    _id: province.capital.id,
+    code: province.capital.code,
+    name: province.capital.name,
+  },
+});
+
+const mapToMunicipalityModel = (municipality: Municipality) => ({
+  ...mapToLocationModel(municipality),
+  province: {
+    _id: municipality.province.id,
+    code: municipality.province.code,
+    name: municipality.province.name,
+  },
+});
+
+const mapToAutonomousCityModel = (autonomousCity: AutonomousCity) =>
+  mapToLocationModel(autonomousCity);
+
+export const createProvincesRepository = async (provinces: Province[]) => {
+  const mappedProvinces = provinces.map(mapToProvinceModel);
   await ProvinceModel.insertMany(mappedProvinces);
 };
 
 export const createMunicipalitiesRepository = async (
   municipalities: Municipality[]
 ) => {
-  const mappedMunicipalities = municipalities.map((municipality) => ({
-    _id: municipality.id,
-    name: municipality.name,
-    latitude: municipality.latLng[0],
-    longitude: municipality.latLng[1],
-    code: municipality.code,
-    province: {
-      _id: municipality.province.id,
-      code: municipality.province.code,
-      name: municipality.province.name,
-    },
-    year: municipality.year,
-  }));
-
+  const mappedMunicipalities = municipalities.map(mapToMunicipalityModel);
   await MunicipalityModel.insertMany(mappedMunicipalities);
 };
 
-export const createAutonomousCityRepository = async (
+export const createAutonomousCitiesRepository = async (
   autonomousCities: AutonomousCity[]
 ) => {
-  const mappedAutonomousCities = autonomousCities.map((autonomousCity) => ({
-    _id: autonomousCity.id,
-    name: autonomousCity.name,
-    latitude: autonomousCity.latLng[0],
-    longitude: autonomousCity.latLng[1],
-    code: autonomousCity.code,
-    year: autonomousCity.year,
-  }));
-
+  const mappedAutonomousCities = autonomousCities.map(mapToAutonomousCityModel);
   await AutonomousCityModel.insertMany(mappedAutonomousCities);
 };
 

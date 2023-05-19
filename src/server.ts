@@ -1,11 +1,11 @@
 import { type Server } from "http";
-import app from "./app";
 import logger from "./logger";
 import { config } from "./config";
+import { type Express } from "express";
 
 let server: Server | undefined;
 
-export const startServer = async () =>
+export const startServer = async (app: Express) =>
   new Promise<void>((resolve, reject) => {
     server = app.listen(config.serverPort, () => {
       logger.info(`Server is running at http://localhost:${config.serverPort}`);
