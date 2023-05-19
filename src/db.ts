@@ -12,6 +12,10 @@ export const closeMongoDb = async () => {
   logger.info("Close all database connections successful");
 };
 
+export const dropMongoDb = async () => {
+  await mongoose.connection.dropDatabase();
+};
+
 mongoose.set(
   "debug",
   (collectionName, method, query: unknown, doc: unknown) => {
@@ -21,10 +25,6 @@ mongoose.set(
     });
   }
 );
-
-export const dropMongoDb = async () => {
-  await mongoose.connection.dropDatabase();
-};
 
 export const runSeeder = async (seederFn: () => Promise<void>) => {
   const seederName = seederFn.name;

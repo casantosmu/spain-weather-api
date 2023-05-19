@@ -6,7 +6,7 @@ const exitCodes = {
   error: 1,
 };
 
-export const terminateApp = (exitCode: "ok" | "error" = "ok") => {
+export const terminateApp = (exitCode: keyof typeof exitCodes) => {
   stopServer().finally(() => {
     closeMongoDb().finally(() => {
       process.exitCode = exitCodes[exitCode];

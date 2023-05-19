@@ -26,5 +26,5 @@ export const afterAllIntegrationTests = async () => {
     await dropMongoDb();
   }
 
-  terminateApp();
+  terminateApp("ok");
 };

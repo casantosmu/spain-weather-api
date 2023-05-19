@@ -18,20 +18,22 @@ describe("validateMiddleware", () => {
     });
   });
 
-  describe("when validateSchema has errors", () => {
+  describe("when validateSchema have error without instancePath and message", () => {
     test("should call next with a bad request error", () => {
       const req = { body: { foo: "bar" } };
       const res = {};
       const next = jest.fn();
       const validateSchema = jest.fn() as unknown as ValidateFunction;
       validateSchema.errors = [{ instancePath: "" }] as ErrorObject[];
+      const expectedError = new BadRequestError({
+        name: "ValidatorError",
+        message: "Validator error",
+      });
 
       const middleware = validateMiddleware(validateSchema, "body");
       middleware(req as Request, res as Response, next);
 
-      expect(next.mock.calls[0][0]).toBeInstanceOf(BadRequestError);
-      expect(next.mock.calls[0][0].name).toBe("ValidationError");
-      expect(next.mock.calls[0][0].message).toBe("Validation error");
+      expect(next.mock.calls[0][0]).toEqual(expectedError);
     });
   });
 
@@ -42,7 +44,10 @@ describe("validateMiddleware", () => {
       const next = jest.fn();
       const instancePath = "/foo";
       const errorMessage = "must be integer";
-      const expectedErrorMessage = `"foo": ${errorMessage}`;
+      const expectedError = new BadRequestError({
+        name: "ValidatorError",
+        message: `"foo": ${errorMessage}`,
+      });
 
       const validateSchema = jest.fn() as unknown as ValidateFunction;
       validateSchema.errors = [
@@ -52,7 +57,7 @@ describe("validateMiddleware", () => {
       const middleware = validateMiddleware(validateSchema, "body");
       middleware(req as Request, res as Response, next);
 
-      expect(next.mock.calls[0][0].message).toBe(expectedErrorMessage);
+      expect(next.mock.calls[0][0]).toEqual(expectedError);
     });
   });
 
