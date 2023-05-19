@@ -5,3 +5,9 @@ export const provinceCodeRange = {
 };
 export const provinceCodeLength = 2;
 export const municipalityCodeLength = 5;
+
+export const entity = {
+  province: "province",
+  municipality: "municipality",
+  autonomousCity: "autonomousCity",
+} as const;
