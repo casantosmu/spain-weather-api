@@ -59,7 +59,7 @@ export class GeneralError extends AppError {
     name = "InternalServerError",
     message = "Something went wrong",
     cause,
-  }: ErrorProps | undefined = {}) {
+  }: ErrorProps = {}) {
     super(500, name, message, { cause });
   }
 }
@@ -69,7 +69,7 @@ export class NotFoundError extends AppError {
     name = "NotFoundError",
     message = "Resource not found",
     cause,
-  }: ErrorProps | undefined = {}) {
+  }: ErrorProps = {}) {
     super(404, name, message, { cause });
   }
 }
@@ -79,7 +79,7 @@ export class BadRequestError extends AppError {
     name = "BadRequestError",
     message = "Bad Request",
     cause,
-  }: ErrorProps | undefined = {}) {
+  }: ErrorProps = {}) {
     super(400, name, message, { cause });
   }
 }
@@ -89,7 +89,7 @@ export class UnprocessableEntityError extends AppError {
     name = "UnprocessableEntityError",
     message = "Unprocessable Entity",
     cause,
-  }: ErrorProps | undefined = {}) {
+  }: ErrorProps = {}) {
     super(422, name, message, { cause });
   }
 }
@@ -99,7 +99,7 @@ export class ConflictError extends AppError {
     name = "ConflictError",
     message = "Conflict",
     cause,
-  }: ErrorProps | undefined = {}) {
+  }: ErrorProps = {}) {
     super(409, name, message, { cause });
   }
 }
