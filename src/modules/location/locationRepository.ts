@@ -16,6 +16,7 @@ import capitalsOfProvincesJson from "./seeder/capitalsOfProvinces.json";
 import { NotFoundError } from "../../error";
 import { getProvinceCodeFromMunicipalityCode } from "./utils";
 import { entity } from "./constants";
+import { sanitizeFilter } from "mongoose";
 
 export type OpenDataSoftRecord<T> = {
   fields: T;
@@ -295,6 +296,7 @@ export const filterLikeNameLocationsRepository = async ({
   const query = {
     ...(name && { name: new RegExp(name, "i") }),
   };
+  sanitizeFilter(query);
 
   const locations = await LocationModel.find(query)
     .limit(limit)
