@@ -1,6 +1,6 @@
 import logger from "../../logger";
 import {
-  createAutonomousCityRepository,
+  createAutonomousCitiesRepository,
   createMunicipalitiesRepository,
   createProvincesRepository,
   getNewAutonomousCitiesRepository,
@@ -11,11 +11,8 @@ import {
 import { randomUUID } from "crypto";
 import { checkProvinceCode, checkProvincesLength } from "./provinceService";
 import { checkMunicipalityCode } from "./municipalityService";
-import {
-  LocationCodeNotUniqueError,
-  MunicipalityNotFoundError,
-  ProvinceNotFoundError,
-} from "./error";
+import { MunicipalityNotFoundError, ProvinceNotFoundError } from "./error";
+import { entity } from "./constants";
 
 export const seedLocationsService = async () => {
   const hasLocation = await hasLocationRepository();
@@ -34,15 +31,36 @@ export const seedLocationsService = async () => {
 
   checkProvincesLength(newProvinces);
 
-  const newProvincesWithUuid = newProvinces.map((province) => ({
-    ...province,
-    id: randomUUID(),
-  }));
+  const provinces = newProvinces.map((province) => {
+    checkProvinceCode(province);
 
-  const municipalities = newMunicipalities.map((municipality, index) => {
+    return {
+      ...province,
+      id: randomUUID(),
+      entity: entity.province,
+    };
+  });
+
+  const municipalities = newMunicipalities.map((municipality) => {
     checkMunicipalityCode(municipality);
 
-    const province = newProvincesWithUuid.find(
+    return {
+      ...municipality,
+      id: randomUUID(),
+      entity: entity.municipality,
+    };
+  });
+
+  const autonomousCities = newAutonomousCities.map((autonomousCity) => ({
+    ...autonomousCity,
+    id: randomUUID(),
+    entity: entity.autonomousCity,
+  }));
+
+  const municipalitiesWithProvince = municipalities.map((municipality) => {
+    checkMunicipalityCode(municipality);
+
+    const province = provinces.find(
       (province) =>
         province.code === municipality.province.code &&
         province.name === municipality.province.name
@@ -52,18 +70,8 @@ export const seedLocationsService = async () => {
       throw new ProvinceNotFoundError(municipality.province.name);
     }
 
-    const isNotUniqueCode = newMunicipalities.find(
-      (municipality2, index2) =>
-        municipality.code === municipality2.code && index !== index2
-    );
-
-    if (isNotUniqueCode) {
-      throw new LocationCodeNotUniqueError(municipality.code);
-    }
-
     return {
       ...municipality,
-      id: randomUUID(),
       province: {
         ...municipality.province,
         id: province.id,
@@ -71,9 +79,7 @@ export const seedLocationsService = async () => {
     };
   });
 
-  const provinces = newProvincesWithUuid.map((province, index) => {
-    checkProvinceCode(province);
-
+  const provincesWithCapital = provinces.map((province) => {
     const capital = municipalities.find(
       (municipality) =>
         province.capital.name === municipality.name &&
@@ -86,15 +92,6 @@ export const seedLocationsService = async () => {
       throw new MunicipalityNotFoundError(province.capital.name);
     }
 
-    const isNotUniqueCode = newProvinces.find(
-      (province2, index2) =>
-        province.code === province2.code && index !== index2
-    );
-
-    if (isNotUniqueCode) {
-      throw new LocationCodeNotUniqueError(province.code);
-    }
-
     return {
       ...province,
       capital: {
@@ -104,14 +101,9 @@ export const seedLocationsService = async () => {
     };
   });
 
-  const autonomousCities = newAutonomousCities.map((autonomousCity) => ({
-    ...autonomousCity,
-    id: randomUUID(),
-  }));
-
   await Promise.all([
-    createProvincesRepository(provinces),
-    createMunicipalitiesRepository(municipalities),
-    createAutonomousCityRepository(autonomousCities),
+    createProvincesRepository(provincesWithCapital),
+    createMunicipalitiesRepository(municipalitiesWithProvince),
+    createAutonomousCitiesRepository(autonomousCities),
   ]);
 };
