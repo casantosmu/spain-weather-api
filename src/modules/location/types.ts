@@ -26,7 +26,7 @@ type LocationBase = {
   name: string;
 };
 
-type Location = {
+export type Location = {
   latLng: LatLng;
   year: number;
 } & LocationBase;
