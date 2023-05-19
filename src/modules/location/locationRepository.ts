@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   type Location,
   type AutonomousCity,
@@ -6,6 +7,7 @@ import {
 } from "./types";
 import {
   AutonomousCityModel,
+  LocationModel,
   MunicipalityModel,
   ProvinceModel,
 } from "./locationModels";
@@ -13,6 +15,7 @@ import httpClient from "../../httpClient";
 import capitalsOfProvincesJson from "./seeder/capitalsOfProvinces.json";
 import { NotFoundError } from "../../error";
 import { getProvinceCodeFromMunicipalityCode } from "./utils";
+import { entity } from "./constants";
 
 export type OpenDataSoftRecord<T> = {
   fields: T;
@@ -199,12 +202,50 @@ const mapToMunicipalityModel = (municipality: Municipality) => ({
   },
 });
 
+const mapToLocation = (location: any) => {
+  const defaultData = {
+    id: location._id,
+    name: location.name,
+    latLng: [location.latitude, location.longitude],
+    code: location.code,
+    entity: location.entity,
+  };
+
+  switch (location.entity) {
+    case entity.municipality:
+      return {
+        ...defaultData,
+        province: {
+          id: location.province._id,
+          name: location.province.name,
+          code: location.province.code,
+        },
+      };
+    case entity.province:
+      return {
+        ...defaultData,
+        capital: {
+          id: location.capital._id,
+          name: location.capital.name,
+          code: location.capital.code,
+        },
+      };
+    default:
+      return defaultData;
+  }
+};
+
 const mapToAutonomousCityModel = (autonomousCity: AutonomousCity) =>
   mapToLocationModel(autonomousCity);
 
 export const createProvincesRepository = async (provinces: Province[]) => {
   const mappedProvinces = provinces.map(mapToProvinceModel);
   await ProvinceModel.insertMany(mappedProvinces);
+};
+
+export const createProvinceRepository = async (province: Province) => {
+  const mappedProvince = mapToProvinceModel(province);
+  await ProvinceModel.create(mappedProvince);
 };
 
 export const createMunicipalitiesRepository = async (
@@ -214,6 +255,13 @@ export const createMunicipalitiesRepository = async (
   await MunicipalityModel.insertMany(mappedMunicipalities);
 };
 
+export const createMunicipalityRepository = async (
+  municipality: Municipality
+) => {
+  const mappedMunicipality = mapToMunicipalityModel(municipality);
+  await MunicipalityModel.create(mappedMunicipality);
+};
+
 export const createAutonomousCitiesRepository = async (
   autonomousCities: AutonomousCity[]
 ) => {
@@ -221,7 +269,41 @@ export const createAutonomousCitiesRepository = async (
   await AutonomousCityModel.insertMany(mappedAutonomousCities);
 };
 
+export const createAutonomousCityRepository = async (
+  autonomousCity: AutonomousCity
+) => {
+  const mappedAutonomousCity = mapToAutonomousCityModel(autonomousCity);
+  await AutonomousCityModel.create(mappedAutonomousCity);
+};
+
 export const hasLocationRepository = async () => {
   const hasLocation = await MunicipalityModel.findOne().exec();
   return Boolean(hasLocation);
+};
+
+type GetLocationsParams = {
+  name?: string;
+  limit: number;
+  skip: number;
+};
+
+export const filterLikeNameLocationsRepository = async ({
+  name,
+  limit,
+  skip,
+}: GetLocationsParams) => {
+  const query = {
+    ...(name && { name: new RegExp(name, "i") }),
+  };
+
+  const locations = await LocationModel.find(query)
+    .limit(limit)
+    .skip(skip)
+    .sort({ name: "asc" });
+
+  return {
+    limit,
+    skip,
+    data: locations.map((location) => mapToLocation(location)),
+  };
 };

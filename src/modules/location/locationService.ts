@@ -3,6 +3,7 @@ import {
   createAutonomousCitiesRepository,
   createMunicipalitiesRepository,
   createProvincesRepository,
+  filterLikeNameLocationsRepository,
   getNewAutonomousCitiesRepository,
   getNewMunicipalitiesRepository,
   getNewProvincesRepository,
@@ -12,6 +13,7 @@ import { randomUUID } from "crypto";
 import { checkProvinceCode, checkProvincesLength } from "./provinceService";
 import { checkMunicipalityCode } from "./municipalityService";
 import { MunicipalityNotFoundError, ProvinceNotFoundError } from "./error";
+import { checkCollectionParams, defaultCollection } from "../../operations";
 import { entity } from "./constants";
 
 export const seedLocationsService = async () => {
@@ -106,4 +108,20 @@ export const seedLocationsService = async () => {
     createMunicipalitiesRepository(municipalitiesWithProvince),
     createAutonomousCitiesRepository(autonomousCities),
   ]);
+};
+
+type GetLocationsParams = {
+  name?: string;
+  limit?: number;
+  skip?: number;
+};
+
+export const getLocationsService = async ({
+  name,
+  limit = defaultCollection.limit.default,
+  skip = defaultCollection.skip.default,
+}: GetLocationsParams = {}) => {
+  checkCollectionParams({ limit, skip });
+
+  return filterLikeNameLocationsRepository({ name, limit, skip });
 };
