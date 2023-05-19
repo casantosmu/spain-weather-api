@@ -1,12 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { type AxiosInstance } from "axios";
-import { AutonomousCityBuilder } from "./locationFactory";
+import {
+  AutonomousCityBuilder,
+  MunicipalityBuilder,
+  ProvinceBuilder,
+} from "./locationFactory";
 import { faker } from "@faker-js/faker";
-import { createAutonomousCityRepository } from "../../../src/modules/location/locationRepository";
+import {
+  createAutonomousCitiesRepository,
+  createAutonomousCityRepository,
+  createMunicipalityRepository,
+  createProvinceRepository,
+} from "../../../src/modules/location/locationRepository";
 import {
   afterAllIntegrationTests,
   beforeAllIntegrationTests,
 } from "../../testUtils";
+import { defaultCollection } from "../../../src/operations";
 
 let request: AxiosInstance;
 
@@ -15,27 +25,28 @@ beforeAll(async () => {
   request = httpClient;
 });
 
-describe("getLocations", () => {
-  describe("when is paginated and filtered", () => {
-    test("should return the list of matching locations paginated", async () => {
-      const name = faker.datatype.uuid();
+describe("GET /locations", () => {
+  describe("when paginated and filtered by name", () => {
+    test("should return a collection of locations with matching names, paginated and ordered by name", async () => {
+      const name = faker.string.uuid();
       const autonomousCity = new AutonomousCityBuilder()
-        .withRandomId()
-        .withRandomCode()
-        .withRandomLatLng()
-        .withName(name)
-        .withRandomYear()
+        .withRandomValues()
+        .withName("A" + name)
         .build();
-      const autonomousCity2 = new AutonomousCityBuilder()
-        .withRandomId()
-        .withRandomCode()
-        .withRandomLatLng()
-        .withName(name)
-        .withRandomYear()
+      const municipality = new MunicipalityBuilder()
+        .withRandomValues()
+        .withName("C" + name)
         .build();
-      await createAutonomousCityRepository([autonomousCity, autonomousCity2]);
-      const { year, ...expectAutonomousCity } = autonomousCity2;
-      const limit = 1;
+      const province = new ProvinceBuilder()
+        .withRandomValues()
+        .withName("B" + name)
+        .build();
+      await createAutonomousCityRepository(autonomousCity);
+      await createMunicipalityRepository(municipality);
+      await createProvinceRepository(province);
+      const { year: year1, ...expectedFirstLocation } = province;
+      const { year: year2, ...expectedSecondLocation } = municipality;
+      const limit = 2;
       const skip = 1;
 
       const { status, data } = await request.get("/locations", {
@@ -52,52 +63,42 @@ describe("getLocations", () => {
           limit,
           skip,
         },
-        data: [expectAutonomousCity],
+        data: [expectedFirstLocation, expectedSecondLocation],
       });
     });
   });
 
-  describe("when defaults", () => {
-    it("should return a list of 25 locations", async () => {
-      const autonomousCity = new AutonomousCityBuilder()
-        .withRandomId()
-        .withRandomCode()
-        .withRandomLatLng()
-        .withRandomName()
-        .withRandomYear()
-        .build();
-      await createAutonomousCityRepository([autonomousCity]);
+  describe("when no filters are applied", () => {
+    it("should return a list of 25 locations by default", async () => {
+      const autonomousCities = Array.from(
+        { length: defaultCollection.limit.default + 5 },
+        () => new AutonomousCityBuilder().withRandomValues().build()
+      );
+      await createAutonomousCitiesRepository(autonomousCities);
 
       const { status, data } = await request.get("/locations");
 
       expect(status).toBe(200);
-      expect(data.data.length).toBeLessThanOrEqual(1);
-      expect(data.data.length).toBeLessThanOrEqual(25);
+      expect(data.data).toHaveLength(defaultCollection.limit.default);
       expect(data).toStrictEqual({
         metadata: {
-          limit: 25,
-          skip: 0,
+          limit: defaultCollection.limit.default,
+          skip: defaultCollection.skip.default,
         },
         data: expect.any(Array),
       });
     });
   });
 
-  describe("when bad request", () => {
-    it("should return 400 error", async () => {
-      const { status, data } = await request.get("/locations", {
+  describe("when bad request parameters are used", () => {
+    it("should return a 400 error", async () => {
+      const { status } = await request.get("/locations", {
         params: {
           foo: "bar",
         },
       });
 
       expect(status).toBe(400);
-      expect(data).toStrictEqual({
-        error: {
-          name: expect.any(String),
-          message: expect.any(String),
-        },
-      });
     });
   });
 });

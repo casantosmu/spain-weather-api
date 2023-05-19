@@ -8,7 +8,10 @@ import {
   type NewAutonomousCity,
   type Location,
   type AutonomousCity,
+  type Province,
+  type Municipality,
 } from "../../../src/modules/location/types";
+import { entity } from "../../../src/modules/location/constants";
 
 abstract class BaseLocationBuilder<T extends NewLocation> {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -20,7 +23,7 @@ abstract class BaseLocationBuilder<T extends NewLocation> {
   }
 
   withRandomCode() {
-    this.data.code = faker.random.alpha(5);
+    this.data.code = faker.string.alpha(5);
     return this;
   }
 
@@ -30,7 +33,7 @@ abstract class BaseLocationBuilder<T extends NewLocation> {
   }
 
   withRandomName() {
-    this.data.name = faker.address.cityName();
+    this.data.name = faker.location.city();
     return this;
   }
 
@@ -41,8 +44,8 @@ abstract class BaseLocationBuilder<T extends NewLocation> {
 
   withRandomLatLng() {
     this.data.latLng = [
-      Number(faker.address.latitude()),
-      Number(faker.address.longitude()),
+      Number(faker.location.latitude()),
+      Number(faker.location.longitude()),
     ];
     return this;
   }
@@ -53,7 +56,7 @@ abstract class BaseLocationBuilder<T extends NewLocation> {
   }
 
   withRandomYear() {
-    this.data.year = faker.datatype.datetime().getFullYear();
+    this.data.year = faker.date.anytime().getFullYear();
     return this;
   }
 
@@ -71,7 +74,7 @@ abstract class LocationBuilder<
   }
 
   withRandomId() {
-    this.data.id = faker.datatype.uuid();
+    this.data.id = faker.string.uuid();
     return this;
   }
 }
@@ -83,6 +86,33 @@ export class NewProvincesBuilder extends BaseLocationBuilder<NewProvince> {
   }
 }
 
+export class ProvinceBuilder extends LocationBuilder<Province> {
+  withEntity() {
+    this.data.entity = entity.province;
+    return this;
+  }
+
+  withRandomCapital() {
+    this.data.capital = new MunicipalityBuilder()
+      .withRandomId()
+      .withRandomCode()
+      .withRandomName()
+      .build();
+    return this;
+  }
+
+  withRandomValues() {
+    this.withRandomId()
+      .withRandomName()
+      .withRandomCode()
+      .withRandomLatLng()
+      .withRandomYear()
+      .withRandomCapital()
+      .withEntity();
+    return this;
+  }
+}
+
 export class NewMunicipalitiesBuilder extends BaseLocationBuilder<NewMunicipality> {
   withProvince(province: NewLocationBase) {
     this.data.province = province;
@@ -90,6 +120,48 @@ export class NewMunicipalitiesBuilder extends BaseLocationBuilder<NewMunicipalit
   }
 }
 
+export class MunicipalityBuilder extends LocationBuilder<Municipality> {
+  withEntity() {
+    this.data.entity = entity.municipality;
+    return this;
+  }
+
+  withRandomProvince() {
+    this.data.province = new ProvinceBuilder()
+      .withRandomId()
+      .withRandomCode()
+      .withRandomName()
+      .build();
+    return this;
+  }
+
+  withRandomValues() {
+    this.withRandomId()
+      .withRandomName()
+      .withRandomCode()
+      .withRandomLatLng()
+      .withRandomYear()
+      .withRandomProvince()
+      .withEntity();
+    return this;
+  }
+}
+
 export class NewAutonomousCityBuilder extends BaseLocationBuilder<NewAutonomousCity> {}
 
-export class AutonomousCityBuilder extends LocationBuilder<AutonomousCity> {}
+export class AutonomousCityBuilder extends LocationBuilder<AutonomousCity> {
+  withEntity() {
+    this.data.entity = entity.autonomousCity;
+    return this;
+  }
+
+  withRandomValues() {
+    this.withRandomId()
+      .withRandomName()
+      .withRandomCode()
+      .withRandomLatLng()
+      .withRandomYear()
+      .withEntity();
+    return this;
+  }
+}

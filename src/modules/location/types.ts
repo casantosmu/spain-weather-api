@@ -1,4 +1,5 @@
 import { type operations } from "../../generated/Docs";
+import { type entity } from "./constants";
 
 export type LatLng = readonly [number, number];
 
@@ -22,7 +23,7 @@ export type NewMunicipality = {
 
 export type NewAutonomousCity = NewLocation;
 
-type LocationBase = {
+export type LocationBase = {
   id: string;
   code: string;
   name: string;
@@ -31,20 +32,22 @@ type LocationBase = {
 export type Location = {
   latLng: LatLng;
   year: number;
+  entity: (typeof entity)[keyof typeof entity];
 } & LocationBase;
 
 export type Province = {
   capital: LocationBase;
+  entity: typeof entity.province;
 } & Location;
 
 export type Municipality = {
   province: LocationBase;
+  entity: typeof entity.municipality;
 } & Location;
 
-export type AutonomousCity = Location;
+export type AutonomousCity = {
+  entity: typeof entity.autonomousCity;
+} & Location;
 
 export type GetLocationsQuery =
   operations["getLocations"]["parameters"]["query"];
-
-export type GetLocationsOkResponse =
-  operations["getLocations"]["responses"]["200"]["content"]["application/json"];
