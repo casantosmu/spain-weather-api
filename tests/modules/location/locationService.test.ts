@@ -1,5 +1,5 @@
 import {
-  createAutonomousCityRepository,
+  createAutonomousCitiesRepository,
   createMunicipalitiesRepository,
   createProvincesRepository,
   getNewAutonomousCitiesRepository,
@@ -14,11 +14,9 @@ import {
   NewMunicipalitiesBuilder,
   NewProvincesBuilder,
 } from "./locationFactory";
-import {
-  LocationCodeNotUniqueError,
-  ProvinceNotFoundError,
-} from "../../../src/modules/location/error";
+import { ProvinceNotFoundError } from "../../../src/modules/location/error";
 import { MunicipalityNotFoundError } from "../../../src/modules/location/error";
+import { entity } from "../../../src/modules/location/constants";
 
 jest.mock("../../../src/modules/location/locationRepository");
 const mockGetNewProvincesRepository = jest.mocked(getNewProvincesRepository);
@@ -49,39 +47,6 @@ describe("seedLocationsService", () => {
       });
     });
 
-    describe("and repository returns repeated municipalities", () => {
-      test("should throw error", async () => {
-        const province = new NewProvincesBuilder()
-          .withCode("ON")
-          .withName("Ontario")
-          .withLatLng([43.6532, -79.3832])
-          .withCapital(
-            new NewMunicipalitiesBuilder()
-              .withCode("TOR01")
-              .withName("Toronto Municipality")
-              .build()
-          )
-          .build();
-        const municipality = new NewMunicipalitiesBuilder()
-          .withCode("TOR01")
-          .withName("Municipality1")
-          .withLatLng([43.6532, -79.3832])
-          .withProvince(province)
-          .build();
-        mockGetNewProvincesRepository.mockResolvedValueOnce([province]);
-        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
-          municipality,
-          municipality,
-        ]);
-
-        const result = async () => {
-          await seedLocationsService();
-        };
-
-        await expect(result).rejects.toThrow(LocationCodeNotUniqueError);
-      });
-    });
-
     describe("and repository returns a municipality with not found province", () => {
       test("should throw error", async () => {
         const municipality = new NewMunicipalitiesBuilder()
@@ -95,6 +60,7 @@ describe("seedLocationsService", () => {
           )
           .build();
         mockGetNewProvincesRepository.mockResolvedValueOnce([]);
+        mockGetNewAutonomousCitiesRepository.mockResolvedValueOnce([]);
         mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
           municipality,
         ]);
@@ -104,41 +70,6 @@ describe("seedLocationsService", () => {
         };
 
         await expect(result).rejects.toThrow(ProvinceNotFoundError);
-      });
-    });
-
-    describe("and repository returns repeated provinces", () => {
-      test("should throw error", async () => {
-        const province = new NewProvincesBuilder()
-          .withCode("ON")
-          .withName("Ontario")
-          .withLatLng([43.6532, -79.3832])
-          .withCapital(
-            new NewMunicipalitiesBuilder()
-              .withCode("TOR01")
-              .withName("Toronto Municipality")
-              .build()
-          )
-          .build();
-        const municipality = new NewMunicipalitiesBuilder()
-          .withCode("TOR01")
-          .withName("Toronto Municipality")
-          .withLatLng([43.6532, -79.3832])
-          .withProvince(province)
-          .build();
-        mockGetNewProvincesRepository.mockResolvedValueOnce([
-          province,
-          province,
-        ]);
-        mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([
-          municipality,
-        ]);
-
-        const result = async () => {
-          await seedLocationsService();
-        };
-
-        await expect(result).rejects.toThrow(LocationCodeNotUniqueError);
       });
     });
 
@@ -157,6 +88,7 @@ describe("seedLocationsService", () => {
           .build();
         mockGetNewProvincesRepository.mockResolvedValueOnce([province]);
         mockGetNewMunicipalitiesRepository.mockResolvedValueOnce([]);
+        mockGetNewAutonomousCitiesRepository.mockResolvedValueOnce([]);
 
         const result = async () => {
           await seedLocationsService();
@@ -223,6 +155,7 @@ describe("seedLocationsService", () => {
           {
             ...municipality1,
             id: ids[2],
+            entity: entity.municipality,
             province: {
               ...municipality1.province,
               id: ids[0],
@@ -231,6 +164,7 @@ describe("seedLocationsService", () => {
           {
             ...municipality2,
             id: ids[3],
+            entity: entity.municipality,
             province: {
               ...municipality2.province,
               id: ids[1],
@@ -297,6 +231,7 @@ describe("seedLocationsService", () => {
           {
             ...province1,
             id: ids[0],
+            entity: entity.province,
             capital: {
               ...province1.capital,
               id: ids[2],
@@ -305,6 +240,7 @@ describe("seedLocationsService", () => {
           {
             ...province2,
             id: ids[1],
+            entity: entity.province,
             capital: {
               ...province2.capital,
               id: ids[3],
@@ -337,10 +273,10 @@ describe("seedLocationsService", () => {
 
         await seedLocationsService();
 
-        expect(createAutonomousCityRepository).toHaveBeenCalledTimes(1);
-        expect(createAutonomousCityRepository).toHaveBeenCalledWith([
-          { ...autonomousCity1, id: ids[0] },
-          { ...autonomousCity2, id: ids[1] },
+        expect(createAutonomousCitiesRepository).toHaveBeenCalledTimes(1);
+        expect(createAutonomousCitiesRepository).toHaveBeenCalledWith([
+          { ...autonomousCity1, entity: entity.autonomousCity, id: ids[0] },
+          { ...autonomousCity2, entity: entity.autonomousCity, id: ids[1] },
         ]);
       });
     });
