@@ -60,8 +60,6 @@ export const seedLocationsService = async () => {
   }));
 
   const municipalitiesWithProvince = municipalities.map((municipality) => {
-    checkMunicipalityCode(municipality);
-
     const province = provinces.find(
       (province) =>
         province.code === municipality.province.code &&

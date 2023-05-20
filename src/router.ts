@@ -4,13 +4,14 @@ import docsJson from "./docs.json";
 import { validateMiddleware } from "./validator";
 import { getLocationsQueryValidator } from "./modules/location/locationValidator";
 import { getLocationsController } from "./modules/location/locationController";
+import { asyncWrapper } from "./middlewares";
 
 const router = expressRouter();
 
 router.get(
   "/locations",
   validateMiddleware(getLocationsQueryValidator, "query"),
-  getLocationsController
+  asyncWrapper(getLocationsController)
 );
 
 router.get("/docs.json", (_req, res) => res.json(docsJson));
