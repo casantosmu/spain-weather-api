@@ -6,12 +6,13 @@ export const getLocationsController = async (
   req: Request<unknown, unknown, unknown, GetLocationsQuery>,
   res: Response
 ) => {
-  const { data, limit, skip } = await getLocationsService(req.query);
+  const { data, limit, skip, total } = await getLocationsService(req.query);
 
   res.status(200).json({
     metadata: {
       limit,
       skip,
+      total,
     },
     data,
   });
