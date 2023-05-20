@@ -34,3 +34,15 @@ export const notFoundMiddleware = (_req: Request, res: Response) => {
     },
   });
 };
+
+export const asyncWrapper =
+  (
+    callback: (req: Request, res: Response, next: NextFunction) => Promise<void>
+  ) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await callback(req, res, next);
+    } catch (error: unknown) {
+      next(error);
+    }
+  };

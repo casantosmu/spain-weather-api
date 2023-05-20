@@ -1,6 +1,10 @@
 import { type Request, type Response } from "express";
 import * as errorModule from "../src/error";
-import { generalErrorMiddleware, notFoundMiddleware } from "../src/middlewares";
+import {
+  generalErrorMiddleware,
+  notFoundMiddleware,
+  asyncWrapper,
+} from "../src/middlewares";
 
 describe("generalErrorMiddleware", () => {
   describe("when receive a error", () => {
@@ -103,6 +107,37 @@ describe("notFoundMiddleware", () => {
         name: notFoundError.name,
         message: notFoundError.message,
       },
+    });
+  });
+});
+
+describe("asyncWrapper", () => {
+  describe("Given a successful callback", () => {
+    test("When the callback succeeds, it should not throw an error", async () => {
+      const callback = jest.fn().mockResolvedValue(undefined);
+      const req = {};
+      const res = {};
+      const next = jest.fn();
+
+      await asyncWrapper(callback)(req as Request, res as Response, next);
+
+      expect(callback).toHaveBeenCalledWith(req, res, next);
+      expect(next).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Given a failing callback", () => {
+    test("When the callback throws an error, it should call next with the error", async () => {
+      const error = new Error("Something went wrong");
+      const callback = jest.fn().mockRejectedValue(error);
+      const req = {};
+      const res = {};
+      const next = jest.fn();
+
+      await asyncWrapper(callback)(req as Request, res as Response, next);
+
+      expect(callback).toHaveBeenCalledWith(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 });
