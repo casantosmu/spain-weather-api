@@ -199,9 +199,13 @@
           "limit": {
             "type": "integer",
             "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
           }
         },
-        "required": ["skip", "limit"]
+        "required": ["skip", "limit", "total"]
       },
       "Error": {
         "type": "object",

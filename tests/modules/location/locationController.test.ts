@@ -48,6 +48,7 @@ describe("GET /locations", () => {
       const { year: year2, ...expectedSecondLocation } = municipality;
       const limit = 2;
       const skip = 1;
+      const queryLength = 3;
 
       const { status, data } = await request.get("/locations", {
         params: {
@@ -62,6 +63,7 @@ describe("GET /locations", () => {
         metadata: {
           limit,
           skip,
+          total: queryLength,
         },
         data: [expectedFirstLocation, expectedSecondLocation],
       });
@@ -84,6 +86,7 @@ describe("GET /locations", () => {
         metadata: {
           limit: defaultCollection.limit.default,
           skip: defaultCollection.skip.default,
+          total: expect.any(Number),
         },
         data: expect.any(Array),
       });

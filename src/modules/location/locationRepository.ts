@@ -300,10 +300,12 @@ export const filterLikeNameLocationsRepository = async ({
     .limit(limit)
     .skip(skip)
     .sort({ name: "asc" });
+  const total = await LocationModel.countDocuments(query);
 
   return {
     limit,
     skip,
+    total,
     data: locations.map((location) => mapToLocation(location)),
   };
 };
