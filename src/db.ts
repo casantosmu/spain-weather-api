@@ -42,3 +42,20 @@ export const runSeeder = async (seederFn: () => Promise<void>) => {
     await closeMongoDb();
   }
 };
+
+export const runMigration = async (migrationFn: () => Promise<void>) => {
+  const migrationName = migrationFn.name;
+
+  logger.info(`Stating migration "${migrationName}"`);
+
+  try {
+    await connectMongoDb();
+    await migrationFn();
+    logger.info(`Migration completed successfully "${migrationName}"`);
+  } catch (error) {
+    logger.error(`An error occurred while migrating "${migrationName}".`);
+    throw error;
+  } finally {
+    await closeMongoDb();
+  }
+};

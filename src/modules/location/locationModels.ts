@@ -2,14 +2,33 @@
 import mongoose from "mongoose";
 import { entity } from "./constants";
 
+// GeoJSON point format:
+// MongoDB documentation: https://www.mongodb.com/docs/manual/reference/geojson/
+// Mongoose documentation: https://mongoosejs.com/docs/geojson.html
+const pointSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ["Point"],
+    required: true,
+  },
+  coordinates: {
+    type: [Number],
+    required: true,
+  },
+});
+
 const locationSchema = new mongoose.Schema(
   {
     _id: "UUID",
     name: { type: String, required: true, index: true },
-    latitude: { type: Number, required: true },
-    longitude: { type: Number, required: true },
     code: { type: String, required: true, unique: true },
+    geo2dPoint: {
+      type: pointSchema,
+      required: true,
+      index: "2dsphere",
+    },
     year: { type: Number, required: true },
+    schemaVersion: { type: Number, required: true },
   },
   {
     discriminatorKey: "entity",
@@ -27,6 +46,8 @@ const locationRelationSchema = new mongoose.Schema({
   name: { type: String, required: true },
   code: { type: String, required: true },
 });
+
+// Polymorphic model data using discriminator key "entity".
 
 const provinceSchema = new mongoose.Schema({
   capital: locationRelationSchema,

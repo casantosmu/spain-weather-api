@@ -33,6 +33,8 @@ export const seedLocationsService = async () => {
 
   checkProvincesLength(newProvinces);
 
+  // Generating identifiers first is necessary to establish circular relationships between provinces and municipalities.
+
   const provinces = newProvinces.map((province) => {
     checkProvinceCode(province);
 
@@ -50,32 +52,6 @@ export const seedLocationsService = async () => {
       ...municipality,
       id: randomUUID(),
       entity: entity.municipality,
-    };
-  });
-
-  const autonomousCities = newAutonomousCities.map((autonomousCity) => ({
-    ...autonomousCity,
-    id: randomUUID(),
-    entity: entity.autonomousCity,
-  }));
-
-  const municipalitiesWithProvince = municipalities.map((municipality) => {
-    const province = provinces.find(
-      (province) =>
-        province.code === municipality.province.code &&
-        province.name === municipality.province.name
-    );
-
-    if (!province) {
-      throw new ProvinceNotFoundError(municipality.province.name);
-    }
-
-    return {
-      ...municipality,
-      province: {
-        ...municipality.province,
-        id: province.id,
-      },
     };
   });
 
@@ -100,6 +76,32 @@ export const seedLocationsService = async () => {
       },
     };
   });
+
+  const municipalitiesWithProvince = municipalities.map((municipality) => {
+    const province = provinces.find(
+      (province) =>
+        province.code === municipality.province.code &&
+        province.name === municipality.province.name
+    );
+
+    if (!province) {
+      throw new ProvinceNotFoundError(municipality.province.name);
+    }
+
+    return {
+      ...municipality,
+      province: {
+        ...municipality.province,
+        id: province.id,
+      },
+    };
+  });
+
+  const autonomousCities = newAutonomousCities.map((autonomousCity) => ({
+    ...autonomousCity,
+    id: randomUUID(),
+    entity: entity.autonomousCity,
+  }));
 
   await Promise.all([
     createProvincesRepository(provincesWithCapital),
