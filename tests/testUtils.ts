@@ -22,7 +22,7 @@ export const beforeAllIntegrationTests = async () => {
 };
 
 export const afterAllIntegrationTests = async () => {
-  if (Math.random() < 0.04) {
+  if (Math.random() < 0.2) {
     await dropMongoDb();
   }
 

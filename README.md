@@ -44,6 +44,7 @@ To run the tests follow these steps:
 
 ```bash
 docker compose up --build -d mongo
+cp .env.test.example .env.test
 docker compose run --rm api npm run test
 ```
 

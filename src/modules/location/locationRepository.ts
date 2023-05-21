@@ -12,7 +12,7 @@ import {
   ProvinceModel,
 } from "./locationModels";
 import httpClient from "../../httpClient";
-import capitalsOfProvincesJson from "./seeder/capitalsOfProvinces.json";
+import capitalsOfProvincesJson from "./seeders/capitalsOfProvinces.json";
 import { NotFoundError } from "../../error";
 import { getProvinceCodeFromMunicipalityCode } from "./utils";
 import { entity } from "./constants";
@@ -178,10 +178,13 @@ export const getNewAutonomousCitiesRepository = async () => {
 const mapToLocationModel = (location: Location) => ({
   _id: location.id,
   name: location.name,
-  latitude: location.latLng[0],
-  longitude: location.latLng[1],
   code: location.code,
+  geo2dPoint: {
+    type: "Point",
+    coordinates: [location.latLng[1], location.latLng[0]],
+  },
   year: location.year,
+  schemaVersion: 2,
 });
 
 const mapToProvinceModel = (province: Province) => ({
@@ -202,11 +205,17 @@ const mapToMunicipalityModel = (municipality: Municipality) => ({
   },
 });
 
+const mapToAutonomousCityModel = (autonomousCity: AutonomousCity) =>
+  mapToLocationModel(autonomousCity);
+
 const mapToLocation = (location: any) => {
   const defaultData = {
     id: location._id,
     name: location.name,
-    latLng: [location.latitude, location.longitude],
+    latLng: [
+      location.geo2dPoint.coordinates[1],
+      location.geo2dPoint.coordinates[0],
+    ],
     code: location.code,
     entity: location.entity,
   };
@@ -234,9 +243,6 @@ const mapToLocation = (location: any) => {
       return defaultData;
   }
 };
-
-const mapToAutonomousCityModel = (autonomousCity: AutonomousCity) =>
-  mapToLocationModel(autonomousCity);
 
 export const createProvincesRepository = async (provinces: Province[]) => {
   const mappedProvinces = provinces.map(mapToProvinceModel);
@@ -299,7 +305,8 @@ export const filterLikeNameLocationsRepository = async ({
   const locations = await LocationModel.find(query)
     .limit(limit)
     .skip(skip)
-    .sort({ name: "asc" });
+    .sort({ name: "asc" })
+    .lean();
   const total = await LocationModel.countDocuments(query);
 
   return {
