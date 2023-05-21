@@ -40,5 +40,8 @@ jobs:
       - name: Build the mongo image
         run: docker compose up --build -d mongo
 
+      - name: Copy example test environment file to .env.test
+        run: cp .env.test.example .env.test
+
       - name: Run tests
-        run: docker compose run --rm api npm run test
+        run: docker compose run --rm api npm run test -- --coverage
