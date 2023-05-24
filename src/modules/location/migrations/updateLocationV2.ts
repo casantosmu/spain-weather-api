@@ -7,11 +7,9 @@ import { LocationModel } from "../locationModels";
     await runMigration(
       "Change latitude longitude fields to GEOJson 2d schema",
       async () => {
-        const locationsV1 = await LocationModel.find({
-          schemaVersion: undefined,
-        });
+        const locations = await LocationModel.find();
 
-        const updatedLocations = locationsV1.map((locationToMigrate) => {
+        const updatedLocations = locations.map((locationToMigrate) => {
           const locationToMigrateObj = locationToMigrate.toObject();
 
           if (
@@ -24,7 +22,7 @@ import { LocationModel } from "../locationModels";
           ) {
             throw new GeneralError({
               message:
-                "Location schema v1 required properties 'longitude' and 'latitude' are missing or not numbers.",
+                "Location schema required properties 'longitude' and 'latitude' are missing or not numbers.",
               cause: locationToMigrateObj,
             });
           }
@@ -36,8 +34,6 @@ import { LocationModel } from "../locationModels";
               locationToMigrateObj.latitude,
             ],
           };
-
-          locationToMigrate.schemaVersion = 2;
 
           return locationToMigrate;
         });

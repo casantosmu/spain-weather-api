@@ -28,7 +28,6 @@ const locationSchema = new mongoose.Schema(
       index: "2dsphere",
     },
     year: { type: Number, required: true },
-    schemaVersion: { type: Number, required: true },
   },
   {
     discriminatorKey: "entity",

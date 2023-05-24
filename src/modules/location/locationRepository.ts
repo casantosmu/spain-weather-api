@@ -184,7 +184,6 @@ const mapToLocationModel = (location: Location) => ({
     coordinates: [location.latLng[1], location.latLng[0]],
   },
   year: location.year,
-  schemaVersion: 2,
 });
 
 const mapToProvinceModel = (province: Province) => ({
