@@ -26,34 +26,36 @@ mongoose.set(
   }
 );
 
-export const runSeeder = async (seederFn: () => Promise<void>) => {
-  const seederName = seederFn.name;
-
-  logger.info(`Stating seeder "${seederName}"`);
+export const runSeeder = async (
+  description: string,
+  seederFn: () => Promise<void>
+) => {
+  logger.info(`Starting seeder "${description}"`);
 
   try {
     await connectMongoDb();
     await seederFn();
-    logger.info(`Seeder completed successfully "${seederName}"`);
+    logger.info("Seeder completed successfully");
   } catch (error) {
-    logger.error(`An error occurred while seeding "${seederName}".`);
+    logger.error("An error occurred while seeding");
     throw error;
   } finally {
     await closeMongoDb();
   }
 };
 
-export const runMigration = async (migrationFn: () => Promise<void>) => {
-  const migrationName = migrationFn.name;
-
-  logger.info(`Stating migration "${migrationName}"`);
+export const runMigration = async (
+  description: string,
+  migrationFn: () => Promise<void>
+) => {
+  logger.info(`Stating migration "${description}"`);
 
   try {
     await connectMongoDb();
     await migrationFn();
-    logger.info(`Migration completed successfully "${migrationName}"`);
+    logger.info("Migration completed successfully");
   } catch (error) {
-    logger.error(`An error occurred while migrating "${migrationName}".`);
+    logger.error("An error occurred while migrating");
     throw error;
   } finally {
     await closeMongoDb();
