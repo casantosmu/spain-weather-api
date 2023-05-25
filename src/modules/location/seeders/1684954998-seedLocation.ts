@@ -6,9 +6,7 @@ import { seedLocationsService } from "../locationService";
   try {
     await runSeeder(
       "Add real spain locations to locations collection",
-      async () => {
-        await seedLocationsService();
-      }
+      seedLocationsService
     );
   } catch (error) {
     handleError(error);
