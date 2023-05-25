@@ -10,7 +10,7 @@ import { randomUUID } from "crypto";
 import {
   NewAutonomousCityBuilder,
   NewMunicipalitiesBuilder,
-  NewProvincesBuilder,
+  NewProvinceBuilder,
 } from "./locationFactory";
 import { ProvinceNotFoundError } from "../../../src/modules/location/error";
 import { MunicipalityNotFoundError } from "../../../src/modules/location/error";
@@ -51,7 +51,7 @@ describe("seedLocationsService", () => {
           .withCode("TOR01º")
           .withName("Municipality1")
           .withProvince(
-            new NewProvincesBuilder()
+            new NewProvinceBuilder()
               .withCode("00")
               .withName("NOT FOUND")
               .build()
@@ -73,7 +73,7 @@ describe("seedLocationsService", () => {
 
     describe("and repository returns a province with not found municipality", () => {
       test("should throw error", async () => {
-        const province = new NewProvincesBuilder()
+        const province = new NewProvinceBuilder()
           .withCode("ON")
           .withName("Ontario")
           .withLatLng([43.6532, -79.3832])
@@ -98,7 +98,7 @@ describe("seedLocationsService", () => {
 
     describe("and repository returns 2 municipalities and their provinces", () => {
       test("should call createLocationsRepository with the 2 municipalities and 2 provinces with an id and their relations", async () => {
-        const province1 = new NewProvincesBuilder()
+        const province1 = new NewProvinceBuilder()
           .withCode("AB")
           .withName("Alberta")
           .withLatLng([51.0486, -114.0708])
@@ -109,7 +109,7 @@ describe("seedLocationsService", () => {
               .build()
           )
           .build();
-        const province2 = new NewProvincesBuilder()
+        const province2 = new NewProvinceBuilder()
           .withCode("ON")
           .withName("Ontario")
           .withLatLng([43.6532, -79.3832])

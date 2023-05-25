@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { type AutonomousCity, type Municipality, type Province } from "./types";
+import {
+  type LocationAutonomousCity,
+  type LocationMunicipality,
+  type LocationProvince,
+} from "./types";
 import { LocationModel, MunicipalityModel } from "./locationModels";
 import httpClient from "../../httpClient";
 import capitalsOfProvincesJson from "./seeders/capitalsOfProvinces.json";
@@ -202,7 +206,7 @@ const mapToLocation = (location: any) => {
 };
 
 const mapToLocationModel = (
-  location: Municipality | Province | AutonomousCity
+  location: LocationMunicipality | LocationProvince | LocationAutonomousCity
 ) => {
   const defaultData = {
     _id: location.id,
@@ -241,14 +245,16 @@ const mapToLocationModel = (
 };
 
 export const createLocationsRepository = async (
-  locations: Array<Municipality | Province | AutonomousCity>
+  locations: Array<
+    LocationMunicipality | LocationProvince | LocationAutonomousCity
+  >
 ) => {
   const mappedLocations = locations.map(mapToLocationModel);
   await LocationModel.insertMany(mappedLocations);
 };
 
 export const createLocationRepository = async (
-  location: Municipality | Province | AutonomousCity
+  location: LocationMunicipality | LocationProvince | LocationAutonomousCity
 ) => {
   const mappedLocation = mapToLocationModel(location);
   await LocationModel.create(mappedLocation);

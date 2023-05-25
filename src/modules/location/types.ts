@@ -3,49 +3,54 @@ import { type entity } from "./constants";
 
 export type LatLng = readonly [number, number];
 
-export type NewLocationBase = {
+export type NewLocation = {
+  code: string;
+  name: string;
+  latLng: LatLng;
+  year: number;
+};
+
+export type NewLocationRelation = {
   code: string;
   name: string;
 };
 
-export type NewLocation = {
-  latLng: LatLng;
-  year: number;
-} & NewLocationBase;
-
 export type NewProvince = {
-  capital: NewLocationBase;
+  capital: NewLocationRelation;
 } & NewLocation;
 
 export type NewMunicipality = {
-  province: NewLocationBase;
+  province: NewLocationRelation;
 } & NewLocation;
 
 export type NewAutonomousCity = NewLocation;
 
-export type LocationBase = {
+export type Location = {
+  id: string;
+  code: string;
+  name: string;
+  latLng: LatLng;
+  year: number;
+  entity: (typeof entity)[keyof typeof entity];
+};
+
+export type LocationRelation = {
   id: string;
   code: string;
   name: string;
 };
 
-export type Location = {
-  latLng: LatLng;
-  year: number;
-  entity: (typeof entity)[keyof typeof entity];
-} & LocationBase;
-
-export type Province = {
-  capital: LocationBase;
+export type LocationProvince = {
+  capital: LocationRelation;
   entity: typeof entity.province;
 } & Location;
 
-export type Municipality = {
-  province: LocationBase;
+export type LocationMunicipality = {
+  province: LocationRelation;
   entity: typeof entity.municipality;
 } & Location;
 
-export type AutonomousCity = {
+export type LocationAutonomousCity = {
   entity: typeof entity.autonomousCity;
 } & Location;
 

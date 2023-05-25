@@ -3,15 +3,17 @@ import {
   InvalidNumberOfProvincesError,
   InvalidProvinceCodeError,
 } from "./error";
-import { type NewProvince, type Province } from "./types";
+import { type NewProvince, type LocationProvince } from "./types";
 
-export const checkProvincesLength = (provinces: NewProvince[] | Province[]) => {
+export const checkProvincesLength = (
+  provinces: NewProvince[] | LocationProvince[]
+) => {
   if (provinces.length !== provincesLength) {
     throw new InvalidNumberOfProvincesError();
   }
 };
 
-export const checkProvinceCode = (province: NewProvince | Province) => {
+export const checkProvinceCode = (province: NewProvince | LocationProvince) => {
   const code = Number(province.code);
   if (
     isNaN(code) ||

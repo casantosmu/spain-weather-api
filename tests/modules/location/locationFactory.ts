@@ -1,15 +1,15 @@
 import { faker } from "@faker-js/faker";
 import {
-  type NewLocationBase,
+  type NewLocationRelation,
   type LatLng,
   type NewLocation,
   type NewMunicipality,
   type NewProvince,
   type NewAutonomousCity,
   type Location,
-  type AutonomousCity,
-  type Province,
-  type Municipality,
+  type LocationAutonomousCity,
+  type LocationProvince,
+  type LocationMunicipality,
 } from "../../../src/modules/location/types";
 import { entity } from "../../../src/modules/location/constants";
 
@@ -79,21 +79,30 @@ abstract class LocationBuilder<
   }
 }
 
-export class NewProvincesBuilder extends BaseLocationBuilder<NewProvince> {
-  withCapital(capital: NewLocationBase) {
+export class NewProvinceBuilder extends BaseLocationBuilder<NewProvince> {
+  withCapital(capital: NewLocationRelation) {
     this.data.capital = capital;
     return this;
   }
 }
 
-export class ProvinceBuilder extends LocationBuilder<Province> {
+export class NewMunicipalitiesBuilder extends BaseLocationBuilder<NewMunicipality> {
+  withProvince(province: NewLocationRelation) {
+    this.data.province = province;
+    return this;
+  }
+}
+
+export class NewAutonomousCityBuilder extends BaseLocationBuilder<NewAutonomousCity> {}
+
+export class LocationProvinceBuilder extends LocationBuilder<LocationProvince> {
   withEntity() {
     this.data.entity = entity.province;
     return this;
   }
 
   withRandomCapital() {
-    this.data.capital = new MunicipalityBuilder()
+    this.data.capital = new LocationMunicipalityBuilder()
       .withRandomId()
       .withRandomCode()
       .withRandomName()
@@ -113,21 +122,14 @@ export class ProvinceBuilder extends LocationBuilder<Province> {
   }
 }
 
-export class NewMunicipalitiesBuilder extends BaseLocationBuilder<NewMunicipality> {
-  withProvince(province: NewLocationBase) {
-    this.data.province = province;
-    return this;
-  }
-}
-
-export class MunicipalityBuilder extends LocationBuilder<Municipality> {
+export class LocationMunicipalityBuilder extends LocationBuilder<LocationMunicipality> {
   withEntity() {
     this.data.entity = entity.municipality;
     return this;
   }
 
   withRandomProvince() {
-    this.data.province = new ProvinceBuilder()
+    this.data.province = new LocationProvinceBuilder()
       .withRandomId()
       .withRandomCode()
       .withRandomName()
@@ -147,9 +149,7 @@ export class MunicipalityBuilder extends LocationBuilder<Municipality> {
   }
 }
 
-export class NewAutonomousCityBuilder extends BaseLocationBuilder<NewAutonomousCity> {}
-
-export class AutonomousCityBuilder extends LocationBuilder<AutonomousCity> {
+export class LocationAutonomousCityBuilder extends LocationBuilder<LocationAutonomousCity> {
   withEntity() {
     this.data.entity = entity.autonomousCity;
     return this;

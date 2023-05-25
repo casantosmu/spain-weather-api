@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { type AxiosInstance } from "axios";
 import {
-  AutonomousCityBuilder,
-  MunicipalityBuilder,
-  ProvinceBuilder,
+  LocationAutonomousCityBuilder,
+  LocationMunicipalityBuilder,
+  LocationProvinceBuilder,
 } from "./locationFactory";
 import { faker } from "@faker-js/faker";
 import {
@@ -24,15 +24,15 @@ describe("GET /locations", () => {
   describe("when paginated and filtered by name", () => {
     test("should return a collection of locations with matching names, paginated and ordered by name", async () => {
       const name = faker.string.uuid();
-      const autonomousCity = new AutonomousCityBuilder()
+      const autonomousCity = new LocationAutonomousCityBuilder()
         .withRandomValues()
         .withName("A" + name)
         .build();
-      const municipality = new MunicipalityBuilder()
+      const municipality = new LocationMunicipalityBuilder()
         .withRandomValues()
         .withName("C" + name)
         .build();
-      const province = new ProvinceBuilder()
+      const province = new LocationProvinceBuilder()
         .withRandomValues()
         .withName("B" + name)
         .build();
@@ -67,7 +67,7 @@ describe("GET /locations", () => {
     it("should return a list of 25 locations by default", async () => {
       const autonomousCities = Array.from(
         { length: defaultCollection.limit.default + 5 },
-        () => new AutonomousCityBuilder().withRandomValues().build()
+        () => new LocationAutonomousCityBuilder().withRandomValues().build()
       );
       await createLocationsRepository(autonomousCities);
 

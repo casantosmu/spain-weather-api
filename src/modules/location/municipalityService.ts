@@ -1,10 +1,10 @@
 import { municipalityCodeLength } from "./constants";
 import { InvalidMunicipalityCodeError } from "./error";
-import { type Municipality, type NewMunicipality } from "./types";
+import { type LocationMunicipality, type NewMunicipality } from "./types";
 import { getProvinceCodeFromMunicipalityCode } from "./utils";
 
 export const checkMunicipalityCode = (
-  municipality: NewMunicipality | Municipality
+  municipality: NewMunicipality | LocationMunicipality
 ) => {
   if (
     getProvinceCodeFromMunicipalityCode(municipality.code) !==

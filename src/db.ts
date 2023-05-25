@@ -61,3 +61,21 @@ export const runMigration = async (
     await closeMongoDb();
   }
 };
+
+// GeoJSON point format:
+// MongoDB documentation: https://www.mongodb.com/docs/manual/reference/geojson/
+// Mongoose documentation: https://mongoosejs.com/docs/geojson.html
+export const pointSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
+  { _id: false }
+);
