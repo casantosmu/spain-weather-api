@@ -8,25 +8,16 @@ const axiosInstance = axios.create();
 
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig<unknown>) => {
-    const requestMetadata = {
-      method: request.method?.toUpperCase(),
-      url: request.url,
-      headers: request.headers,
-      data: request.data,
-    };
-    logger.debug("Http client request", requestMetadata);
+    const requestInfo = `${request.method!.toUpperCase()} ${request.url!}`;
+    logger.debug(`HTTP client request: ${requestInfo}`);
     return request;
   }
 );
 
 axiosInstance.interceptors.response.use((response: AxiosResponse<unknown>) => {
-  const responseMetadata = {
-    url: response.config.url,
-    status: response.status,
-    headers: response.headers,
-    data: response.data,
-  };
-  logger.debug("Http client response", responseMetadata);
+  const responseInfo = `Status: ${response.status} - URL: ${response.config
+    .url!}`;
+  logger.debug(`HTTP client response: ${responseInfo}`);
   return response;
 });
 

@@ -1,8 +1,6 @@
 import logger from "../../logger";
 import {
-  createAutonomousCitiesRepository,
-  createMunicipalitiesRepository,
-  createProvincesRepository,
+  createLocationsRepository,
   filterLikeNameLocationsRepository,
   getNewAutonomousCitiesRepository,
   getNewMunicipalitiesRepository,
@@ -103,10 +101,10 @@ export const seedLocationsService = async () => {
     entity: entity.autonomousCity,
   }));
 
-  await Promise.all([
-    createProvincesRepository(provincesWithCapital),
-    createMunicipalitiesRepository(municipalitiesWithProvince),
-    createAutonomousCitiesRepository(autonomousCities),
+  await createLocationsRepository([
+    ...provincesWithCapital,
+    ...municipalitiesWithProvince,
+    ...autonomousCities,
   ]);
 };
 
