@@ -2,7 +2,7 @@ import { InvalidMunicipalityCodeError } from "../../../src/modules/location/erro
 import { checkMunicipalityCode } from "../../../src/modules/location/municipalityService";
 import {
   NewMunicipalitiesBuilder,
-  NewProvincesBuilder,
+  NewProvinceBuilder,
 } from "./locationFactory";
 
 describe("checkMunicipalityCode", () => {
@@ -11,7 +11,7 @@ describe("checkMunicipalityCode", () => {
       .withCode("20211")
       .withName("Name")
       .withProvince(
-        new NewProvincesBuilder().withCode("20").withName("Province").build()
+        new NewProvinceBuilder().withCode("20").withName("Province").build()
       )
       .build();
 
@@ -27,7 +27,7 @@ describe("checkMunicipalityCode", () => {
       .withCode("10001")
       .withName("Name")
       .withProvince(
-        new NewProvincesBuilder().withCode("00").withName("Province").build()
+        new NewProvinceBuilder().withCode("00").withName("Province").build()
       )
       .build();
 
@@ -43,7 +43,7 @@ describe("checkMunicipalityCode", () => {
       .withCode("202110")
       .withName("Name")
       .withProvince(
-        new NewProvincesBuilder().withCode("20").withName("Province").build()
+        new NewProvinceBuilder().withCode("20").withName("Province").build()
       )
       .build();
 

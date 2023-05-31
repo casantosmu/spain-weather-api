@@ -1,21 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import mongoose from "mongoose";
 import { entity } from "./constants";
-
-// GeoJSON point format:
-// MongoDB documentation: https://www.mongodb.com/docs/manual/reference/geojson/
-// Mongoose documentation: https://mongoosejs.com/docs/geojson.html
-const pointSchema = new mongoose.Schema({
-  type: {
-    type: String,
-    enum: ["Point"],
-    required: true,
-  },
-  coordinates: {
-    type: [Number],
-    required: true,
-  },
-});
+import { pointSchema } from "../../db";
 
 const locationSchema = new mongoose.Schema(
   {
@@ -48,24 +34,24 @@ const locationRelationSchema = new mongoose.Schema({
 
 // Polymorphic model data using discriminator key "entity".
 
-const provinceSchema = new mongoose.Schema({
+const provinceLocationSchema = new mongoose.Schema({
   capital: locationRelationSchema,
 });
 export const ProvinceModel = LocationModel.discriminator(
   entity.province,
-  provinceSchema
+  provinceLocationSchema
 );
 
-const municipalitySchema = new mongoose.Schema({
+const municipalityLocationSchema = new mongoose.Schema({
   province: locationRelationSchema,
 });
 export const MunicipalityModel = LocationModel.discriminator(
   entity.municipality,
-  municipalitySchema
+  municipalityLocationSchema
 );
 
-const autonomousCitySchema = new mongoose.Schema();
+const autonomousCityLocationSchema = new mongoose.Schema();
 export const AutonomousCityModel = LocationModel.discriminator(
   entity.autonomousCity,
-  autonomousCitySchema
+  autonomousCityLocationSchema
 );
