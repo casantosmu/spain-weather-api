@@ -7,16 +7,11 @@ import {
 } from "./locationFactory";
 import { faker } from "@faker-js/faker";
 import {
-  createAutonomousCitiesRepository,
-  createAutonomousCityRepository,
-  createMunicipalityRepository,
-  createProvinceRepository,
-} from "../../../src/modules/location/locationRepository";
-import {
   afterAllIntegrationTests,
   beforeAllIntegrationTests,
 } from "../../testUtils";
 import { defaultCollection } from "../../../src/operations";
+import { createLocationsRepository } from "../../../src/modules/location/locationRepository";
 
 let request: AxiosInstance;
 
@@ -41,9 +36,7 @@ describe("GET /locations", () => {
         .withRandomValues()
         .withName("B" + name)
         .build();
-      await createAutonomousCityRepository(autonomousCity);
-      await createMunicipalityRepository(municipality);
-      await createProvinceRepository(province);
+      await createLocationsRepository([autonomousCity, municipality, province]);
       const { year: year1, ...expectedFirstLocation } = province;
       const { year: year2, ...expectedSecondLocation } = municipality;
       const limit = 2;
@@ -76,7 +69,7 @@ describe("GET /locations", () => {
         { length: defaultCollection.limit.default + 5 },
         () => new AutonomousCityBuilder().withRandomValues().build()
       );
-      await createAutonomousCitiesRepository(autonomousCities);
+      await createLocationsRepository(autonomousCities);
 
       const { status, data } = await request.get("/locations");
 

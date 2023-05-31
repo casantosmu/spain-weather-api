@@ -1,16 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import {
-  type Location,
-  type AutonomousCity,
-  type Municipality,
-  type Province,
-} from "./types";
-import {
-  AutonomousCityModel,
-  LocationModel,
-  MunicipalityModel,
-  ProvinceModel,
-} from "./locationModels";
+import { type AutonomousCity, type Municipality, type Province } from "./types";
+import { LocationModel, MunicipalityModel } from "./locationModels";
 import httpClient from "../../httpClient";
 import capitalsOfProvincesJson from "./seeders/capitalsOfProvinces.json";
 import { NotFoundError } from "../../error";
@@ -175,38 +165,6 @@ export const getNewAutonomousCitiesRepository = async () => {
     }));
 };
 
-const mapToLocationModel = (location: Location) => ({
-  _id: location.id,
-  name: location.name,
-  code: location.code,
-  geo2dPoint: {
-    type: "Point",
-    coordinates: [location.latLng[1], location.latLng[0]],
-  },
-  year: location.year,
-});
-
-const mapToProvinceModel = (province: Province) => ({
-  ...mapToLocationModel(province),
-  capital: {
-    _id: province.capital.id,
-    code: province.capital.code,
-    name: province.capital.name,
-  },
-});
-
-const mapToMunicipalityModel = (municipality: Municipality) => ({
-  ...mapToLocationModel(municipality),
-  province: {
-    _id: municipality.province.id,
-    code: municipality.province.code,
-    name: municipality.province.name,
-  },
-});
-
-const mapToAutonomousCityModel = (autonomousCity: AutonomousCity) =>
-  mapToLocationModel(autonomousCity);
-
 const mapToLocation = (location: any) => {
   const defaultData = {
     id: location._id,
@@ -243,42 +201,57 @@ const mapToLocation = (location: any) => {
   }
 };
 
-export const createProvincesRepository = async (provinces: Province[]) => {
-  const mappedProvinces = provinces.map(mapToProvinceModel);
-  await ProvinceModel.insertMany(mappedProvinces);
-};
-
-export const createProvinceRepository = async (province: Province) => {
-  const mappedProvince = mapToProvinceModel(province);
-  await ProvinceModel.create(mappedProvince);
-};
-
-export const createMunicipalitiesRepository = async (
-  municipalities: Municipality[]
+const mapToLocationModel = (
+  location: Municipality | Province | AutonomousCity
 ) => {
-  const mappedMunicipalities = municipalities.map(mapToMunicipalityModel);
-  await MunicipalityModel.insertMany(mappedMunicipalities);
+  const defaultData = {
+    _id: location.id,
+    name: location.name,
+    code: location.code,
+    geo2dPoint: {
+      type: "Point",
+      coordinates: [location.latLng[1], location.latLng[0]],
+    },
+    year: location.year,
+    entity: location.entity,
+  };
+
+  switch (location.entity) {
+    case entity.municipality:
+      return {
+        ...defaultData,
+        province: {
+          _id: location.province.id,
+          name: location.province.name,
+          code: location.province.code,
+        },
+      };
+    case entity.province:
+      return {
+        ...defaultData,
+        capital: {
+          _id: location.capital.id,
+          name: location.capital.name,
+          code: location.capital.code,
+        },
+      };
+    default:
+      return defaultData;
+  }
 };
 
-export const createMunicipalityRepository = async (
-  municipality: Municipality
+export const createLocationsRepository = async (
+  locations: Array<Municipality | Province | AutonomousCity>
 ) => {
-  const mappedMunicipality = mapToMunicipalityModel(municipality);
-  await MunicipalityModel.create(mappedMunicipality);
+  const mappedLocations = locations.map(mapToLocationModel);
+  await LocationModel.insertMany(mappedLocations);
 };
 
-export const createAutonomousCitiesRepository = async (
-  autonomousCities: AutonomousCity[]
+export const createLocationRepository = async (
+  location: Municipality | Province | AutonomousCity
 ) => {
-  const mappedAutonomousCities = autonomousCities.map(mapToAutonomousCityModel);
-  await AutonomousCityModel.insertMany(mappedAutonomousCities);
-};
-
-export const createAutonomousCityRepository = async (
-  autonomousCity: AutonomousCity
-) => {
-  const mappedAutonomousCity = mapToAutonomousCityModel(autonomousCity);
-  await AutonomousCityModel.create(mappedAutonomousCity);
+  const mappedLocation = mapToLocationModel(location);
+  await LocationModel.create(mappedLocation);
 };
 
 export const hasLocationRepository = async () => {
