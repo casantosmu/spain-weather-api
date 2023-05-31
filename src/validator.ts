@@ -24,7 +24,7 @@ export const validateMiddleware =
   (req: Request, _res: Response, next: NextFunction) => {
     validateSchema(req[property]);
 
-    const validationError = validateSchema?.errors?.[0];
+    const validationError = validateSchema.errors?.[0];
 
     if (validationError) {
       const errorMessage = convertAjvErrorToMessage(validationError);
