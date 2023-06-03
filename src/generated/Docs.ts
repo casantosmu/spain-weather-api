@@ -7,7 +7,7 @@ export type paths = {
   "/locations": {
     /**
      * Get all locations
-     * @description Retrieves a list of all locations in Spain.
+     * @description Retrieves a list of municipalities, provinces and autonomous cities in Spain.
      */
     get: operations["getLocations"];
   };
@@ -25,8 +25,8 @@ export type components = {
       latLng: [number, number];
       entity: string;
     };
-    City: {
-      entity: "City";
+    Municipality: {
+      entity: "Municipality";
     } & Omit<components["schemas"]["Location"], "entity"> & {
         province: {
           /** Format: uuid */
@@ -53,6 +53,8 @@ export type components = {
       skip: number;
       /** Format: int32 */
       limit: number;
+      /** Format: int32 */
+      total: number;
     };
     Error: {
       name: string;
@@ -89,15 +91,15 @@ export type external = Record<string, never>;
 export type operations = {
   /**
    * Get all locations
-   * @description Retrieves a list of all locations in Spain.
+   * @description Retrieves a list of municipalities, provinces and autonomous cities in Spain.
    */
   getLocations: {
     parameters: {
-      query: {
+      query?: {
         limit?: components["parameters"]["limit"];
         skip?: components["parameters"]["skip"];
-        /** @description Name of the location to filter the results by */
-        name?: string;
+        /** @description Name or code of the location to filter the results by */
+        filter?: string;
       };
     };
     responses: {
@@ -107,7 +109,7 @@ export type operations = {
           "application/json": {
             metadata: components["schemas"]["ListMetadata"];
             data: (
-              | components["schemas"]["City"]
+              | components["schemas"]["Municipality"]
               | components["schemas"]["Province"]
               | components["schemas"]["AutonomousCity"]
             )[];

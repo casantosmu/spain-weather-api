@@ -266,18 +266,23 @@ export const hasLocationRepository = async () => {
 };
 
 type GetLocationsParams = {
-  name?: string;
+  filter?: string;
   limit: number;
   skip: number;
 };
 
-export const filterLikeNameLocationsRepository = async ({
-  name,
+export const getLocationsRepository = async ({
+  filter,
   limit,
   skip,
 }: GetLocationsParams) => {
   const query = {
-    ...(name && { name: new RegExp(name, "i") }),
+    ...(filter && {
+      $or: [
+        { code: new RegExp(filter, "i") },
+        { name: new RegExp(filter, "i") },
+      ],
+    }),
   };
 
   const locations = await LocationModel.find(query)

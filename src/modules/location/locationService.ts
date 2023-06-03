@@ -1,7 +1,7 @@
 import logger from "../../logger";
 import {
   createLocationsRepository,
-  filterLikeNameLocationsRepository,
+  getLocationsRepository,
   getNewAutonomousCitiesRepository,
   getNewMunicipalitiesRepository,
   getNewProvincesRepository,
@@ -109,17 +109,17 @@ export const seedLocationsService = async () => {
 };
 
 type GetLocationsParams = {
-  name?: string;
+  filter?: string;
   limit?: number;
   skip?: number;
 };
 
 export const getLocationsService = async ({
-  name,
+  filter,
   limit = defaultCollection.limit.default,
   skip = defaultCollection.skip.default,
 }: GetLocationsParams = {}) => {
   checkCollectionParams({ limit, skip });
 
-  return filterLikeNameLocationsRepository({ name, limit, skip });
+  return getLocationsRepository({ filter, limit, skip });
 };
