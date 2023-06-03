@@ -3,7 +3,7 @@
   "info": {
     "title": "spain-weather",
     "description": "This API provides a comprehensive historical weather data for Spanish cities, provinces, and the country as a whole. The API also includes tools for filtering and searching for specific information, making it easy to find relevant data.",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "contact": {},
     "license": {
       "name": "Apache 2.0",
@@ -36,9 +36,9 @@
             "$ref": "#/components/parameters/skip"
           },
           {
-            "name": "name",
+            "name": "filter",
             "in": "query",
-            "description": "Name of the location to filter the results by",
+            "description": "Name or code of the location to filter the results by",
             "required": false,
             "schema": {
               "type": "string"

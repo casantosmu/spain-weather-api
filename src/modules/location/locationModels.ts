@@ -6,7 +6,7 @@ import { pointSchema } from "../../db";
 const locationSchema = new mongoose.Schema(
   {
     _id: "UUID",
-    name: { type: String, required: true, index: true },
+    name: { type: String, required: true, index: 1 },
     code: { type: String, required: true, unique: true },
     geo2dPoint: {
       type: pointSchema,

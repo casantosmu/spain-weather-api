@@ -23,18 +23,19 @@ beforeAll(async () => {
 describe("GET /locations", () => {
   describe("when paginated and filtered by name", () => {
     test("should return a collection of locations with matching names, paginated and ordered by name", async () => {
-      const name = faker.string.uuid();
+      const filterBy = faker.string.uuid();
       const autonomousCity = new LocationAutonomousCityBuilder()
         .withRandomValues()
-        .withName("A" + name)
+        .withName("A" + filterBy)
         .build();
       const municipality = new LocationMunicipalityBuilder()
         .withRandomValues()
-        .withName("C" + name)
+        .withName("C" + filterBy)
         .build();
       const province = new LocationProvinceBuilder()
         .withRandomValues()
-        .withName("B" + name)
+        .withCode(filterBy)
+        .withName("B")
         .build();
       await createLocationsRepository([autonomousCity, municipality, province]);
       const { year: year1, ...expectedFirstLocation } = province;
@@ -45,7 +46,7 @@ describe("GET /locations", () => {
 
       const { status, data } = await request.get("/locations", {
         params: {
-          name,
+          filter: filterBy,
           limit,
           skip,
         },

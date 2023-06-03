@@ -9,7 +9,7 @@ const getLocationsQuerySchema = {
     skip: {
       type: "integer",
     },
-    name: {
+    filter: {
       type: "string",
     },
   },
