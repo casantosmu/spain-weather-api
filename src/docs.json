@@ -3,7 +3,7 @@
   "info": {
     "title": "spain-weather",
     "description": "This API provides a comprehensive historical weather data for Spanish cities, provinces, and the country as a whole. The API also includes tools for filtering and searching for specific information, making it easy to find relevant data.",
-    "version": "1.0",
+    "version": "1.0.1",
     "contact": {},
     "license": {
       "name": "Apache 2.0",
@@ -18,7 +18,7 @@
   "tags": [
     {
       "name": "location",
-      "description": "Endpoints related to cities, provinces and Spain."
+      "description": "Endpoints related to municipalities, provinces and autonomous cities."
     }
   ],
   "paths": {
@@ -26,7 +26,7 @@
       "get": {
         "tags": ["location"],
         "summary": "Get all locations",
-        "description": "Retrieves a list of all locations in Spain.",
+        "description": "Retrieves a list of municipalities, provinces and autonomous cities in Spain.",
         "operationId": "getLocations",
         "parameters": [
           {
@@ -62,7 +62,7 @@
                         "type": "object",
                         "anyOf": [
                           {
-                            "$ref": "#/components/schemas/City"
+                            "$ref": "#/components/schemas/Municipality"
                           },
                           {
                             "$ref": "#/components/schemas/Province"
@@ -121,7 +121,7 @@
           "propertyName": "entity"
         }
       },
-      "City": {
+      "Municipality": {
         "type": "object",
         "allOf": [
           {
