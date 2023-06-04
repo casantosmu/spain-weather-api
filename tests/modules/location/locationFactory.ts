@@ -43,10 +43,7 @@ abstract class BaseLocationBuilder<T extends NewLocation> {
   }
 
   withRandomLatLng() {
-    this.data.latLng = [
-      Number(faker.location.latitude()),
-      Number(faker.location.longitude()),
-    ];
+    this.data.latLng = [faker.location.latitude(), faker.location.longitude()];
     return this;
   }
 

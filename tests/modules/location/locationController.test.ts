@@ -11,10 +11,7 @@ import {
   beforeAllIntegrationTests,
 } from "../../testUtils";
 import { defaultList } from "../../../src/operations";
-import {
-  createLocationRepository,
-  createLocationsRepository,
-} from "../../../src/modules/location/locationRepository";
+import { createLocationsRepository } from "../../../src/modules/location/locationRepository";
 
 let request: AxiosInstance;
 
@@ -104,18 +101,27 @@ describe("GET /locations", () => {
 });
 
 describe("GET /locations/reverse", () => {
-  describe("when filtered by latLng and entity", () => {
-    test("should return a location within coordinates", async () => {
-      const location = new LocationAutonomousCityBuilder()
+  describe("when filtered by latLng and a entity", () => {
+    test("should return a location with the same entity type within the specified latLng coordinates", async () => {
+      const latLng = [
+        faker.location.latitude(),
+        faker.location.longitude(),
+      ] as const;
+      const locationProvince = new LocationProvinceBuilder()
         .withRandomValues()
+        .withLatLng(latLng)
         .build();
-      await createLocationRepository(location);
-      const { year, ...expectedLocation } = location;
+      const locationMunicipality = new LocationMunicipalityBuilder()
+        .withRandomValues()
+        .withLatLng(latLng)
+        .build();
+      await createLocationsRepository([locationProvince, locationMunicipality]);
+      const { year, ...expectedLocation } = locationProvince;
 
       const { status, data } = await request.get("/locations/reverse", {
         params: {
-          filter: location.latLng.join(","),
-          entity: location.entity,
+          filter: latLng.join(","),
+          entity: expectedLocation.entity,
         },
       });
 

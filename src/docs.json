@@ -92,23 +92,23 @@
       "get": {
         "tags": ["location"],
         "summary": "Get reverse location",
-        "description": "Retrieves the location information based on the provided latitude and longitude coordinates or IP address.",
+        "description": "Retrieves a Location based on the provided latitude and longitude coordinates or IP address.",
         "operationId": "getReverseLocation",
         "parameters": [
           {
             "name": "entity",
             "in": "query",
-            "description": "Entity type to filter response",
+            "description": "Type of entity or a comma-separated list of entity types to filter the response",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": ["municipality", "autonomousCity", "province"]
+              "type": "string"
             }
           },
+
           {
             "name": "filter",
             "in": "query",
-            "description": "IP address or latitude and longitude separated by comma to filter the results",
+            "description": "IP address or latitude and longitude separated by a comma to filter the results",
             "required": true,
             "schema": {
               "type": "string"
@@ -139,9 +139,6 @@
           },
           "400": {
             "$ref": "#/components/responses/BadRequestError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
           },
           "500": {
             "$ref": "#/components/responses/InternalServerError"
@@ -337,16 +334,6 @@
       },
       "BadRequestError": {
         "description": "The request was malformed or invalid",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            }
-          }
-        }
-      },
-      "NotFoundError": {
-        "description": "The requested resource was not found",
         "content": {
           "application/json": {
             "schema": {

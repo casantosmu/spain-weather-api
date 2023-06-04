@@ -116,7 +116,7 @@ export const createLocationRepository = async (
 };
 
 export const hasLocationRepository = async () => {
-  const hasLocation = await MunicipalityModel.findOne().exec();
+  const hasLocation = await MunicipalityModel.findOne().lean();
   return Boolean(hasLocation);
 };
 
@@ -157,7 +157,7 @@ export const getLocationsRepository = async ({
 
 type GetLocationByLatLngRepositoryParams = {
   latLng: LatLng;
-  entity?: Entity;
+  entity?: Entity | Entity[];
 };
 
 export const getLocationByLatLngRepository = async ({
@@ -173,9 +173,12 @@ export const getLocationByLatLngRepository = async ({
         },
       },
     },
-    ...(entity && { entity }),
+    ...(Array.isArray(entity)
+      ? { $or: entity.map((entityName) => ({ entity: entityName })) }
+      : { entity }),
   };
 
-  const location = await LocationModel.findOne(query);
+  const location = await LocationModel.findOne(query).lean();
+
   return mapToLocation(location);
 };

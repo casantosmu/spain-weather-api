@@ -16,6 +16,7 @@ const locationSchema = new mongoose.Schema(
     year: { type: Number, required: true },
   },
   {
+    // Polymorphic model data using discriminator key "entity".
     discriminatorKey: "entity",
     timestamps: true,
   }
@@ -25,8 +26,6 @@ export const LocationModel = mongoose.model(
   locationSchema,
   "locations"
 );
-
-// Polymorphic model data using discriminator key "entity".
 
 const provinceLocationSchema = new mongoose.Schema({
   provinceId: {

@@ -276,6 +276,45 @@ describe("getReverseLocationService", () => {
     });
   });
 
+  describe("when receives a valid entity", () => {
+    test("should call getLocationByLatLngRepository with the entity", async () => {
+      const params = {
+        filter: "0,0",
+        entity: entity.autonomousCity,
+      };
+      jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(true);
+      jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(false);
+
+      await getReverseLocationService(params);
+
+      expect(mockGetLocationByLatLngRepository.mock.calls[0]?.[0].entity).toBe(
+        params.entity
+      );
+    });
+  });
+
+  describe("when receives a list of valid entities", () => {
+    test("should call getLocationByLatLngRepository with an array of unique entities", async () => {
+      const entities = [
+        entity.autonomousCity,
+        entity.autonomousCity,
+        entity.municipality,
+      ];
+      const params = {
+        filter: "0,0",
+        entity: entities.join(", "),
+      };
+      jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(true);
+      jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(false);
+
+      await getReverseLocationService(params);
+
+      expect(
+        mockGetLocationByLatLngRepository.mock.calls[0]?.[0].entity
+      ).toStrictEqual(entities.slice(1));
+    });
+  });
+
   describe("when receives a latLng filter", () => {
     test("should call getLocationByLatLngRepository with correct latLng", async () => {
       const latLng = [40.7128, -74.006];
@@ -288,10 +327,9 @@ describe("getReverseLocationService", () => {
 
       await getReverseLocationService(params);
 
-      expect(mockGetLocationByLatLngRepository).toHaveBeenCalledWith({
-        latLng,
-        entity: params.entity,
-      });
+      expect(
+        mockGetLocationByLatLngRepository.mock.calls[0]?.[0].latLng
+      ).toStrictEqual(latLng);
     });
   });
 
@@ -308,10 +346,9 @@ describe("getReverseLocationService", () => {
 
       await getReverseLocationService(params);
 
-      expect(mockGetLocationByLatLngRepository).toHaveBeenCalledWith({
-        latLng,
-        entity: params.entity,
-      });
+      expect(
+        mockGetLocationByLatLngRepository.mock.calls[0]?.[0].latLng
+      ).toStrictEqual(latLng);
     });
   });
 
@@ -330,7 +367,7 @@ describe("getReverseLocationService", () => {
     test("should throw a InvalidEntityError", async () => {
       const params = {
         filter: "0,0",
-        entity: "invalid-entity",
+        entity: `${entity.autonomousCity},invalid-entity`,
       };
       jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(true);
       jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(false);

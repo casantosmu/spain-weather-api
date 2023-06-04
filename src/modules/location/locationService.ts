@@ -28,6 +28,9 @@ import { BadRequestError } from "../../error";
 export const isEntity = (string: string): string is Entity =>
   Object.keys(entity).includes(string);
 
+export const isEntityArray = (array: string[]): array is Entity[] =>
+  !array.some((entityName) => !isEntity(entityName));
+
 export const seedLocationsService = async () => {
   const hasLocation = await hasLocationRepository();
 
@@ -150,8 +153,11 @@ export const getReverseLocationService = async ({
   filter,
   entity,
 }: GetReverseLocationServiceParams) => {
-  if (entity !== undefined && !isEntity(entity)) {
-    throw new InvalidEntityError(entity);
+  const uniqueEntities = entity
+    ? [...new Set(entity.split(",").map((entityName) => entityName.trim()))]
+    : undefined;
+  if (uniqueEntities && !isEntityArray(uniqueEntities)) {
+    throw new InvalidEntityError(entity!);
   }
 
   let latLng: LatLng | undefined;
@@ -172,6 +178,9 @@ export const getReverseLocationService = async ({
 
   return getLocationByLatLngRepository({
     latLng,
-    entity,
+    entity:
+      uniqueEntities && uniqueEntities.length > 1
+        ? uniqueEntities
+        : uniqueEntities?.[0],
   });
 };
