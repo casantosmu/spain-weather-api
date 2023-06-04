@@ -130,6 +130,10 @@
           {
             "type": "object",
             "properties": {
+              "municipalityId": {
+                "type": "string",
+                "format": "uuid"
+              },
               "province": {
                 "type": "object",
                 "properties": {
@@ -147,7 +151,7 @@
                 "required": ["id", "code", "name"]
               }
             },
-            "required": ["province"]
+            "required": ["province", "municipalityId"]
           }
         ]
       },
@@ -160,6 +164,10 @@
           {
             "type": "object",
             "properties": {
+              "provinceId": {
+                "type": "string",
+                "format": "uuid"
+              },
               "capital": {
                 "type": "object",
                 "properties": {
@@ -177,7 +185,7 @@
                 "required": ["id", "code", "name"]
               }
             },
-            "required": ["capital"]
+            "required": ["capital", "provinceId"]
           }
         ]
       },
@@ -186,6 +194,16 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/Location"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "autonomousCityId": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "required": ["autonomousCityId"]
           }
         ]
       },

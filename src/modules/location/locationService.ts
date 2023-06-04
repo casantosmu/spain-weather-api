@@ -39,6 +39,7 @@ export const seedLocationsService = async () => {
     return {
       ...province,
       id: randomUUID(),
+      provinceId: randomUUID(),
       entity: entity.province,
     };
   });
@@ -49,9 +50,17 @@ export const seedLocationsService = async () => {
     return {
       ...municipality,
       id: randomUUID(),
+      municipalityId: randomUUID(),
       entity: entity.municipality,
     };
   });
+
+  const autonomousCities = newAutonomousCities.map((autonomousCity) => ({
+    ...autonomousCity,
+    id: randomUUID(),
+    autonomousCityId: randomUUID(),
+    entity: entity.autonomousCity,
+  }));
 
   const provincesWithCapital = provinces.map((province) => {
     const capital = municipalities.find(
@@ -70,7 +79,7 @@ export const seedLocationsService = async () => {
       ...province,
       capital: {
         ...province.capital,
-        id: capital.id,
+        id: capital.municipalityId,
       },
     };
   });
@@ -90,16 +99,10 @@ export const seedLocationsService = async () => {
       ...municipality,
       province: {
         ...municipality.province,
-        id: province.id,
+        id: province.provinceId,
       },
     };
   });
-
-  const autonomousCities = newAutonomousCities.map((autonomousCity) => ({
-    ...autonomousCity,
-    id: randomUUID(),
-    entity: entity.autonomousCity,
-  }));
 
   await createLocationsRepository([
     ...provincesWithCapital,
