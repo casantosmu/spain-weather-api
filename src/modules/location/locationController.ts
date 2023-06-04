@@ -1,6 +1,18 @@
 import { type Request, type Response } from "express";
-import { type GetLocationsQuery } from "./types";
+import {
+  type LocationMunicipality,
+  type GetLocationsQuery,
+  type LocationProvince,
+  type LocationAutonomousCity,
+} from "./types";
 import { getLocationsService } from "./locationService";
+
+export const mapToLocationView = (
+  location: LocationMunicipality | LocationProvince | LocationAutonomousCity
+) => {
+  const { year, ...restData } = location;
+  return restData;
+};
 
 export const getLocationsController = async (
   req: Request<unknown, unknown, unknown, GetLocationsQuery>,
@@ -14,6 +26,6 @@ export const getLocationsController = async (
       skip,
       total,
     },
-    data,
+    data: data.map(mapToLocationView),
   });
 };

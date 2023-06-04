@@ -6,18 +6,19 @@ import {
   type LocationProvince,
 } from "./types";
 
-// eslint-disable-next-line no-warning-comments
-// TODO: Assert returns and add year
-export const mapToLocation = (location: any) => {
+export const mapToLocation = (
+  location: any
+): LocationMunicipality | LocationProvince | LocationAutonomousCity => {
   const defaultData = {
     id: location._id,
     name: location.name,
     latLng: [
       location.geo2dPoint.coordinates[1],
       location.geo2dPoint.coordinates[0],
-    ],
+    ] as const,
     code: location.code,
     entity: location.entity,
+    year: location.year,
   };
 
   switch (location.entity) {
@@ -41,13 +42,11 @@ export const mapToLocation = (location: any) => {
           code: location.capital.code,
         },
       };
-    case entity.autonomousCity:
+    default:
       return {
         ...defaultData,
         autonomousCityId: location.autonomousCityId,
       };
-    default:
-      return defaultData;
   }
 };
 
