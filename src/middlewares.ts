@@ -42,7 +42,7 @@ export const asyncWrapper =
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await callback(req, res, next);
-    } catch (error: unknown) {
+    } catch (error) {
       next(error);
     }
   };

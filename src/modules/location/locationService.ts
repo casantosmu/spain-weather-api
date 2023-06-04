@@ -2,9 +2,6 @@ import logger from "../../logger";
 import {
   createLocationsRepository,
   getLocationsRepository,
-  getNewAutonomousCitiesRepository,
-  getNewMunicipalitiesRepository,
-  getNewProvincesRepository,
   hasLocationRepository,
 } from "./locationRepository";
 import { randomUUID } from "crypto";
@@ -13,6 +10,11 @@ import { checkMunicipalityCode } from "./municipalityService";
 import { MunicipalityNotFoundError, ProvinceNotFoundError } from "./error";
 import { checkListParams, defaultList } from "../../operations";
 import { entity } from "./constants";
+import {
+  getNewAutonomousCitiesRepository,
+  getNewMunicipalitiesRepository,
+  getNewProvincesRepository,
+} from "./newLocationRepository";
 
 export const seedLocationsService = async () => {
   const hasLocation = await hasLocationRepository();
@@ -111,7 +113,7 @@ export const seedLocationsService = async () => {
   ]);
 };
 
-type GetLocationsParams = {
+type GetLocationsServiceParams = {
   filter?: string;
   limit?: number;
   skip?: number;
@@ -121,7 +123,7 @@ export const getLocationsService = async ({
   filter,
   limit = defaultList.limit.default,
   skip = defaultList.skip.default,
-}: GetLocationsParams = {}) => {
+}: GetLocationsServiceParams = {}) => {
   checkListParams({ limit, skip });
 
   return getLocationsRepository({ filter, limit, skip });

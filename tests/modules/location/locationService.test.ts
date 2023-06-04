@@ -1,8 +1,5 @@
 import {
   createLocationsRepository,
-  getNewAutonomousCitiesRepository,
-  getNewMunicipalitiesRepository,
-  getNewProvincesRepository,
   hasLocationRepository,
 } from "../../../src/modules/location/locationRepository";
 import { seedLocationsService } from "../../../src/modules/location/locationService";
@@ -15,8 +12,13 @@ import {
 import { ProvinceNotFoundError } from "../../../src/modules/location/error";
 import { MunicipalityNotFoundError } from "../../../src/modules/location/error";
 import { entity } from "../../../src/modules/location/constants";
+import {
+  getNewAutonomousCitiesRepository,
+  getNewMunicipalitiesRepository,
+  getNewProvincesRepository,
+} from "../../../src/modules/location/newLocationRepository";
 
-jest.mock("../../../src/modules/location/locationRepository");
+jest.mock("../../../src/modules/location/newLocationRepository");
 const mockGetNewProvincesRepository = jest.mocked(getNewProvincesRepository);
 const mockGetNewMunicipalitiesRepository = jest.mocked(
   getNewMunicipalitiesRepository
@@ -24,6 +26,8 @@ const mockGetNewMunicipalitiesRepository = jest.mocked(
 const mockGetNewAutonomousCitiesRepository = jest.mocked(
   getNewAutonomousCitiesRepository
 );
+
+jest.mock("../../../src/modules/location/locationRepository");
 const mockHasLocationRepository = jest.mocked(hasLocationRepository);
 
 jest.mock("../../../src/modules/location/provinceService");
