@@ -11,7 +11,7 @@ import { randomUUID } from "crypto";
 import { checkProvinceCode, checkProvincesLength } from "./provinceService";
 import { checkMunicipalityCode } from "./municipalityService";
 import { MunicipalityNotFoundError, ProvinceNotFoundError } from "./error";
-import { checkCollectionParams, defaultCollection } from "../../operations";
+import { checkListParams, defaultList } from "../../operations";
 import { entity } from "./constants";
 
 export const seedLocationsService = async () => {
@@ -119,10 +119,10 @@ type GetLocationsParams = {
 
 export const getLocationsService = async ({
   filter,
-  limit = defaultCollection.limit.default,
-  skip = defaultCollection.skip.default,
+  limit = defaultList.limit.default,
+  skip = defaultList.skip.default,
 }: GetLocationsParams = {}) => {
-  checkCollectionParams({ limit, skip });
+  checkListParams({ limit, skip });
 
   return getLocationsRepository({ filter, limit, skip });
 };

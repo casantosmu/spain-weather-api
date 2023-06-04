@@ -1,6 +1,6 @@
 import { BadRequestError } from "./error";
 
-export const defaultCollection = {
+export const defaultList = {
   limit: {
     default: 25,
     min: 0,
@@ -13,9 +13,9 @@ export const defaultCollection = {
   },
 };
 
-export const checkCollectionParams = (
+export const checkListParams = (
   params: { limit: number; skip: number },
-  options = defaultCollection
+  options = defaultList
 ) => {
   if (params.limit < options.limit.min || params.limit > options.limit.max) {
     throw new BadRequestError({

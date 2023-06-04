@@ -16,6 +16,7 @@ export const dropMongoDb = async () => {
   await mongoose.connection.dropDatabase();
 };
 
+// Enable Mongoose debug mode and log collection, method, query, and document
 mongoose.set(
   "debug",
   (collectionName, method, query: unknown, doc: unknown) => {
