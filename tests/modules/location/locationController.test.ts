@@ -10,7 +10,7 @@ import {
   afterAllIntegrationTests,
   beforeAllIntegrationTests,
 } from "../../testUtils";
-import { defaultCollection } from "../../../src/operations";
+import { defaultList } from "../../../src/operations";
 import { createLocationsRepository } from "../../../src/modules/location/locationRepository";
 
 let request: AxiosInstance;
@@ -22,7 +22,7 @@ beforeAll(async () => {
 
 describe("GET /locations", () => {
   describe("when paginated and filtered by name", () => {
-    test("should return a collection of locations with matching names, paginated and ordered by name", async () => {
+    test("should return a list of locations with matching names, paginated and ordered by name", async () => {
       const filterBy = faker.string.uuid();
       const autonomousCity = new LocationAutonomousCityBuilder()
         .withRandomValues()
@@ -67,7 +67,7 @@ describe("GET /locations", () => {
   describe("when no filters are applied", () => {
     it("should return a list of 25 locations by default", async () => {
       const autonomousCities = Array.from(
-        { length: defaultCollection.limit.default + 5 },
+        { length: defaultList.limit.default + 5 },
         () => new LocationAutonomousCityBuilder().withRandomValues().build()
       );
       await createLocationsRepository(autonomousCities);
@@ -75,11 +75,11 @@ describe("GET /locations", () => {
       const { status, data } = await request.get("/locations");
 
       expect(status).toBe(200);
-      expect(data.data).toHaveLength(defaultCollection.limit.default);
+      expect(data.data).toHaveLength(defaultList.limit.default);
       expect(data).toStrictEqual({
         metadata: {
-          limit: defaultCollection.limit.default,
-          skip: defaultCollection.skip.default,
+          limit: defaultList.limit.default,
+          skip: defaultList.skip.default,
           total: expect.any(Number),
         },
         data: expect.any(Array),

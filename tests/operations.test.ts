@@ -1,17 +1,17 @@
 import { BadRequestError } from "../src/error";
-import { checkCollectionParams, defaultCollection } from "../src/operations";
+import { checkListParams, defaultList } from "../src/operations";
 
-describe("checkCollectionParams", () => {
+describe("checkListParams", () => {
   describe("when default options", () => {
     describe("and params are within default values", () => {
       it("should not throw an error", () => {
         const params = {
-          limit: defaultCollection.limit.default,
-          skip: defaultCollection.skip.default,
+          limit: defaultList.limit.default,
+          skip: defaultList.skip.default,
         };
 
         const result = () => {
-          checkCollectionParams(params);
+          checkListParams(params);
         };
 
         expect(result).not.toThrow();
@@ -21,12 +21,12 @@ describe("checkCollectionParams", () => {
     describe("and limit exceed max", () => {
       it("should throw a BadRequestError", () => {
         const invalidParams = {
-          limit: defaultCollection.limit.max + 5,
-          skip: defaultCollection.skip.default,
+          limit: defaultList.limit.max + 5,
+          skip: defaultList.skip.default,
         };
 
         const result = () => {
-          checkCollectionParams(invalidParams);
+          checkListParams(invalidParams);
         };
 
         expect(result).toThrow(BadRequestError);
@@ -36,12 +36,12 @@ describe("checkCollectionParams", () => {
     describe("and skip is less than min", () => {
       it("should throw a BadRequestError", () => {
         const invalidParams = {
-          limit: defaultCollection.limit.default,
-          skip: defaultCollection.skip.min - 1,
+          limit: defaultList.limit.default,
+          skip: defaultList.skip.min - 1,
         };
 
         const result = () => {
-          checkCollectionParams(invalidParams);
+          checkListParams(invalidParams);
         };
 
         expect(result).toThrow(BadRequestError);
@@ -71,7 +71,7 @@ describe("checkCollectionParams", () => {
         };
 
         const result = () => {
-          checkCollectionParams(params, customOptions);
+          checkListParams(params, customOptions);
         };
 
         expect(result).not.toThrow();
@@ -86,7 +86,7 @@ describe("checkCollectionParams", () => {
         };
 
         const result = () => {
-          checkCollectionParams(invalidParams, customOptions);
+          checkListParams(invalidParams, customOptions);
         };
 
         expect(result).toThrow(BadRequestError);
@@ -101,7 +101,7 @@ describe("checkCollectionParams", () => {
         };
 
         const result = () => {
-          checkCollectionParams(invalidParams, customOptions);
+          checkListParams(invalidParams, customOptions);
         };
 
         expect(result).toThrow(BadRequestError);
