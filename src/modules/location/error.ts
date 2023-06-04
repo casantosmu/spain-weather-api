@@ -44,3 +44,12 @@ export class InvalidMunicipalityCodeError extends UnprocessableEntityError {
     });
   }
 }
+
+export class InvalidEntityError extends UnprocessableEntityError {
+  constructor(entity: string) {
+    super({
+      name: "InvalidEntityError",
+      message: `Invalid entity: ${entity}`,
+    });
+  }
+}
