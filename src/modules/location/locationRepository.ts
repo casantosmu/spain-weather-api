@@ -166,7 +166,7 @@ export const getLocationByLatLngRepository = async ({
 }: GetLocationByLatLngRepositoryParams) => {
   const query = {
     geo2dPoint: {
-      $geoWithin: {
+      $near: {
         $geometry: {
           type: "Point",
           coordinates: [latLng[1], latLng[0]],

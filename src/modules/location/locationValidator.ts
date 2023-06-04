@@ -20,3 +20,21 @@ const getLocationsQuerySchema = {
 export const getLocationsQueryValidator = validator.compile(
   getLocationsQuerySchema
 );
+
+const getReverseLocationQuerySchema = {
+  type: "object",
+  properties: {
+    filter: {
+      type: "string",
+    },
+    entity: {
+      type: "string",
+    },
+  },
+  required: ["filter"],
+  additionalProperties: false,
+};
+
+export const getReverseLocationQueryValidator = validator.compile(
+  getReverseLocationQuerySchema
+);

@@ -61,3 +61,6 @@ export type LocationAutonomousCity = {
 
 export type GetLocationsQuery =
   operations["getLocations"]["parameters"]["query"];
+
+export type GetReverseLocationQuery =
+  operations["getReverseLocation"]["parameters"]["query"];

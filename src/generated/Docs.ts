@@ -11,6 +11,13 @@ export type paths = {
      */
     get: operations["getLocations"];
   };
+  "/locations/reverse": {
+    /**
+     * Get reverse location
+     * @description Retrieves the location information based on the provided latitude and longitude coordinates or IP address.
+     */
+    get: operations["getReverseLocation"];
+  };
 };
 
 export type webhooks = Record<string, never>;
@@ -28,6 +35,8 @@ export type components = {
     Municipality: {
       entity: "Municipality";
     } & Omit<components["schemas"]["Location"], "entity"> & {
+        /** Format: uuid */
+        municipalityId: string;
         province: {
           /** Format: uuid */
           id: string;
@@ -38,6 +47,8 @@ export type components = {
     Province: {
       entity: "Province";
     } & Omit<components["schemas"]["Location"], "entity"> & {
+        /** Format: uuid */
+        provinceId: string;
         capital: {
           /** Format: uuid */
           id: string;
@@ -47,7 +58,10 @@ export type components = {
       };
     AutonomousCity: {
       entity: "AutonomousCity";
-    } & Omit<components["schemas"]["Location"], "entity">;
+    } & Omit<components["schemas"]["Location"], "entity"> & {
+        /** Format: uuid */
+        autonomousCityId: string;
+      };
     ListMetadata: {
       /** Format: int32 */
       skip: number;
@@ -70,6 +84,12 @@ export type components = {
     };
     /** @description The request was malformed or invalid */
     BadRequestError: {
+      content: {
+        "application/json": components["schemas"]["Error"];
+      };
+    };
+    /** @description The requested resource was not found */
+    NotFoundError: {
       content: {
         "application/json": components["schemas"]["Error"];
       };
@@ -117,6 +137,34 @@ export type operations = {
         };
       };
       400: components["responses"]["BadRequestError"];
+      500: components["responses"]["InternalServerError"];
+    };
+  };
+  /**
+   * Get reverse location
+   * @description Retrieves the location information based on the provided latitude and longitude coordinates or IP address.
+   */
+  getReverseLocation: {
+    parameters: {
+      query: {
+        /** @description Entity type to filter response */
+        entity?: "municipality" | "autonomousCity" | "province";
+        /** @description IP address or latitude and longitude separated by comma to filter the results */
+        filter: string;
+      };
+    };
+    responses: {
+      /** @description Successful response */
+      200: {
+        content: {
+          "application/json":
+            | components["schemas"]["Municipality"]
+            | components["schemas"]["Province"]
+            | components["schemas"]["AutonomousCity"];
+        };
+      };
+      400: components["responses"]["BadRequestError"];
+      404: components["responses"]["NotFoundError"];
       500: components["responses"]["InternalServerError"];
     };
   };

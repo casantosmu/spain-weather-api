@@ -150,6 +150,10 @@ export const getReverseLocationService = async ({
   filter,
   entity,
 }: GetReverseLocationServiceParams) => {
+  if (entity !== undefined && !isEntity(entity)) {
+    throw new InvalidEntityError(entity);
+  }
+
   let latLng: LatLng | undefined;
 
   if (stringValidator.isLatLng(filter)) {
@@ -164,10 +168,6 @@ export const getReverseLocationService = async ({
 
   if (!latLng) {
     throw new BadRequestError({ message: `Invalid filter: ${filter}` });
-  }
-
-  if (entity !== undefined && !isEntity(entity)) {
-    throw new InvalidEntityError(entity);
   }
 
   return getLocationByLatLngRepository({

@@ -11,7 +11,10 @@ import {
   beforeAllIntegrationTests,
 } from "../../testUtils";
 import { defaultList } from "../../../src/operations";
-import { createLocationsRepository } from "../../../src/modules/location/locationRepository";
+import {
+  createLocationRepository,
+  createLocationsRepository,
+} from "../../../src/modules/location/locationRepository";
 
 let request: AxiosInstance;
 
@@ -65,7 +68,7 @@ describe("GET /locations", () => {
   });
 
   describe("when no filters are applied", () => {
-    it("should return a list of 25 locations by default", async () => {
+    test("should return a list of 25 locations by default", async () => {
       const autonomousCities = Array.from(
         { length: defaultList.limit.default + 5 },
         () => new LocationAutonomousCityBuilder().withRandomValues().build()
@@ -88,8 +91,42 @@ describe("GET /locations", () => {
   });
 
   describe("when bad request parameters are used", () => {
-    it("should return a 400 error", async () => {
+    test("should return a 400 error", async () => {
       const { status } = await request.get("/locations", {
+        params: {
+          foo: "bar",
+        },
+      });
+
+      expect(status).toBe(400);
+    });
+  });
+});
+
+describe("GET /locations/reverse", () => {
+  describe("when filtered by latLng and entity", () => {
+    test("should return a location within coordinates", async () => {
+      const location = new LocationAutonomousCityBuilder()
+        .withRandomValues()
+        .build();
+      await createLocationRepository(location);
+      const { year, ...expectedLocation } = location;
+
+      const { status, data } = await request.get("/locations/reverse", {
+        params: {
+          filter: location.latLng.join(","),
+          entity: location.entity,
+        },
+      });
+
+      expect(status).toBe(200);
+      expect(data).toStrictEqual(expectedLocation);
+    });
+  });
+
+  describe("when bad request parameters are used", () => {
+    test("should return a 400 error", async () => {
+      const { status } = await request.get("/locations/reverse", {
         params: {
           foo: "bar",
         },
