@@ -26,16 +26,23 @@ export const LocationModel = mongoose.model(
   "locations"
 );
 
-const locationRelationSchema = new mongoose.Schema({
-  _id: "UUID",
-  name: { type: String, required: true },
-  code: { type: String, required: true },
-});
-
 // Polymorphic model data using discriminator key "entity".
 
 const provinceLocationSchema = new mongoose.Schema({
-  capital: locationRelationSchema,
+  provinceId: {
+    type: mongoose.Schema.Types.UUID,
+    required: true,
+    unique: true,
+  },
+  capital: {
+    municipalityId: {
+      type: mongoose.Schema.Types.UUID,
+      required: true,
+      unique: true,
+    },
+    name: { type: String, required: true },
+    code: { type: String, required: true },
+  },
 });
 export const ProvinceModel = LocationModel.discriminator(
   entity.province,
@@ -43,14 +50,32 @@ export const ProvinceModel = LocationModel.discriminator(
 );
 
 const municipalityLocationSchema = new mongoose.Schema({
-  province: locationRelationSchema,
+  municipalityId: {
+    type: mongoose.Schema.Types.UUID,
+    required: true,
+    unique: true,
+  },
+  province: {
+    provinceId: {
+      type: mongoose.Schema.Types.UUID,
+      required: true,
+    },
+    name: { type: String, required: true },
+    code: { type: String, required: true },
+  },
 });
 export const MunicipalityModel = LocationModel.discriminator(
   entity.municipality,
   municipalityLocationSchema
 );
 
-const autonomousCityLocationSchema = new mongoose.Schema();
+const autonomousCityLocationSchema = new mongoose.Schema({
+  autonomousCityId: {
+    type: mongoose.Schema.Types.UUID,
+    required: true,
+    unique: true,
+  },
+});
 export const AutonomousCityModel = LocationModel.discriminator(
   entity.autonomousCity,
   autonomousCityLocationSchema

@@ -185,8 +185,9 @@ const mapToLocation = (location: any) => {
     case entity.municipality:
       return {
         ...defaultData,
+        municipalityId: location.municipalityId,
         province: {
-          id: location.province._id,
+          id: location.province.provinceId,
           name: location.province.name,
           code: location.province.code,
         },
@@ -194,11 +195,17 @@ const mapToLocation = (location: any) => {
     case entity.province:
       return {
         ...defaultData,
+        provinceId: location.provinceId,
         capital: {
-          id: location.capital._id,
+          id: location.capital.municipalityId,
           name: location.capital.name,
           code: location.capital.code,
         },
+      };
+    case entity.autonomousCity:
+      return {
+        ...defaultData,
+        autonomousCityId: location.autonomousCityId,
       };
     default:
       return defaultData;
@@ -224,8 +231,9 @@ const mapToLocationModel = (
     case entity.municipality:
       return {
         ...defaultData,
+        municipalityId: location.municipalityId,
         province: {
-          _id: location.province.id,
+          provinceId: location.province.id,
           name: location.province.name,
           code: location.province.code,
         },
@@ -233,11 +241,17 @@ const mapToLocationModel = (
     case entity.province:
       return {
         ...defaultData,
+        provinceId: location.provinceId,
         capital: {
-          _id: location.capital.id,
+          municipalityId: location.capital.id,
           name: location.capital.name,
           code: location.capital.code,
         },
+      };
+    case entity.autonomousCity:
+      return {
+        ...defaultData,
+        autonomousCityId: location.autonomousCityId,
       };
     default:
       return defaultData;

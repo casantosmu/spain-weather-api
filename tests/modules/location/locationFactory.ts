@@ -65,20 +65,6 @@ abstract class BaseLocationBuilder<T extends NewLocation> {
   }
 }
 
-abstract class LocationBuilder<
-  T extends Location
-> extends BaseLocationBuilder<T> {
-  withId(id: string) {
-    this.data.id = id;
-    return this;
-  }
-
-  withRandomId() {
-    this.data.id = faker.string.uuid();
-    return this;
-  }
-}
-
 export class NewProvinceBuilder extends BaseLocationBuilder<NewProvince> {
   withCapital(capital: NewLocationRelation) {
     this.data.capital = capital;
@@ -95,6 +81,20 @@ export class NewMunicipalitiesBuilder extends BaseLocationBuilder<NewMunicipalit
 
 export class NewAutonomousCityBuilder extends BaseLocationBuilder<NewAutonomousCity> {}
 
+abstract class LocationBuilder<
+  T extends Location
+> extends BaseLocationBuilder<T> {
+  withId(id: string) {
+    this.data.id = id;
+    return this;
+  }
+
+  withRandomId() {
+    this.data.id = faker.string.uuid();
+    return this;
+  }
+}
+
 export class LocationProvinceBuilder extends LocationBuilder<LocationProvince> {
   withEntity() {
     this.data.entity = entity.province;
@@ -110,6 +110,11 @@ export class LocationProvinceBuilder extends LocationBuilder<LocationProvince> {
     return this;
   }
 
+  withRandomProvinceId() {
+    this.data.provinceId = faker.string.uuid();
+    return this;
+  }
+
   withRandomValues() {
     this.withRandomId()
       .withRandomName()
@@ -117,6 +122,7 @@ export class LocationProvinceBuilder extends LocationBuilder<LocationProvince> {
       .withRandomLatLng()
       .withRandomYear()
       .withRandomCapital()
+      .withRandomProvinceId()
       .withEntity();
     return this;
   }
@@ -137,6 +143,11 @@ export class LocationMunicipalityBuilder extends LocationBuilder<LocationMunicip
     return this;
   }
 
+  withRandomMunicipalityId() {
+    this.data.municipalityId = faker.string.uuid();
+    return this;
+  }
+
   withRandomValues() {
     this.withRandomId()
       .withRandomName()
@@ -144,6 +155,7 @@ export class LocationMunicipalityBuilder extends LocationBuilder<LocationMunicip
       .withRandomLatLng()
       .withRandomYear()
       .withRandomProvince()
+      .withRandomMunicipalityId()
       .withEntity();
     return this;
   }
@@ -155,12 +167,18 @@ export class LocationAutonomousCityBuilder extends LocationBuilder<LocationAuton
     return this;
   }
 
+  withRandomAutonomousCityId() {
+    this.data.autonomousCityId = faker.string.uuid();
+    return this;
+  }
+
   withRandomValues() {
     this.withRandomId()
       .withRandomName()
       .withRandomCode()
       .withRandomLatLng()
       .withRandomYear()
+      .withRandomAutonomousCityId()
       .withEntity();
     return this;
   }

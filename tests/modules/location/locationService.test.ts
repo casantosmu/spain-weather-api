@@ -96,7 +96,7 @@ describe("seedLocationsService", () => {
       });
     });
 
-    describe("and repository returns 2 municipalities and their provinces", () => {
+    describe("and repository returns 2 municipalities and 2 provinces", () => {
       test("should call createLocationsRepository with the 2 municipalities and 2 provinces with an id and their relations", async () => {
         const province1 = new NewProvinceBuilder()
           .withCode("AB")
@@ -141,7 +141,7 @@ describe("seedLocationsService", () => {
           municipality2,
         ]);
         mockGetNewAutonomousCitiesRepository.mockResolvedValueOnce([]);
-        const ids = ["id1", "id2", "id3", "id3"];
+        const ids = ["id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8"];
         ids.forEach((id) => {
           mockRandomUuid.mockReturnValueOnce(id as never);
         });
@@ -153,37 +153,41 @@ describe("seedLocationsService", () => {
           {
             ...province1,
             id: ids[0],
+            provinceId: ids[1],
             entity: entity.province,
             capital: {
               ...province1.capital,
-              id: ids[2],
+              id: ids[5],
             },
           },
           {
             ...province2,
-            id: ids[1],
+            id: ids[2],
+            provinceId: ids[3],
             entity: entity.province,
             capital: {
               ...province2.capital,
-              id: ids[3],
+              id: ids[7],
             },
           },
           {
             ...municipality1,
-            id: ids[2],
+            id: ids[4],
+            municipalityId: ids[5],
             entity: entity.municipality,
             province: {
               ...municipality1.province,
-              id: ids[0],
+              id: ids[1],
             },
           },
           {
             ...municipality2,
-            id: ids[3],
+            id: ids[6],
+            municipalityId: ids[7],
             entity: entity.municipality,
             province: {
               ...municipality2.province,
-              id: ids[1],
+              id: ids[3],
             },
           },
         ]);
@@ -206,17 +210,27 @@ describe("seedLocationsService", () => {
           autonomousCity1,
           autonomousCity2,
         ]);
-        const ids = ["id1", "id2"];
-        mockRandomUuid
-          .mockReturnValueOnce(ids[0] as never)
-          .mockReturnValueOnce(ids[1] as never);
+        const ids = ["id1", "id2", "id3", "id4"];
+        ids.forEach((id) => {
+          mockRandomUuid.mockReturnValueOnce(id as never);
+        });
 
         await seedLocationsService();
 
         expect(createLocationsRepository).toHaveBeenCalledTimes(1);
         expect(createLocationsRepository).toHaveBeenCalledWith([
-          { ...autonomousCity1, entity: entity.autonomousCity, id: ids[0] },
-          { ...autonomousCity2, entity: entity.autonomousCity, id: ids[1] },
+          {
+            ...autonomousCity1,
+            entity: entity.autonomousCity,
+            id: ids[0],
+            autonomousCityId: ids[1],
+          },
+          {
+            ...autonomousCity2,
+            entity: entity.autonomousCity,
+            id: ids[2],
+            autonomousCityId: ids[3],
+          },
         ]);
       });
     });

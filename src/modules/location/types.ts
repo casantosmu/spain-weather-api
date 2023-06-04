@@ -41,16 +41,19 @@ export type LocationRelation = {
 };
 
 export type LocationProvince = {
+  provinceId: string;
   capital: LocationRelation;
   entity: typeof entity.province;
 } & Location;
 
 export type LocationMunicipality = {
+  municipalityId: string;
   province: LocationRelation;
   entity: typeof entity.municipality;
 } & Location;
 
 export type LocationAutonomousCity = {
+  autonomousCityId: string;
   entity: typeof entity.autonomousCity;
 } & Location;
 
