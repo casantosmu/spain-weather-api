@@ -175,7 +175,9 @@ export const getLocationByLatLngRepository = async ({
     },
     ...(Array.isArray(entity)
       ? { $or: entity.map((entityName) => ({ entity: entityName })) }
-      : { entity }),
+      : entity
+      ? { entity }
+      : undefined),
   };
 
   const location = await LocationModel.findOne(query).lean();

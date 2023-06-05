@@ -26,8 +26,8 @@ import {
   getNewProvincesRepository,
 } from "../../../src/modules/location/newLocationRepository";
 import { stringValidator } from "../../../src/validator";
-import { getLatLngFromIpRepository } from "../../../src/modules/location/geolocationRepository";
 import { BadRequestError } from "../../../src/error";
+import { getLatLngFromIpRepository } from "../../../src/modules/location/ipLocationRepository";
 
 jest.mock("../../../src/modules/location/newLocationRepository");
 const mockGetNewProvincesRepository = jest.mocked(getNewProvincesRepository);
@@ -44,7 +44,7 @@ const mockGetLocationByLatLngRepository = jest.mocked(
   getLocationByLatLngRepository
 );
 
-jest.mock("../../../src/modules/location/geolocationRepository");
+jest.mock("../../../src/modules/location/ipLocationRepository");
 const mockGetLatLngFromIpRepository = jest.mocked(getLatLngFromIpRepository);
 
 jest.mock("../../../src/modules/location/provinceService");
