@@ -1,5 +1,5 @@
 import { ipv4ToNumber } from "../../utils";
-import { IPLocationModel } from "./ipLocationModel";
+import { IpLocationModel } from "./ipLocationModel";
 
 export const getLatLngFromIpv4Repository = async (ipv4: string) => {
   const ipNumber = ipv4ToNumber(ipv4);
@@ -10,7 +10,7 @@ export const getLatLngFromIpv4Repository = async (ipv4: string) => {
     },
   };
 
-  const result = await IPLocationModel.findOne(query)
+  const result = await IpLocationModel.findOne(query)
     .select("latitude longitude")
     .lean();
 

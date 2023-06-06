@@ -5,13 +5,18 @@ import {
   LocationMunicipalityBuilder,
   LocationProvinceBuilder,
 } from "./locationFactory";
+import { IpLocationModelBuilder } from "./ipLocationFactory";
 import { faker } from "@faker-js/faker";
 import {
   afterAllIntegrationTests,
   beforeAllIntegrationTests,
 } from "../../testUtils";
 import { defaultList } from "../../../src/operations";
-import { createLocationsRepository } from "../../../src/modules/location/locationRepository";
+import {
+  createLocationRepository,
+  createLocationsRepository,
+} from "../../../src/modules/location/locationRepository";
+import { IpLocationModel } from "../../../src/modules/location/ipLocationModel";
 
 let request: AxiosInstance;
 
@@ -130,23 +135,33 @@ describe("GET /locations/reverse", () => {
     });
   });
 
-  describe("when filtered by non existen ip v4 address", () => {
-    test("should return a 404 error", async () => {
-      const locationProvince = new LocationProvinceBuilder()
+  describe("when filtered by IP v4 address", () => {
+    test("should return a location within the latLng of IP v4 address", async () => {
+      const latLng = [
+        faker.location.latitude(),
+        faker.location.longitude(),
+      ] as const;
+      const ipv4 = faker.internet.ipv4();
+      const location = new LocationProvinceBuilder()
         .withRandomValues()
+        .withLatLng(latLng)
         .build();
-      const locationMunicipality = new LocationMunicipalityBuilder()
-        .withRandomValues()
+      const ipLocation = new IpLocationModelBuilder()
+        .withIpv4(ipv4)
+        .withLatLng(latLng)
         .build();
-      await createLocationsRepository([locationProvince, locationMunicipality]);
+      await createLocationRepository(location);
+      await IpLocationModel.create(ipLocation);
+      const { year, ...expectedLocation } = location;
 
-      const { status } = await request.get("/locations/reverse", {
+      const { status, data } = await request.get("/locations/reverse", {
         params: {
-          filter: faker.internet.ipv4(),
+          filter: ipv4,
         },
       });
 
-      expect(status).toBe(404);
+      expect(status).toBe(200);
+      expect(data).toStrictEqual(expectedLocation);
     });
   });
 
@@ -154,7 +169,7 @@ describe("GET /locations/reverse", () => {
     test("should return a 400 error", async () => {
       const { status } = await request.get("/locations/reverse", {
         params: {
-          filter: faker.internet.ipv6(),
+          foo: "bar",
         },
       });
 

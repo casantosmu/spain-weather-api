@@ -15,7 +15,7 @@ import { entity } from "../../../src/modules/location/constants";
 
 abstract class BaseLocationBuilder<T extends NewLocation> {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  protected readonly data: T = {} as T;
+  protected readonly data = {} as T;
 
   withCode(code: string) {
     this.data.code = code;

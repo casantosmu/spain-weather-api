@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import mongoose from "mongoose";
 
-const ipLocationSchema = new mongoose.Schema({
+export const ipLocationSchema = new mongoose.Schema({
   ipFrom: {
     type: Number,
     required: true,
@@ -10,22 +10,6 @@ const ipLocationSchema = new mongoose.Schema({
     type: Number,
     required: true,
     index: 1,
-  },
-  countryCode: {
-    type: String,
-    required: true,
-  },
-  countryName: {
-    type: String,
-    required: true,
-  },
-  regionName: {
-    type: String,
-    required: true,
-  },
-  cityName: {
-    type: String,
-    required: true,
   },
   latitude: {
     type: Number,
@@ -37,8 +21,8 @@ const ipLocationSchema = new mongoose.Schema({
   },
 });
 
-export const IPLocationModel = mongoose.model(
-  "IPLocation",
+export const IpLocationModel = mongoose.model(
+  "IpLocation",
   ipLocationSchema,
   "iplocations"
 );
