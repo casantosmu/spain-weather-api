@@ -27,7 +27,7 @@ import {
 } from "../../../src/modules/location/newLocationRepository";
 import { stringValidator } from "../../../src/validator";
 import { BadRequestError, NotFoundError } from "../../../src/error";
-import { getLatLngFromIpRepository } from "../../../src/modules/location/ipLocationRepository";
+import { getLatLngFromIpv4Repository } from "../../../src/modules/location/ipLocationRepository";
 
 jest.mock("../../../src/modules/location/newLocationRepository");
 const mockGetNewProvincesRepository = jest.mocked(getNewProvincesRepository);
@@ -45,7 +45,9 @@ const mockGetLocationByLatLngRepository = jest.mocked(
 );
 
 jest.mock("../../../src/modules/location/ipLocationRepository");
-const mockGetLatLngFromIpRepository = jest.mocked(getLatLngFromIpRepository);
+const mockGetLatLngFromIpv4Repository = jest.mocked(
+  getLatLngFromIpv4Repository
+);
 
 jest.mock("../../../src/modules/location/provinceService");
 jest.mock("../../../src/modules/location/municipalityService");
@@ -342,7 +344,7 @@ describe("getReverseLocationService", () => {
       };
       jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(false);
       jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(true);
-      mockGetLatLngFromIpRepository.mockResolvedValueOnce(latLng);
+      mockGetLatLngFromIpv4Repository.mockResolvedValueOnce(latLng);
 
       await getReverseLocationService(params);
 
@@ -360,7 +362,7 @@ describe("getReverseLocationService", () => {
       };
       jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(false);
       jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(true);
-      mockGetLatLngFromIpRepository.mockResolvedValueOnce(undefined);
+      mockGetLatLngFromIpv4Repository.mockResolvedValueOnce(undefined);
 
       const result = async () => getReverseLocationService(params);
 

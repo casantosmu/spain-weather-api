@@ -1,12 +1,12 @@
-import { ipToLong } from "../../utils";
+import { ipv4ToNumber } from "../../utils";
 import { IPLocationModel } from "./ipLocationModel";
 
-export const getLatLngFromIpRepository = async (ip: string) => {
-  const ipLong = ipToLong(ip);
+export const getLatLngFromIpv4Repository = async (ipv4: string) => {
+  const ipNumber = ipv4ToNumber(ipv4);
 
   const query = {
     ipTo: {
-      $gte: ipLong,
+      $gte: ipNumber,
     },
   };
 

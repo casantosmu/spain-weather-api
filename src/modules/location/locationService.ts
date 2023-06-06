@@ -23,7 +23,7 @@ import {
 import { type LatLng, type Entity } from "./types";
 import { stringValidator } from "../../validator";
 import { BadRequestError, NotFoundError } from "../../error";
-import { getLatLngFromIpRepository } from "./ipLocationRepository";
+import { getLatLngFromIpv4Repository } from "./ipLocationRepository";
 
 export const isEntity = (string: string): string is Entity =>
   Object.keys(entity).includes(string);
@@ -169,7 +169,7 @@ export const getReverseLocationService = async ({
   }
 
   if (stringValidator.isIp(filter, "4")) {
-    const latLngFromIpResult = await getLatLngFromIpRepository(filter);
+    const latLngFromIpResult = await getLatLngFromIpv4Repository(filter);
 
     if (!latLngFromIpResult) {
       throw new NotFoundError({ message: `IP not found: "${filter}"` });

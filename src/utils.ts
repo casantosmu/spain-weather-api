@@ -1,7 +1,9 @@
-export const ipToLong = (dot: string) => {
-  const d = dot.split(".");
+export const ipv4ToNumber = (ipv4: string) => {
+  const ipParts = ipv4.split(".");
   return (
-    ((Number(d[0]) * 256 + Number(d[1])) * 256 + Number(d[2])) * 256 +
-    Number(d[3])
+    ((Number(ipParts[0]) * 256 + Number(ipParts[1])) * 256 +
+      Number(ipParts[2])) *
+      256 +
+    Number(ipParts[3])
   );
 };
