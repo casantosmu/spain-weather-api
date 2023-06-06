@@ -26,7 +26,7 @@ import {
   getNewProvincesRepository,
 } from "../../../src/modules/location/newLocationRepository";
 import { stringValidator } from "../../../src/validator";
-import { BadRequestError } from "../../../src/error";
+import { BadRequestError, NotFoundError } from "../../../src/error";
 import { getLatLngFromIpRepository } from "../../../src/modules/location/ipLocationRepository";
 
 jest.mock("../../../src/modules/location/newLocationRepository");
@@ -333,7 +333,7 @@ describe("getReverseLocationService", () => {
     });
   });
 
-  describe("when receives a IP filter", () => {
+  describe("when receives a IP v4 filter", () => {
     test("should call getLocationByLatLngRepository with latLng returned by getLatLngFromIpRepository", async () => {
       const latLng = [40.7128, -74.006] as const;
       const params = {
@@ -349,6 +349,22 @@ describe("getReverseLocationService", () => {
       expect(
         mockGetLocationByLatLngRepository.mock.calls[0]?.[0].latLng
       ).toStrictEqual(latLng);
+    });
+  });
+
+  describe("when receives a not found IP filter", () => {
+    test("should throw a Not Found Error", async () => {
+      const params = {
+        filter: "35.35.45",
+        entity: entity.autonomousCity,
+      };
+      jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(false);
+      jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(true);
+      mockGetLatLngFromIpRepository.mockResolvedValueOnce(undefined);
+
+      const result = async () => getReverseLocationService(params);
+
+      await expect(result).rejects.toThrow(NotFoundError);
     });
   });
 

@@ -168,7 +168,7 @@ export const getReverseLocationService = async ({
       .map((coordinate) => Number(coordinate.trim())) as [number, number];
   }
 
-  if (stringValidator.isIp(filter)) {
+  if (stringValidator.isIp(filter, "4")) {
     const latLngFromIpResult = await getLatLngFromIpRepository(filter);
 
     if (!latLngFromIpResult) {

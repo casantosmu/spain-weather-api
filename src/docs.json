@@ -92,7 +92,7 @@
       "get": {
         "tags": ["location"],
         "summary": "Get reverse location",
-        "description": "Retrieves a Location based on the provided latitude and longitude coordinates or IP address.",
+        "description": "Retrieves a Location based on the provided latitude and longitude coordinates or IP v4 address.",
         "operationId": "getReverseLocation",
         "parameters": [
           {
@@ -108,7 +108,7 @@
           {
             "name": "filter",
             "in": "query",
-            "description": "IP address or latitude and longitude separated by a comma to filter the results",
+            "description": "IP v4 address or latitude and longitude separated by a comma to filter the results",
             "required": true,
             "schema": {
               "type": "string"
@@ -139,6 +139,9 @@
           },
           "400": {
             "$ref": "#/components/responses/BadRequestError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
           },
           "500": {
             "$ref": "#/components/responses/InternalServerError"
@@ -334,6 +337,16 @@
       },
       "BadRequestError": {
         "description": "The request was malformed or invalid",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFoundError": {
+        "description": "The requested resource was not found",
         "content": {
           "application/json": {
             "schema": {

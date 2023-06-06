@@ -130,11 +130,31 @@ describe("GET /locations/reverse", () => {
     });
   });
 
+  describe("when filtered by non existen ip v4 address", () => {
+    test("should return a 404 error", async () => {
+      const locationProvince = new LocationProvinceBuilder()
+        .withRandomValues()
+        .build();
+      const locationMunicipality = new LocationMunicipalityBuilder()
+        .withRandomValues()
+        .build();
+      await createLocationsRepository([locationProvince, locationMunicipality]);
+
+      const { status } = await request.get("/locations/reverse", {
+        params: {
+          filter: faker.internet.ipv4(),
+        },
+      });
+
+      expect(status).toBe(404);
+    });
+  });
+
   describe("when bad request parameters are used", () => {
     test("should return a 400 error", async () => {
       const { status } = await request.get("/locations/reverse", {
         params: {
-          foo: "bar",
+          filter: faker.internet.ipv6(),
         },
       });
 

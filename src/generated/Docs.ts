@@ -14,7 +14,7 @@ export type paths = {
   "/locations/reverse": {
     /**
      * Get reverse location
-     * @description Retrieves the location information based on the provided latitude and longitude coordinates or IP address.
+     * @description Retrieves a Location based on the provided latitude and longitude coordinates or IP v4 address.
      */
     get: operations["getReverseLocation"];
   };
@@ -142,14 +142,14 @@ export type operations = {
   };
   /**
    * Get reverse location
-   * @description Retrieves the location information based on the provided latitude and longitude coordinates or IP address.
+   * @description Retrieves a Location based on the provided latitude and longitude coordinates or IP v4 address.
    */
   getReverseLocation: {
     parameters: {
       query: {
-        /** @description Entity type to filter response */
-        entity?: "municipality" | "autonomousCity" | "province";
-        /** @description IP address or latitude and longitude separated by comma to filter the results */
+        /** @description Type of entity or a comma-separated list of entity types to filter the response */
+        entity?: string;
+        /** @description IP v4 address or latitude and longitude separated by a comma to filter the results */
         filter: string;
       };
     };
