@@ -14,5 +14,5 @@ export const getLatLngFromIpRepository = async (ip: string) => {
     .select("latitude longitude")
     .lean();
 
-  return result ? ([result.latitude, result.latitude] as const) : undefined;
+  return result ? ([result.latitude, result.longitude] as const) : undefined;
 };
