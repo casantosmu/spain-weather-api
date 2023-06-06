@@ -1,15 +1,23 @@
 import {
   createLocationsRepository,
+  getLocationByLatLngRepository,
   hasLocationRepository,
 } from "../../../src/modules/location/locationRepository";
-import { seedLocationsService } from "../../../src/modules/location/locationService";
+import {
+  getReverseLocationService,
+  seedLocationsService,
+} from "../../../src/modules/location/locationService";
 import { randomUUID } from "crypto";
 import {
+  LocationAutonomousCityBuilder,
   NewAutonomousCityBuilder,
   NewMunicipalitiesBuilder,
   NewProvinceBuilder,
 } from "./locationFactory";
-import { ProvinceNotFoundError } from "../../../src/modules/location/error";
+import {
+  InvalidEntityError,
+  ProvinceNotFoundError,
+} from "../../../src/modules/location/error";
 import { MunicipalityNotFoundError } from "../../../src/modules/location/error";
 import { entity } from "../../../src/modules/location/constants";
 import {
@@ -17,6 +25,9 @@ import {
   getNewMunicipalitiesRepository,
   getNewProvincesRepository,
 } from "../../../src/modules/location/newLocationRepository";
+import { stringValidator } from "../../../src/validator";
+import { BadRequestError, NotFoundError } from "../../../src/error";
+import { getLatLngFromIpv4Repository } from "../../../src/modules/location/ipLocationRepository";
 
 jest.mock("../../../src/modules/location/newLocationRepository");
 const mockGetNewProvincesRepository = jest.mocked(getNewProvincesRepository);
@@ -29,6 +40,14 @@ const mockGetNewAutonomousCitiesRepository = jest.mocked(
 
 jest.mock("../../../src/modules/location/locationRepository");
 const mockHasLocationRepository = jest.mocked(hasLocationRepository);
+const mockGetLocationByLatLngRepository = jest.mocked(
+  getLocationByLatLngRepository
+);
+
+jest.mock("../../../src/modules/location/ipLocationRepository");
+const mockGetLatLngFromIpv4Repository = jest.mocked(
+  getLatLngFromIpv4Repository
+);
 
 jest.mock("../../../src/modules/location/provinceService");
 jest.mock("../../../src/modules/location/municipalityService");
@@ -237,6 +256,143 @@ describe("seedLocationsService", () => {
           },
         ]);
       });
+    });
+  });
+});
+
+describe("getReverseLocationService", () => {
+  describe("when called", () => {
+    test("should return the location returned by getLocationByLatLngRepository", async () => {
+      const location = new LocationAutonomousCityBuilder().build();
+      const params = {
+        filter: "0,0",
+        entity: entity.autonomousCity,
+      };
+      jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(true);
+      jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(false);
+      mockGetLocationByLatLngRepository.mockResolvedValueOnce(location);
+
+      const result = await getReverseLocationService(params);
+
+      expect(result).toStrictEqual(location);
+    });
+  });
+
+  describe("when receives a valid entity", () => {
+    test("should call getLocationByLatLngRepository with the entity", async () => {
+      const params = {
+        filter: "0,0",
+        entity: entity.autonomousCity,
+      };
+      jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(true);
+      jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(false);
+
+      await getReverseLocationService(params);
+
+      expect(mockGetLocationByLatLngRepository.mock.calls[0]?.[0].entity).toBe(
+        params.entity
+      );
+    });
+  });
+
+  describe("when receives a list of valid entities", () => {
+    test("should call getLocationByLatLngRepository with an array of unique entities", async () => {
+      const entities = [
+        entity.autonomousCity,
+        entity.autonomousCity,
+        entity.municipality,
+      ];
+      const params = {
+        filter: "0,0",
+        entity: entities.join(", "),
+      };
+      jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(true);
+      jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(false);
+
+      await getReverseLocationService(params);
+
+      expect(
+        mockGetLocationByLatLngRepository.mock.calls[0]?.[0].entity
+      ).toStrictEqual(entities.slice(1));
+    });
+  });
+
+  describe("when receives a latLng filter", () => {
+    test("should call getLocationByLatLngRepository with correct latLng", async () => {
+      const latLng = [40.7128, -74.006];
+      const params = {
+        filter: latLng.join(", "),
+        entity: entity.autonomousCity,
+      };
+      jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(true);
+      jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(false);
+
+      await getReverseLocationService(params);
+
+      expect(
+        mockGetLocationByLatLngRepository.mock.calls[0]?.[0].latLng
+      ).toStrictEqual(latLng);
+    });
+  });
+
+  describe("when receives a IP v4 filter", () => {
+    test("should call getLocationByLatLngRepository with latLng returned by getLatLngFromIpRepository", async () => {
+      const latLng = [40.7128, -74.006] as const;
+      const params = {
+        filter: "35.35.45",
+        entity: entity.autonomousCity,
+      };
+      jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(false);
+      jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(true);
+      mockGetLatLngFromIpv4Repository.mockResolvedValueOnce(latLng);
+
+      await getReverseLocationService(params);
+
+      expect(
+        mockGetLocationByLatLngRepository.mock.calls[0]?.[0].latLng
+      ).toStrictEqual(latLng);
+    });
+  });
+
+  describe("when receives a not found IP filter", () => {
+    test("should throw a Not Found Error", async () => {
+      const params = {
+        filter: "35.35.45",
+        entity: entity.autonomousCity,
+      };
+      jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(false);
+      jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(true);
+      mockGetLatLngFromIpv4Repository.mockResolvedValueOnce(undefined);
+
+      const result = async () => getReverseLocationService(params);
+
+      await expect(result).rejects.toThrow(NotFoundError);
+    });
+  });
+
+  describe("when receives an invalid filter", () => {
+    test("should throw a Bad Request Error", async () => {
+      jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(false);
+      jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(false);
+
+      const result = async () => getReverseLocationService({ filter: "" });
+
+      await expect(result).rejects.toThrow(BadRequestError);
+    });
+  });
+
+  describe("when receives an invalid entity", () => {
+    test("should throw a InvalidEntityError", async () => {
+      const params = {
+        filter: "0,0",
+        entity: `${entity.autonomousCity},invalid-entity`,
+      };
+      jest.spyOn(stringValidator, "isLatLng").mockReturnValueOnce(true);
+      jest.spyOn(stringValidator, "isIp").mockReturnValueOnce(false);
+
+      const result = async () => getReverseLocationService(params);
+
+      await expect(result).rejects.toThrow(InvalidEntityError);
     });
   });
 });

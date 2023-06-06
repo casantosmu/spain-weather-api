@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
+  type Entity,
+  type LatLng,
   type LocationAutonomousCity,
   type LocationMunicipality,
   type LocationProvince,
@@ -114,7 +116,7 @@ export const createLocationRepository = async (
 };
 
 export const hasLocationRepository = async () => {
-  const hasLocation = await MunicipalityModel.findOne().exec();
+  const hasLocation = await MunicipalityModel.findOne().lean();
   return Boolean(hasLocation);
 };
 
@@ -151,4 +153,34 @@ export const getLocationsRepository = async ({
     total,
     data: locations.map((location) => mapToLocation(location)),
   };
+};
+
+type GetLocationByLatLngRepositoryParams = {
+  latLng: LatLng;
+  entity?: Entity | Entity[];
+};
+
+export const getLocationByLatLngRepository = async ({
+  latLng,
+  entity,
+}: GetLocationByLatLngRepositoryParams) => {
+  const query = {
+    geo2dPoint: {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: [latLng[1], latLng[0]],
+        },
+      },
+    },
+    ...(Array.isArray(entity)
+      ? { $or: entity.map((entityName) => ({ entity: entityName })) }
+      : entity
+      ? { entity }
+      : undefined),
+  };
+
+  const location = await LocationModel.findOne(query).lean();
+
+  return mapToLocation(location);
 };

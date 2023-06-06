@@ -36,9 +36,7 @@ export const notFoundMiddleware = (_req: Request, res: Response) => {
 };
 
 export const asyncWrapper =
-  (
-    callback: (req: Request, res: Response, next: NextFunction) => Promise<void>
-  ) =>
+  (callback: (...arg: any[]) => Promise<void>) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await callback(req, res, next);

@@ -4,7 +4,7 @@ import { checkListParams, defaultList } from "../src/operations";
 describe("checkListParams", () => {
   describe("when default options", () => {
     describe("and params are within default values", () => {
-      it("should not throw an error", () => {
+      test("should not throw an error", () => {
         const params = {
           limit: defaultList.limit.default,
           skip: defaultList.skip.default,
@@ -19,7 +19,7 @@ describe("checkListParams", () => {
     });
 
     describe("and limit exceed max", () => {
-      it("should throw a BadRequestError", () => {
+      test("should throw a BadRequestError", () => {
         const invalidParams = {
           limit: defaultList.limit.max + 5,
           skip: defaultList.skip.default,
@@ -34,7 +34,7 @@ describe("checkListParams", () => {
     });
 
     describe("and skip is less than min", () => {
-      it("should throw a BadRequestError", () => {
+      test("should throw a BadRequestError", () => {
         const invalidParams = {
           limit: defaultList.limit.default,
           skip: defaultList.skip.min - 1,
@@ -64,7 +64,7 @@ describe("checkListParams", () => {
     } as const;
 
     describe("and params are within default values", () => {
-      it("should not throw an error", () => {
+      test("should not throw an error", () => {
         const params = {
           limit: customOptions.limit.default,
           skip: customOptions.skip.default,
@@ -79,7 +79,7 @@ describe("checkListParams", () => {
     });
 
     describe("and limit exceed max", () => {
-      it("should throw a BadRequestError", () => {
+      test("should throw a BadRequestError", () => {
         const invalidParams = {
           limit: customOptions.limit.max + 5,
           skip: customOptions.skip.default,
@@ -94,7 +94,7 @@ describe("checkListParams", () => {
     });
 
     describe("and skip is less than min", () => {
-      it("should throw a BadRequestError", () => {
+      test("should throw a BadRequestError", () => {
         const invalidParams = {
           limit: customOptions.limit.default,
           skip: customOptions.skip.min - 1,

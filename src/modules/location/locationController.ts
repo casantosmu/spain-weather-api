@@ -4,8 +4,12 @@ import {
   type GetLocationsQuery,
   type LocationProvince,
   type LocationAutonomousCity,
+  type GetReverseLocationQuery,
 } from "./types";
-import { getLocationsService } from "./locationService";
+import {
+  getLocationsService,
+  getReverseLocationService,
+} from "./locationService";
 
 export const mapToLocationView = (
   location: LocationMunicipality | LocationProvince | LocationAutonomousCity
@@ -28,4 +32,13 @@ export const getLocationsController = async (
     },
     data: data.map(mapToLocationView),
   });
+};
+
+export const getReverseLocationController = async (
+  req: Request<unknown, unknown, unknown, GetReverseLocationQuery>,
+  res: Response
+) => {
+  const location = await getReverseLocationService(req.query);
+
+  res.status(200).json(mapToLocationView(location));
 };

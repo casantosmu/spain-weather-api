@@ -1,13 +1,18 @@
 import logger from "../../logger";
 import {
   createLocationsRepository,
+  getLocationByLatLngRepository,
   getLocationsRepository,
   hasLocationRepository,
 } from "./locationRepository";
 import { randomUUID } from "crypto";
 import { checkProvinceCode, checkProvincesLength } from "./provinceService";
 import { checkMunicipalityCode } from "./municipalityService";
-import { MunicipalityNotFoundError, ProvinceNotFoundError } from "./error";
+import {
+  InvalidEntityError,
+  MunicipalityNotFoundError,
+  ProvinceNotFoundError,
+} from "./error";
 import { checkListParams, defaultList } from "../../operations";
 import { entity } from "./constants";
 import {
@@ -15,6 +20,16 @@ import {
   getNewMunicipalitiesRepository,
   getNewProvincesRepository,
 } from "./newLocationRepository";
+import { type LatLng, type Entity } from "./types";
+import { stringValidator } from "../../validator";
+import { BadRequestError, NotFoundError } from "../../error";
+import { getLatLngFromIpv4Repository } from "./ipLocationRepository";
+
+export const isEntity = (string: string): string is Entity =>
+  Object.keys(entity).includes(string);
+
+export const isEntityArray = (array: string[]): array is Entity[] =>
+  !array.some((entityName) => !isEntity(entityName));
 
 export const seedLocationsService = async () => {
   const hasLocation = await hasLocationRepository();
@@ -127,4 +142,51 @@ export const getLocationsService = async ({
   checkListParams({ limit, skip });
 
   return getLocationsRepository({ filter, limit, skip });
+};
+
+type GetReverseLocationServiceParams = {
+  filter: string;
+  entity?: string;
+};
+
+export const getReverseLocationService = async ({
+  filter,
+  entity,
+}: GetReverseLocationServiceParams) => {
+  const uniqueEntities = entity
+    ? [...new Set(entity.split(",").map((entityName) => entityName.trim()))]
+    : undefined;
+  if (uniqueEntities && !isEntityArray(uniqueEntities)) {
+    throw new InvalidEntityError(entity!);
+  }
+
+  let latLng: LatLng | undefined;
+
+  if (stringValidator.isLatLng(filter)) {
+    latLng = filter
+      .split(",")
+      .map((coordinate) => Number(coordinate.trim())) as [number, number];
+  }
+
+  if (stringValidator.isIp(filter, "4")) {
+    const latLngFromIpResult = await getLatLngFromIpv4Repository(filter);
+
+    if (!latLngFromIpResult) {
+      throw new NotFoundError({ message: `IP not found: "${filter}"` });
+    }
+
+    latLng = latLngFromIpResult;
+  }
+
+  if (!latLng) {
+    throw new BadRequestError({ message: `Invalid filter: ${filter}` });
+  }
+
+  return getLocationByLatLngRepository({
+    latLng,
+    entity:
+      uniqueEntities && uniqueEntities.length > 1
+        ? uniqueEntities
+        : uniqueEntities?.[0],
+  });
 };

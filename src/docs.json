@@ -87,6 +87,67 @@
           }
         }
       }
+    },
+    "/locations/reverse": {
+      "get": {
+        "tags": ["location"],
+        "summary": "Get reverse location",
+        "description": "Retrieves a Location based on the provided latitude and longitude coordinates or IP v4 address.",
+        "operationId": "getReverseLocation",
+        "parameters": [
+          {
+            "name": "entity",
+            "in": "query",
+            "description": "Type of entity or a comma-separated list of entity types to filter the response",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "IP v4 address or latitude and longitude separated by a comma to filter the results",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Municipality"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Province"
+                    },
+                    {
+                      "$ref": "#/components/schemas/AutonomousCity"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -276,6 +337,16 @@
       },
       "BadRequestError": {
         "description": "The request was malformed or invalid",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFoundError": {
+        "description": "The requested resource was not found",
         "content": {
           "application/json": {
             "schema": {

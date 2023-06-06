@@ -15,7 +15,7 @@ import { entity } from "../../../src/modules/location/constants";
 
 abstract class BaseLocationBuilder<T extends NewLocation> {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  protected readonly data: T = {} as T;
+  protected readonly data = {} as T;
 
   withCode(code: string) {
     this.data.code = code;
@@ -43,10 +43,7 @@ abstract class BaseLocationBuilder<T extends NewLocation> {
   }
 
   withRandomLatLng() {
-    this.data.latLng = [
-      Number(faker.location.latitude()),
-      Number(faker.location.longitude()),
-    ];
+    this.data.latLng = [faker.location.latitude(), faker.location.longitude()];
     return this;
   }
 

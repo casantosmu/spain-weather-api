@@ -28,13 +28,13 @@ const updateLocation = async () => {
   ]);
   await MunicipalityModel.bulkWrite(
     municipalitiesWithProvinceId.map(
-      (municipality: { _id: string; provinceId: string }) => ({
+      ({ _id, provinceId }: { _id: string; provinceId: string }) => ({
         updateOne: {
-          filter: { _id: municipality._id },
+          filter: { _id },
           update: [
             {
               $set: {
-                "province.provinceId": municipality.provinceId,
+                "province.provinceId": provinceId,
               },
             },
             { $unset: "province._id" },
@@ -68,13 +68,13 @@ const updateLocation = async () => {
   ]);
   await ProvinceModel.bulkWrite(
     provincesWithCapitalId.map(
-      (province: { _id: string; capitalId: string }) => ({
+      ({ _id, capitalId }: { _id: string; capitalId: string }) => ({
         updateOne: {
-          filter: { _id: province._id },
+          filter: { _id },
           update: [
             {
               $set: {
-                "capital.municipalityId": province.capitalId,
+                "capital.municipalityId": capitalId,
               },
             },
             { $unset: "capital._id" },

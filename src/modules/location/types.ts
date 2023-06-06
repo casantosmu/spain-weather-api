@@ -25,13 +25,15 @@ export type NewMunicipality = {
 
 export type NewAutonomousCity = NewLocation;
 
+export type Entity = (typeof entity)[keyof typeof entity];
+
 export type Location = {
   id: string;
   code: string;
   name: string;
   latLng: LatLng;
   year: number;
-  entity: (typeof entity)[keyof typeof entity];
+  entity: Entity;
 };
 
 export type LocationRelation = {
@@ -59,3 +61,6 @@ export type LocationAutonomousCity = {
 
 export type GetLocationsQuery =
   operations["getLocations"]["parameters"]["query"];
+
+export type GetReverseLocationQuery =
+  operations["getReverseLocation"]["parameters"]["query"];

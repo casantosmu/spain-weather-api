@@ -1,6 +1,8 @@
 import { type Request, type Response, type NextFunction } from "express";
 import Ajv, { type ErrorObject, type ValidateFunction } from "ajv";
 import { BadRequestError } from "./error";
+import isIP from "validator/lib/isIP";
+import isLatLong from "validator/lib/isLatLong";
 
 export class ValidatorError extends BadRequestError {
   constructor(message: string) {
@@ -11,6 +13,10 @@ export class ValidatorError extends BadRequestError {
   }
 }
 
+export const stringValidator = {
+  isIp: isIP,
+  isLatLng: isLatLong,
+};
 export const validator = new Ajv({ coerceTypes: true });
 
 const convertAjvErrorToMessage = (ajvError: ErrorObject) => {

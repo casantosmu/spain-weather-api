@@ -14,7 +14,7 @@ jest.mock("../src/terminate");
 
 describe("handleError", () => {
   describe("when receives an AppError", () => {
-    it("logs the error message and error object, but does not terminate the app", () => {
+    test("logs the error message and error object, but does not terminate the app", () => {
       jest.spyOn(logger, "warn");
       const appError = new NotFoundError();
 
@@ -26,7 +26,7 @@ describe("handleError", () => {
   });
 
   describe("when receives a GeneralError", () => {
-    it("logs the error message and error object and terminates the app", () => {
+    test("logs the error message and error object and terminates the app", () => {
       jest.spyOn(logger, "error");
       const generalError = new GeneralError();
 
@@ -41,7 +41,7 @@ describe("handleError", () => {
   });
 
   describe("when receives an error", () => {
-    it("creates and logs an AppError with error stack and terminates the app", () => {
+    test("creates and logs an AppError with error stack and terminates the app", () => {
       const spyLoggerError = jest.spyOn(logger, "error");
       const error = new Error("Some error message");
 
@@ -58,7 +58,7 @@ describe("handleError", () => {
   });
 
   describe("when not receives an error", () => {
-    it("logs an error message with the unexpected value and terminates the app", () => {
+    test("logs an error message with the unexpected value and terminates the app", () => {
       jest.spyOn(logger, "error");
       const value = { foo: "bar" };
 
@@ -74,7 +74,7 @@ describe("handleError", () => {
 });
 
 describe("AppError", () => {
-  it("should create an instance with the correct properties", () => {
+  test("should create an instance with the correct properties", () => {
     const statusCode = 500;
     const name = "TestError";
     const message = "This is a test error";
